@@ -4,6 +4,8 @@ from crewai import LLM, Agent, Crew, Process, Task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from crewai.project import CrewBase, agent, crew, task
 
+from churn_pipeline.crews.analyst_crew.outputs import ContractText
+
 
 def _llm() -> LLM:
     # temperature=0 keeps agent wording as repeatable as the model allows;
@@ -57,7 +59,26 @@ class AnalystCrew:
             verbose=True,
         )
 
-    # Tasks are defined in step 3.3.
+    # Tools are attached to the agents in step 3.4.
+
+    @task
+    def inspect_raw_data_task(self) -> Task:
+        return Task(config=self.tasks_config["inspect_raw_data_task"])  # type: ignore[index]
+
+    @task
+    def prepare_clean_data_task(self) -> Task:
+        return Task(config=self.tasks_config["prepare_clean_data_task"])  # type: ignore[index]
+
+    @task
+    def eda_task(self) -> Task:
+        return Task(config=self.tasks_config["eda_task"])  # type: ignore[index]
+
+    @task
+    def publish_contract_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["publish_contract_task"],  # type: ignore[index]
+            output_pydantic=ContractText,
+        )
 
     @crew
     def crew(self) -> Crew:

@@ -1,1 +1,94 @@
-# Tasks for the Data Analyst Crew are defined in step 3.3.
+inspect_raw_data_task:
+  description: >
+    Profile the raw dataset at {raw_data_path} (sheet "E Comm") with the
+    profile_raw_data tool. The tool writes {output_dir}/quality_report.json.
+
+    From the tool output, summarise for the team:
+    - row count, duplicate rows and whether CustomerID is unique
+    - every column with missing values: count, share, and churn rate when the
+      value is missing versus present
+    - every categorical column with each spelling, its count and churn rate,
+      pointing out spellings that look like the same meaning
+    - numeric outliers the tool flagged
+    - the overall churn rate
+
+    Use only numbers that appear in the tool output. Do not recommend imputing,
+    merging categories or clipping outliers: the team decided against all three.
+  expected_output: >
+    A markdown quality summary with sections Overview, Missing values,
+    Categories, Outliers and Target, where every number matches
+    quality_report.json.
+  agent: data_quality_inspector
+  output_file: "{output_dir}/quality_summary.md"
+
+prepare_clean_data_task:
+  description: >
+    Create the handoff file with the export_clean_data tool: it reads sheet
+    "E Comm" from {raw_data_path}, writes {output_dir}/clean_data.csv without
+    changing any value, re-reads the CSV and compares it to the raw data cell by
+    cell, and returns the comparison result and the file's sha256.
+
+    The team decisions you must follow and document:
+    - missing values stay missing (no imputation, no synthetic values)
+    - category spellings stay as they are (no merging)
+    - outliers stay as they are (no clipping or removal)
+
+    If the tool reports any difference between the CSV and the raw data, say
+    so plainly at the top of the log and do not describe the file as faithful.
+  expected_output: >
+    A markdown preparation log with sections Source, Steps, Decisions,
+    Verification (the tool's comparison result and the sha256) and Output.
+  agent: data_preparation_engineer
+  context:
+    - inspect_raw_data_task
+  output_file: "{output_dir}/preparation_log.md"
+
+eda_task:
+  description: >
+    Run the run_eda tool on {output_dir}/clean_data.csv. It writes
+    {output_dir}/eda_report.html with descriptive statistics, distributions and
+    churn-rate charts, and returns the computed churn rates by group.
+
+    Then write business insights for Harbor & Vale's retention team:
+    - which customer groups churn most, with their size and churn rate
+    - what that means for where the discount budget should go
+    - patterns that may come from data collection rather than customer
+      behaviour (for example different spellings with different churn rates)
+    - the known limitation that the churn window is undefined, so last-month
+      columns may describe customers after they churned
+
+    Quote only numbers the tool returned. Do not claim causation.
+  expected_output: >
+    A markdown insights document with an executive summary of three to five
+    bullet points, then sections Who churns, Budget implications, Data caveats.
+  agent: eda_insights_analyst
+  context:
+    - inspect_raw_data_task
+    - prepare_clean_data_task
+  output_file: "{output_dir}/insights.md"
+
+publish_contract_task:
+  description: >
+    Use the build_contract tool on {output_dir}/clean_data.csv. It computes
+    every number of the contract (types, ranges, means, null counts, allowed
+    values, row count, target rate, sha256) and returns the column list.
+
+    Your part is the text the tool cannot know. Return:
+    - a one-sentence description for every column, based on the data
+      dictionary sheet "Data Dict" in {raw_data_path} and the tool output
+    - the assumptions the Data Scientist crew must know: no imputation, no
+      category merging, outliers kept, and which units are assumed
+      (Tenure in months, WarehouseToHome in km, CashbackAmount in INR)
+    - leakage notes: the churn window is undefined, so Complain, CouponUsed,
+      OrderCount, CashbackAmount and PreferedOrderCat (all "last month") may
+      leak; and the different spellings with different churn rates
+
+    Do not return or change any number; the code merges your text with the
+    tool's numbers into {output_dir}/dataset_contract.json.
+  expected_output: >
+    Column descriptions for all 20 columns, a list of assumptions and a list of
+    leakage notes, in the structured format requested.
+  agent: contract_steward
+  context:
+    - inspect_raw_data_task
+    - prepare_clean_data_task
