@@ -1,0 +1,321 @@
+{
+  "contract_version": "1.0.0",
+  "dataset": {
+    "name": "ecommerce_churn",
+    "file": "clean_data.csv",
+    "sha256": null,
+    "row_count": 5630
+  },
+  "target": {
+    "name": "Churn",
+    "positive_class": 1,
+    "expected_rate": 0.1684
+  },
+  "tolerances": {
+    "mean_rel": 0.01,
+    "target_rate_rel": 0.01,
+    "unit_change_factor": 10
+  },
+  "columns": [
+    {
+      "name": "CustomerID",
+      "role": "id",
+      "dtype": "int",
+      "description": "Unique customer ID",
+      "expected_null_count": 0,
+      "unique": true,
+      "range": {
+        "min": 50001,
+        "max": 55630
+      }
+    },
+    {
+      "name": "Churn",
+      "role": "target",
+      "dtype": "binary",
+      "description": "Churn Flag",
+      "unit": "flag",
+      "unit_source": "data_dict",
+      "expected_null_count": 0,
+      "range": {
+        "min": 0,
+        "max": 1
+      },
+      "expected_mean": 0.1684,
+      "expected_std": 0.3742
+    },
+    {
+      "name": "Tenure",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Tenure of customer in organization",
+      "unit": "months",
+      "unit_source": "assumed",
+      "expected_null_count": 264,
+      "range": {
+        "min": 0,
+        "max": 61
+      },
+      "expected_mean": 10.1899,
+      "expected_std": 8.5572
+    },
+    {
+      "name": "PreferredLoginDevice",
+      "role": "feature",
+      "dtype": "category",
+      "description": "Preferred login device of customer",
+      "expected_null_count": 0,
+      "allowed_values": [
+        "Computer",
+        "Mobile Phone",
+        "Phone"
+      ]
+    },
+    {
+      "name": "CityTier",
+      "role": "feature",
+      "dtype": "int",
+      "description": "City tier",
+      "unit": "tier",
+      "unit_source": "data_dict",
+      "expected_null_count": 0,
+      "range": {
+        "min": 1,
+        "max": 3
+      },
+      "expected_mean": 1.6547,
+      "expected_std": 0.9154
+    },
+    {
+      "name": "WarehouseToHome",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Distance in between warehouse to home of customer",
+      "unit": "km",
+      "unit_source": "assumed",
+      "expected_null_count": 251,
+      "range": {
+        "min": 5,
+        "max": 127
+      },
+      "expected_mean": 15.6399,
+      "expected_std": 8.5315
+    },
+    {
+      "name": "PreferredPaymentMode",
+      "role": "feature",
+      "dtype": "category",
+      "description": "Preferred payment method of customer",
+      "expected_null_count": 0,
+      "allowed_values": [
+        "CC",
+        "COD",
+        "Cash on Delivery",
+        "Credit Card",
+        "Debit Card",
+        "E wallet",
+        "UPI"
+      ]
+    },
+    {
+      "name": "Gender",
+      "role": "feature",
+      "dtype": "category",
+      "description": "Gender of customer",
+      "expected_null_count": 0,
+      "allowed_values": [
+        "Female",
+        "Male"
+      ]
+    },
+    {
+      "name": "HourSpendOnApp",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Number of hours spend on mobile application or website",
+      "unit": "hours",
+      "unit_source": "data_dict",
+      "expected_null_count": 255,
+      "range": {
+        "min": 0,
+        "max": 5
+      },
+      "expected_mean": 2.9315,
+      "expected_std": 0.7219
+    },
+    {
+      "name": "NumberOfDeviceRegistered",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Total number of devices registered on particular customer",
+      "unit": "count",
+      "unit_source": "data_dict",
+      "expected_null_count": 0,
+      "range": {
+        "min": 1,
+        "max": 6
+      },
+      "expected_mean": 3.689,
+      "expected_std": 1.024
+    },
+    {
+      "name": "PreferedOrderCat",
+      "role": "feature",
+      "dtype": "category",
+      "description": "Preferred order category of customer in last month",
+      "expected_null_count": 0,
+      "allowed_values": [
+        "Fashion",
+        "Grocery",
+        "Laptop & Accessory",
+        "Mobile",
+        "Mobile Phone",
+        "Others"
+      ]
+    },
+    {
+      "name": "SatisfactionScore",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Satisfactory score of customer on service",
+      "unit": "score",
+      "unit_source": "data_dict",
+      "expected_null_count": 0,
+      "range": {
+        "min": 1,
+        "max": 5
+      },
+      "expected_mean": 3.0668,
+      "expected_std": 1.3802
+    },
+    {
+      "name": "MaritalStatus",
+      "role": "feature",
+      "dtype": "category",
+      "description": "Marital status of customer",
+      "expected_null_count": 0,
+      "allowed_values": [
+        "Divorced",
+        "Married",
+        "Single"
+      ]
+    },
+    {
+      "name": "NumberOfAddress",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Total number of addresses added on particular customer",
+      "unit": "count",
+      "unit_source": "data_dict",
+      "expected_null_count": 0,
+      "range": {
+        "min": 1,
+        "max": 22
+      },
+      "expected_mean": 4.214,
+      "expected_std": 2.5836
+    },
+    {
+      "name": "Complain",
+      "role": "feature",
+      "dtype": "binary",
+      "description": "Any complaint has been raised in last month",
+      "unit": "flag (last month)",
+      "unit_source": "data_dict",
+      "expected_null_count": 0,
+      "range": {
+        "min": 0,
+        "max": 1
+      },
+      "expected_mean": 0.2849,
+      "expected_std": 0.4514
+    },
+    {
+      "name": "OrderAmountHikeFromlastYear",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Percentage increases in order from last year",
+      "unit": "percent",
+      "unit_source": "data_dict",
+      "expected_null_count": 265,
+      "range": {
+        "min": 11,
+        "max": 26
+      },
+      "expected_mean": 15.7079,
+      "expected_std": 3.6755
+    },
+    {
+      "name": "CouponUsed",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Total number of coupon has been used in last month",
+      "unit": "count (last month)",
+      "unit_source": "data_dict",
+      "expected_null_count": 256,
+      "range": {
+        "min": 0,
+        "max": 16
+      },
+      "expected_mean": 1.751,
+      "expected_std": 1.8946
+    },
+    {
+      "name": "OrderCount",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Total number of orders has been places in last month",
+      "unit": "count (last month)",
+      "unit_source": "data_dict",
+      "expected_null_count": 258,
+      "range": {
+        "min": 1,
+        "max": 16
+      },
+      "expected_mean": 3.008,
+      "expected_std": 2.9397
+    },
+    {
+      "name": "DaySinceLastOrder",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Day Since last order by customer",
+      "unit": "days",
+      "unit_source": "data_dict",
+      "expected_null_count": 307,
+      "range": {
+        "min": 0,
+        "max": 46
+      },
+      "expected_mean": 4.5435,
+      "expected_std": 3.6544
+    },
+    {
+      "name": "CashbackAmount",
+      "role": "feature",
+      "dtype": "float",
+      "description": "Average cashback in last month",
+      "unit": "INR (last month average)",
+      "unit_source": "assumed",
+      "expected_null_count": 0,
+      "range": {
+        "min": 0,
+        "max": 324.99
+      },
+      "expected_mean": 177.223,
+      "expected_std": 49.207
+    }
+  ],
+  "forbidden_features": [
+    "CustomerID"
+  ],
+  "assumptions": [
+    "No category merging",
+    "No imputation of missing values",
+    "Outliers kept as-is",
+    "Units of Tenure, WarehouseToHome and CashbackAmount are assumed"
+  ],
+  "leakage_notes": [
+    "Churn window is undefined; last-month columns (Complain, CouponUsed, OrderCount, CashbackAmount, PreferedOrderCat) may leak"
+  ]
+}
