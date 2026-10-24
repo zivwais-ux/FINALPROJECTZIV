@@ -1,0 +1,23 @@
+[project]
+name = "churn_pipeline"
+version = "0.1.0"
+description = "churn_pipeline using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "crewai[tools]>=1.15.30,<2.0.0"
+]
+
+[project.scripts]
+kickoff = "churn_pipeline.main:kickoff"
+run_crew = "churn_pipeline.main:kickoff"
+plot = "churn_pipeline.main:plot"
+run_with_trigger = "churn_pipeline.main:run_with_trigger"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "flow"
+project_id = "93280e70-e208-4f9b-aa5b-0683d63c1f1d"
