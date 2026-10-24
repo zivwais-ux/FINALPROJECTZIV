@@ -1,0 +1,61 @@
+# שלב 3: Data Analyst Crew
+
+## מבנה
+- `src/churn_pipeline/crews/analyst_crew/`: ה-crew עצמו. נוצר עם `crewai flow add-crew analyst_crew`.
+- `src/churn_pipeline/tools/analyst_tools.py`: הכלים. פייתון טהור, בלי LLM.
+- `src/churn_pipeline/main.py`: Flow מינימלי שמריץ רק את Crew 1. ה-Flow המלא ייבנה בשלב 5.
+
+## סוכנים, משימות וכלים
+| # | סוכן | משימה | כלי | קבצים שהכלי כותב | קובץ שהסוכן כותב |
+|---|---|---|---|---|---|
+| 1 | `data_quality_inspector` | `inspect_raw_data_task` | `profile_raw_data` | `quality_report.json` | `quality_summary.md` |
+| 2 | `data_preparation_engineer` | `prepare_clean_data_task` | `export_clean_data` | `clean_data.csv` | `preparation_log.md` |
+| 3 | `eda_insights_analyst` | `eda_task` | `run_eda` | `eda_report.html` | `insights.md` |
+| 4 | `contract_steward` | `publish_contract_task` | `build_contract` | `contract_numbers.json` | מחזיר `ContractText` (טקסט בלבד) |
+
+**הגדרות משותפות לכל הסוכנים:** `gpt-4.1-mini` (מהמשתנה `MODEL`), `temperature=0`, `max_iter=8`.
+
+**אחרי שה-crew מסיים** (`@after_kickoff`): `finalize_contract` ממזג את הטקסט של ה-Contract Steward עם המספרים של
+`build_contract`, ובודק את החוזה מול `clean_data.csv` עם הוולידטור משלב 2. רק אם אין הפרות נכתב
+`dataset_contract.json`. אחרת נזרקת שגיאה, ולא נמסר חוזה שגוי.
+
+**כל התוצרים** נכתבים לתיקייה `artifacts/latest/crew1/`, שנקבעת ב-Flow.
+
+## פרטים חשובים בכלים
+- **`export_clean_data`:** כותב CSV בלי שום שינוי, קורא אותו מחדש ומשווה לגולמי תא מול תא, גם בערכים וגם במיקום החסרים.
+  התוצאה: `identical_to_raw: true` ו-1,856 ערכים חסרים שנשמרו. ה-SHA256 של הקובץ זהה בין ריצות.
+- **`profile_raw_data`:** חריגים לפי כלל קבוע, ערך מחוץ ל-Q1−3·IQR עד Q3+3·IQR. לפי הכלל הזה:
+
+  | עמודה | ערכים חריגים לפי הכלל |
+  |---|---|
+  | `Tenure` | 2 |
+  | `WarehouseToHome` | 2 |
+  | `NumberOfAddress` | 4 |
+  | `DaySinceLastOrder` | 3 |
+  | `CouponUsed` | 303 |
+  | `OrderCount` | 263 |
+
+  ב-`CouponUsed` וב-`OrderCount` רוב הערכים צפופים ליד 1 עד 2, ולכן הכלל מסמן הרבה ערכים. הם מסומנים בדוח בלבד, ולא מוסרים
+  (לפי ההחלטה מצעד 1.3).
+- **`build_contract`:** היחידות לקוחות מטבלה קבועה בקוד (`UNITS`), שמשקפת את ההחלטות מ-`docs/contract_spec.md`.
+  טסט מוודא שכל המספרים שהכלי מחשב זהים לאפיון שנכתב ידנית ב-`tests/fixtures/contract_v1.json`.
+
+## תקלה שנמצאה ותוקנה
+**הבעיה:** CrewAI מחליף את `warnings.warn` בגרסה שלא תומכת בפרמטר `skip_file_prefixes`, ש-matplotlib 3.11 משתמש בו.
+לכן כל אזהרת deprecation של matplotlib מפילה את הכלי. `seaborn.heatmap` מפעיל אזהרה כזו.
+
+**הפתרון:** מפת החום של הקורלציות מצוירת ישירות ב-matplotlib.
+
+## טסטים
+`tests/test_analyst_tools.py` מכיל 8 טסטים, בלי LLM. הם בודקים:
+- שכל כלי כותב את הקובץ שלו
+- שהייצוא זהה לגולמי ודטרמיניסטי
+- שמספרי החוזה תואמים לאפיון
+- שחוזה ממוזג עובר את הוולידטור
+- שחוזה לא נכתב אם חסר תיאור לעמודה, או אם `clean_data.csv` השתנה, למשל ביחידות ×100
+
+## הרצה
+```bash
+cp .env.example .env    # ולהכניס OPENAI_API_KEY
+crewai run
+```

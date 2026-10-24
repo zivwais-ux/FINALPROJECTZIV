@@ -2,9 +2,16 @@ import os
 
 from crewai import LLM, Agent, Crew, Process, Task
 from crewai.agents.agent_builder.base_agent import BaseAgent
-from crewai.project import CrewBase, agent, crew, task
+from crewai.project import CrewBase, after_kickoff, agent, before_kickoff, crew, task
 
 from churn_pipeline.crews.analyst_crew.outputs import ContractText
+from churn_pipeline.tools.analyst_tools import (
+    build_contract_tool,
+    export_clean_data_tool,
+    finalize_contract,
+    profile_raw_data_tool,
+    run_eda_tool,
+)
 
 
 def _llm() -> LLM:
@@ -28,6 +35,7 @@ class AnalystCrew:
         return Agent(
             config=self.agents_config["data_quality_inspector"],  # type: ignore[index]
             llm=_llm(),
+            tools=[profile_raw_data_tool],
             max_iter=8,
             verbose=True,
         )
@@ -37,6 +45,7 @@ class AnalystCrew:
         return Agent(
             config=self.agents_config["data_preparation_engineer"],  # type: ignore[index]
             llm=_llm(),
+            tools=[export_clean_data_tool],
             max_iter=8,
             verbose=True,
         )
@@ -46,6 +55,7 @@ class AnalystCrew:
         return Agent(
             config=self.agents_config["eda_insights_analyst"],  # type: ignore[index]
             llm=_llm(),
+            tools=[run_eda_tool],
             max_iter=8,
             verbose=True,
         )
@@ -55,11 +65,33 @@ class AnalystCrew:
         return Agent(
             config=self.agents_config["contract_steward"],  # type: ignore[index]
             llm=_llm(),
+            tools=[build_contract_tool],
             max_iter=8,
             verbose=True,
         )
 
-    # Tools are attached to the agents in step 3.4.
+    @before_kickoff
+    def remember_inputs(self, inputs: dict) -> dict:
+        self._output_dir = inputs["output_dir"]
+        return inputs
+
+    @after_kickoff
+    def publish_contract(self, result):
+        """Merge the steward's text with the tool's numbers into dataset_contract.json.
+
+        finalize_contract validates the merged contract against clean_data.csv
+        and raises if they disagree, so the crew never hands over a bad contract.
+        """
+        text = result.pydantic
+        if not isinstance(text, ContractText):
+            raise ValueError("contract steward did not return ContractText")
+        finalize_contract(
+            self._output_dir,
+            column_descriptions={c.name: c.description for c in text.column_descriptions},
+            assumptions=text.assumptions,
+            leakage_notes=text.leakage_notes,
+        )
+        return result
 
     @task
     def inspect_raw_data_task(self) -> Task:

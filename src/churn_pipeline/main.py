@@ -1,88 +1,79 @@
 #!/usr/bin/env python
+"""Churn pipeline flow.
+
+Step 3 version: runs the Data Analyst Crew only. Validation gates and the
+Data Scientist Crew are added in step 5.
+"""
+import json
 from pathlib import Path
 
 from pydantic import BaseModel
 
 from crewai.flow import Flow, listen, start
 
-from churn_pipeline.crews.content_crew.content_crew import ContentCrew
+from churn_pipeline.crews.analyst_crew.analyst_crew import AnalystCrew
+
+ROOT = Path(__file__).resolve().parents[2]
+
+CREW1_ARTIFACTS = [
+    "quality_report.json",
+    "quality_summary.md",
+    "clean_data.csv",
+    "preparation_log.md",
+    "eda_report.html",
+    "insights.md",
+    "contract_numbers.json",
+    "dataset_contract.json",
+]
 
 
-class ContentState(BaseModel):
-    topic: str = ""
-    outline: str = ""
-    draft: str = ""
-    final_post: str = ""
+class PipelineState(BaseModel):
+    raw_data_path: str = str(ROOT / "data" / "raw" / "E Commerce Dataset.xlsx")
+    output_dir: str = str(ROOT / "artifacts" / "latest" / "crew1")
+    crew1_artifacts: list[str] = []
 
 
-class ContentFlow(Flow[ContentState]):
+class ChurnPipelineFlow(Flow[PipelineState]):
 
     @start()
-    def plan_content(self, crewai_trigger_payload: dict = None):
-        print("Planning content")
+    def run_analyst_crew(self):
+        Path(self.state.output_dir).mkdir(parents=True, exist_ok=True)
+        AnalystCrew().crew().kickoff(inputs={
+            "raw_data_path": self.state.raw_data_path,
+            "output_dir": self.state.output_dir,
+        })
 
-        if crewai_trigger_payload:
-            self.state.topic = crewai_trigger_payload.get("topic", "AI Agents")
-            print(f"Using trigger payload: {crewai_trigger_payload}")
-        else:
-            self.state.topic = "AI Agents"
-
-        print(f"Topic: {self.state.topic}")
-
-    @listen(plan_content)
-    def generate_content(self):
-        print(f"Generating content on: {self.state.topic}")
-        result = (
-            ContentCrew()
-            .crew()
-            .kickoff(inputs={"topic": self.state.topic})
-        )
-
-        print("Content generated")
-        self.state.final_post = result.raw
-
-    @listen(generate_content)
-    def save_content(self):
-        print("Saving content")
-        output_dir = Path("output")
-        output_dir.mkdir(exist_ok=True)
-        with open(output_dir / "post.md", "w") as f:
-            f.write(self.state.final_post)
-        print("Post saved to output/post.md")
+    @listen(run_analyst_crew)
+    def check_crew1_artifacts(self):
+        out = Path(self.state.output_dir)
+        missing = [f for f in CREW1_ARTIFACTS if not (out / f).is_file() or (out / f).stat().st_size == 0]
+        if missing:
+            raise RuntimeError(f"Data Analyst Crew did not produce: {missing}")
+        self.state.crew1_artifacts = [str(out / f) for f in CREW1_ARTIFACTS]
+        return {"status": "crew1_complete", "artifacts": self.state.crew1_artifacts}
 
 
 def kickoff():
-    content_flow = ContentFlow()
-    content_flow.kickoff()
+    result = ChurnPipelineFlow().kickoff()
+    print(json.dumps(result, indent=2))
+    return result
 
 
 def plot():
-    content_flow = ContentFlow()
-    content_flow.plot()
+    ChurnPipelineFlow().plot()
 
 
 def run_with_trigger():
-    """
-    Run the flow with trigger payload.
-    """
-    import json
+    """Run the flow with a JSON trigger payload of state overrides."""
     import sys
 
     if len(sys.argv) < 2:
         raise Exception("No trigger payload provided. Please provide JSON payload as argument.")
-
     try:
-        trigger_payload = json.loads(sys.argv[1])
+        payload = json.loads(sys.argv[1])
     except json.JSONDecodeError:
         raise Exception("Invalid JSON payload provided as argument")
-
-    content_flow = ContentFlow()
-
-    try:
-        result = content_flow.kickoff({"crewai_trigger_payload": trigger_payload})
-        return result
-    except Exception as e:
-        raise Exception(f"An error occurred while running the flow with trigger: {e}")
+    return ChurnPipelineFlow().kickoff(inputs=payload)
 
 
 if __name__ == "__main__":
