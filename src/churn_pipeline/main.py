@@ -54,9 +54,9 @@ class ChurnPipelineFlow(Flow[PipelineState]):
 
 
 def kickoff():
+    # No return value: the console script passes it to sys.exit, and a dict exits with 1.
     result = ChurnPipelineFlow().kickoff()
     print(json.dumps(result, indent=2))
-    return result
 
 
 def plot():
