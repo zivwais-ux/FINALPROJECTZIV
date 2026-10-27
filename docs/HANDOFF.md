@@ -7,10 +7,10 @@
 - **לעבוד צעד אחר צעד, ולא לקפוץ קדימה.** בסוף כל צעד מסכמים מה נעשה, מציגים את הצעד הבא, ומחכים לאישור שלי.
 - **לשאול אותי לפני כל החלטה מהותית** על הנתונים או על התכנון. לא להחליט במקומי.
 - **לשמור על דיוק:** כל מספר צריך לבוא מהרצה אמיתית על הנתונים, לא מהזיכרון.
-- **לבצע commit ו-push** לענף `claude/friendly-heisenberg-vyhztw` בסוף כל צעד. לא לפתוח PR בלי שביקשתי.
+- **לבצע commit ו-push** לענף `claude/amazing-goldberg-s7pi2u` בסוף כל צעד. לא לפתוח PR בלי שביקשתי.
 
 ## הפרויקט
-- **repo:** `zivwais-ux/finalprojectziv`, ענף `claude/friendly-heisenberg-vyhztw`.
+- **repo:** `zivwais-ux/finalprojectziv`, ענף `claude/amazing-goldberg-s7pi2u`.
 - **המטלה:** CrewAI Flow שמחבר שני crews, Data Analyst ו-Data Scientist, עם חוזה נתונים
   (`dataset_contract.json`) שנאכף בקוד. ה-Flow צריך לעצור עם הודעה ברורה כשהנתונים לא תואמים לחוזה,
   למשל כששונו יחידות. הסיפור: Harbor & Vale, שבה שינוי מסנטים לדולרים הרס מודל churn במשך 5 שבועות.
@@ -60,24 +60,19 @@
   - **טסטים: 25 עוברים** (`uv run pytest`), בלי LLM.
 - **תקלה שתוקנה:** CrewAI מחליף את `warnings.warn` בגרסה שלא תואמת ל-matplotlib 3.11, ולכן `seaborn.heatmap` קורס. מפת החום מצוירת ישירות ב-matplotlib.
 
-## הצעד הבא בדיוק: סגירת שלב 3, הרצה אמיתית
-`OPENAI_API_KEY` הוגדר כמשתנה סביבה בהגדרות הסביבה, ויש לבדוק שהוא נקלט בסשן החדש.
-1. לבדוק שהמשתנה קיים, **בלי להדפיס את הערך:** `env | grep -c '^OPENAI_API_KEY='`.
-2. `cd` לשורש ה-repo, `uv sync`, ואז `crewai run`. אם צריך, אפשר להריץ ישירות `uv run kickoff`.
-3. לבדוק את התוצרים:
-   - 8 קבצים ב-`artifacts/latest/crew1/`: `quality_report.json`, `quality_summary.md`, `clean_data.csv`,
-     `preparation_log.md`, `eda_report.html`, `insights.md`, `contract_numbers.json`, `dataset_contract.json`.
-   - המספרים בטקסטים של הסוכנים תואמים לפלט של הכלים.
-   - הסוכנים באמת קראו לכלים.
-   - `dataset_contract.json` עובר את הוולידטור.
-4. להציג לי את התוצאות בעברית, ואם יש בעיות, לתקן.
-5. commit ל-`artifacts/latest/crew1/` (בלי `.env`), עדכון `docs/analyst_crew.md` ו-push. שלב 3 נסגר.
+- **שלב 3 ✅ נסגר:** הרצה אמיתית עברה, והתוצרים נשמרו ב-`artifacts/latest/crew1/`. הפרטים ב-`docs/analyst_crew.md`.
+- **שלב 4 ✅ נסגר (Crew 2):** התוצרים ב-`artifacts/latest/crew2/`, והפרטים ב-`docs/scientist_crew.md`.
+  - **החלטות:** HistGradientBoosting ו-RandomForest, בלי Logistic Regression. חלוקה של בערך 80/20 עם stratify ו-`random_state=42`,
+    שבה **כל קבוצת עותקים נשארת בצד אחד**. ספי איכות: PR-AUC לפחות 0.80 ו-Recall לפחות 0.60.
+  - **ממצא:** 1,112 שורות הן עותק מדויק של שורה אחרת, בלי ה-ID (556 חוזרות על שורה קודמת). 3,472 שורות יוצרות 1,736 קבוצות
+    של עותק מדויק, או עותק שבו השתנה ערך אחד. נוספה לוולידטור בדיקה 10 (כפילויות), והחוזה עודכן.
+  - **תוצאה:** HistGradientBoosting נבחר, עם PR-AUC של 0.8636 ו-Recall של 0.6667 על סט הבדיקה. **35 טסטים עוברים.**
+- **הרצה:** `uv run kickoff`, שמריץ את Crew 1 ואחריו את Crew 2 ומסתיים עם exit 0. ה-CLI של crewai לא מותקן בקונטיינר.
+
+## הצעד הבא בדיוק: שלב 5, ה-Flow המלא
+לשאול את המשתמש לפני שמתחילים. הספים ל-PR-AUC ול-Recall כבר אושרו.
 
 ## השלבים שאחרי (לעבור צעד צעד, ולשאול לפני כל אחד)
-- **שלב 4, Crew 2 (Data Scientist):** 4 סוכנים: Contract Reviewer, Feature Engineer, Model Trainer & Evaluator, Model Card Writer.
-  - הקלט שלו הוא רק `clean_data.csv` ו-`dataset_contract.json`.
-  - לפחות 2 וריאציות מודל, שיודעות לעבוד עם NaN (למשל HistGradientBoosting). לגבי Logistic Regression, צריך לשאול אותי.
-  - תוצרים: `features.csv`, `model.joblib`, `evaluation_report.md`, `model_card.md`.
 - **שלב 5, ה-Flow המלא:**
   - שערים: קבצים קיימים, חוזה מול נתונים, השוואה לחוזה נעול (`contracts/dataset_contract.lock.json`), features נדרשים, איכות המודל.
   - router בין pass ל-fail. במקרה של fail: `validation_report.md` ו-exit 1, ו-Crew 2 לא רץ.

@@ -5,6 +5,11 @@ inspect_raw_data_task:
 
     From the tool output, summarise for the team:
     - row count, duplicate rows and whether CustomerID is unique
+    - duplicates once CustomerID is ignored: quote the tool's
+      duplicates_ignoring_id.summary sentence word for word, then give the
+      churn rate in duplicate groups. Do not combine the counts in your own
+      words. Say plainly that "duplicate rows: 0" only holds because every
+      row has its own id
     - every column with missing values: count, share, and churn rate when the
       value is missing versus present
     - every categorical column with each spelling, its count and churn rate,
@@ -59,6 +64,10 @@ eda_task:
       rates differ; report both rates and do not guess the cause (do not call
       it a data-entry error or say the groups behave the same)
     - missing values whose churn rate differs from present values
+    - rows repeated under a new CustomerID: quote the tool's
+      duplicates_ignoring_id sentence word for word (do not combine the counts
+      in your own words), and say that every copy is counted as a separate
+      customer in the group sizes and churn rates above
     - SatisfactionScore and the other score columns have no documented
       direction (the data dictionary does not say whether 5 is best or
       worst), so name the score value (for example "score 5"), never "lowest"
@@ -86,11 +95,15 @@ publish_contract_task:
     - a one-sentence description for every column, based on the data
       dictionary sheet "Data Dict" in {raw_data_path} and the tool output
     - the assumptions the Data Scientist crew must know: no imputation, no
-      category merging, outliers kept, and which units are assumed
+      category merging, outliers kept, duplicate rows kept (rows repeated
+      under a new CustomerID, exactly or with one value changed; counts are in
+      the tool output under dataset), and which units are assumed
       (Tenure in months, WarehouseToHome in km, CashbackAmount in INR)
     - leakage notes: the churn window is undefined, so Complain, CouponUsed,
       OrderCount, CashbackAmount and PreferedOrderCat (all "last month") may
-      leak; and the different spellings with different churn rates
+      leak; the different spellings with different churn rates; and the
+      duplicate rows, which leak between train and test unless each group of
+      copies stays on one side of the split
 
     Do not return or change any number; the code merges your text with the
     tool's numbers into {output_dir}/dataset_contract.json.

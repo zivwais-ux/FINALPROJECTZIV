@@ -25,18 +25,22 @@ from sklearn.metrics import (
     recall_score,
     roc_auc_score,
 )
-from sklearn.model_selection import StratifiedKFold, cross_val_score, train_test_split
+from sklearn.model_selection import StratifiedGroupKFold, cross_val_score
 
+from churn_pipeline.contract.duplicates import duplicate_counts, duplicate_groups
 from churn_pipeline.contract.models import DatasetContract, load_contract
 from churn_pipeline.contract.validator import validate_against_contract
 
-# Team decisions for step 4: 80/20 split stratified on the target, fixed seed,
-# and two model families that handle missing values natively (no imputation).
-TEST_SIZE = 0.2
+# Team decisions for step 4: two model families that handle missing values
+# natively (no imputation); an 80/20 split stratified on the target with a
+# fixed seed, where each group of duplicate rows stays on one side (one fold
+# of five is the test set); and the minimum quality the step 5 gate enforces.
 RANDOM_STATE = 42
 CV_FOLDS = 5
 THRESHOLD = 0.5
+QUALITY_THRESHOLDS = {"pr_auc": 0.80, "recall": 0.60}
 ONE_HOT_SEP = "="
+GROUP_COLUMN = "duplicate_group"
 
 
 def _write_json(path: Path, payload: Any) -> None:
@@ -67,11 +71,15 @@ def review_contract(input_dir: str | Path) -> dict[str, Any]:
     """Validate clean_data.csv against dataset_contract.json and list what modeling may use."""
     df, contract, path = _load_inputs(input_dir)
     violations = validate_against_contract(df, contract, file_path=path)
+    ids = [c.name for c in contract.columns if c.role == "id"]
     features = [c for c in contract.columns
                 if c.role == "feature" and c.name not in contract.forbidden_features]
     return {
         "contract_version": contract.contract_version,
         "rows": int(len(df)),
+        "duplicate_rows_ignoring_id": contract.dataset.duplicate_rows_ignoring_id,
+        "rows_in_duplicate_groups": contract.dataset.rows_in_duplicate_groups,
+        "duplicates_summary": duplicate_counts(df, ids)["summary"],
         "passes": not violations,
         "violations": [v.to_dict() for v in violations],
         "target": {"name": contract.target.name, "expected_rate": contract.target.expected_rate},
@@ -90,12 +98,13 @@ def review_contract(input_dir: str | Path) -> dict[str, Any]:
 # --------------------------------------------------------------- features
 
 def build_features(input_dir: str | Path, output_dir: str | Path) -> dict[str, Any]:
-    """Write features.csv: id, target and model features built only from the contract.
+    """Write features.csv: id, duplicate group, target and model features from the contract.
 
     Numeric features are copied unchanged, missing values included. Each
     category column becomes one 0/1 column per allowed value in the contract,
-    so different spellings stay separate. Refuses to run when the data does
-    not match the contract.
+    so different spellings stay separate. duplicate_group is not a feature:
+    it keeps copies of a row on one side of the train/test split. Refuses to
+    run when the data does not match the contract.
     """
     df, contract, path = _load_inputs(input_dir)
     violations = validate_against_contract(df, contract, file_path=path)
@@ -106,6 +115,7 @@ def build_features(input_dir: str | Path, output_dir: str | Path) -> dict[str, A
     id_cols = [c.name for c in contract.columns if c.role == "id"]
     target = contract.target.name
     out = df[id_cols + [target]].copy()
+    out.insert(len(id_cols), GROUP_COLUMN, duplicate_groups(df, id_cols))
     sources = []
     for spec in contract.columns:
         if spec.role != "feature" or spec.name in contract.forbidden_features:
@@ -122,7 +132,8 @@ def build_features(input_dir: str | Path, output_dir: str | Path) -> dict[str, A
             sources.append({"source": spec.name, "encoding": "unchanged",
                             "missing_kept": int(df[spec.name].isna().sum())})
 
-    feature_columns = [c for c in out.columns if c not in id_cols + [target]]
+    feature_columns = [c for c in out.columns if c not in id_cols + [GROUP_COLUMN, target]]
+    group_sizes = out[GROUP_COLUMN].value_counts()
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     out.to_csv(output_dir / "features.csv", index=False)
@@ -130,6 +141,9 @@ def build_features(input_dir: str | Path, output_dir: str | Path) -> dict[str, A
         "output": str(output_dir / "features.csv"),
         "rows": int(len(out)),
         "id_columns": id_cols,
+        "group_column": GROUP_COLUMN,
+        "duplicate_groups": int((group_sizes > 1).sum()),
+        "rows_in_duplicate_groups": int(group_sizes[group_sizes > 1].sum()),
         "target": target,
         "feature_count": len(feature_columns),
         "feature_columns": feature_columns,
@@ -158,22 +172,26 @@ def _test_metrics(y: pd.Series, proba: np.ndarray) -> dict[str, Any]:
 def train_and_evaluate(output_dir: str | Path) -> dict[str, Any]:
     """Train both models on features.csv, pick one by cross-validated PR-AUC, evaluate on test.
 
-    The model is chosen on the training split only; the test split is used
-    once, after the choice, so test scores are an honest estimate. Writes
-    model.joblib and evaluation_metrics.json.
+    Copies of a row never sit on both sides of a split, in the test split or
+    in cross-validation. The model is chosen on the training split only; the
+    test split is used once, after the choice, so test scores are an honest
+    estimate. Writes model.joblib and evaluation_metrics.json.
     """
     output_dir = Path(output_dir)
     spec = json.loads((output_dir / "feature_spec.json").read_text(encoding="utf-8"))
     data = pd.read_csv(output_dir / "features.csv")
-    X, y = data[spec["feature_columns"]], data[spec["target"]]
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=TEST_SIZE, stratify=y, random_state=RANDOM_STATE)
+    X, y, groups = data[spec["feature_columns"]], data[spec["target"]], data[spec["group_column"]]
+    cv = StratifiedGroupKFold(n_splits=CV_FOLDS, shuffle=True, random_state=RANDOM_STATE)
+    train_idx, test_idx = next(cv.split(X, y, groups))
+    X_train, X_test = X.iloc[train_idx], X.iloc[test_idx]
+    y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
+    shared_groups = len(set(groups.iloc[train_idx]) & set(groups.iloc[test_idx]))
 
-    cv = StratifiedKFold(n_splits=CV_FOLDS, shuffle=True, random_state=RANDOM_STATE)
     candidates = {}
     fitted = {}
     for name, model in _models().items():
-        scores = cross_val_score(clone(model), X_train, y_train, cv=cv, scoring="average_precision")
+        scores = cross_val_score(clone(model), X_train, y_train, groups=groups.iloc[train_idx],
+                                 cv=cv, scoring="average_precision")
         model.fit(X_train, y_train)
         fitted[name] = model
         candidates[name] = {
@@ -191,16 +209,24 @@ def train_and_evaluate(output_dir: str | Path) -> dict[str, Any]:
 
     joblib.dump({"model": best, "model_name": selected, "feature_columns": spec["feature_columns"],
                  "target": spec["target"], "threshold": THRESHOLD}, output_dir / "model.joblib")
+    test = candidates[selected]["test"]
     metrics = {
-        "split": {"test_size": TEST_SIZE, "stratified_on": spec["target"], "random_state": RANDOM_STATE,
+        "split": {"method": f"StratifiedGroupKFold({CV_FOLDS}), first fold is the test set",
+                  "stratified_on": spec["target"], "grouped_by": spec["group_column"],
+                  "random_state": RANDOM_STATE,
                   "train_rows": int(len(X_train)), "test_rows": int(len(X_test)),
-                  "train_churn_rate": _r(y_train.mean()), "test_churn_rate": _r(y_test.mean())},
-        "selection_rule": f"highest mean PR-AUC over {CV_FOLDS}-fold stratified CV on the training split",
+                  "test_share": _r(len(X_test) / len(X)),
+                  "train_churn_rate": _r(y_train.mean()), "test_churn_rate": _r(y_test.mean()),
+                  "duplicate_groups_on_both_sides": shared_groups},
+        "selection_rule": (f"highest mean PR-AUC over {CV_FOLDS}-fold stratified group CV "
+                           "on the training split"),
         "threshold": THRESHOLD,
         "baseline_pr_auc": _r(y_test.mean()),
         "candidates": candidates,
         "selected_model": selected,
-        "selected_test_metrics": candidates[selected]["test"],
+        "selected_test_metrics": test,
+        "quality_thresholds": QUALITY_THRESHOLDS,
+        "meets_quality_thresholds": all(test[k] >= v for k, v in QUALITY_THRESHOLDS.items()),
         "top_features_by_permutation": top,
         "model_file": str(output_dir / "model.joblib"),
     }
@@ -210,12 +236,14 @@ def train_and_evaluate(output_dir: str | Path) -> dict[str, Any]:
 
 def read_model_facts(input_dir: str | Path, output_dir: str | Path) -> dict[str, Any]:
     """Everything the model card needs: contract text, feature summary and metrics."""
-    contract = load_contract(Path(input_dir) / "dataset_contract.json")
+    df, contract, _ = _load_inputs(input_dir)
+    ids = [c.name for c in contract.columns if c.role == "id"]
     output_dir = Path(output_dir)
     return {
         "contract_version": contract.contract_version,
         "dataset": contract.dataset.model_dump(),
         "target": contract.target.model_dump(),
+        "duplicates_summary": duplicate_counts(df, ids)["summary"],
         "assumed_units": {c.name: c.unit for c in contract.columns if c.unit_source == "assumed"},
         "assumptions": contract.assumptions,
         "leakage_notes": contract.leakage_notes,
@@ -244,14 +272,16 @@ def build_features_tool(input_dir: str, output_dir: str) -> str:
 
 @tool("train_and_evaluate")
 def train_and_evaluate_tool(output_dir: str) -> str:
-    """Train HistGradientBoosting and RandomForest on output_dir/features.csv (80/20 stratified
-    split), select one by cross-validated PR-AUC on the training split, evaluate it on the test
-    split and save model.joblib. Returns all metrics as JSON."""
+    """Train HistGradientBoosting and RandomForest on output_dir/features.csv (80/20 split,
+    stratified, duplicate rows kept on one side), select one by cross-validated PR-AUC on the
+    training split, evaluate it on the test split against the quality thresholds and save
+    model.joblib. Returns all metrics as JSON."""
     return json.dumps(train_and_evaluate(output_dir), ensure_ascii=False)
 
 
 @tool("read_model_facts")
 def read_model_facts_tool(input_dir: str, output_dir: str) -> str:
-    """Return as JSON everything a model card needs: the contract's dataset, target, assumed
-    units, assumptions and leakage notes, the feature summary and the evaluation metrics."""
+    """Return as JSON everything a model card needs: the contract's dataset, target, a sentence
+    describing the duplicate rows, assumed units, assumptions and leakage notes, the feature
+    summary and the evaluation metrics."""
     return json.dumps(read_model_facts(input_dir, output_dir), ensure_ascii=False)

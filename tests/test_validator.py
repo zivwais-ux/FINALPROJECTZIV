@@ -72,9 +72,27 @@ def test_unknown_category(df, contract):
 
 def test_merged_category_not_caught_by_allowed_values(df, contract):
     # Known gap: merging Phone into Mobile Phone keeps every value inside
-    # allowed_values, so no column check sees it; only the sha256 check does.
+    # allowed_values, so no column check sees it. On this data the merge makes
+    # one more row a copy of another, so the duplicate check notices, without
+    # naming the column.
     df["PreferredLoginDevice"] = df["PreferredLoginDevice"].replace({"Phone": "Mobile Phone"})
-    assert ("allowed_values", "PreferredLoginDevice") not in checks(validate_against_contract(df, contract))
+    found = checks(validate_against_contract(df, contract))
+    assert ("allowed_values", "PreferredLoginDevice") not in found
+    assert ("duplicates", None) in found
+
+
+def test_removed_duplicates(df, contract):
+    deduped = df.drop_duplicates(subset=[c for c in df.columns if c != "CustomerID"])
+    violations = [v for v in validate_against_contract(deduped, contract) if v.check == "duplicates"]
+    assert [(v.expected, v.actual) for v in violations] == [(556, 0), (3472, 2360)]
+
+
+def test_changed_value_in_a_duplicate_pair(df, contract):
+    # Same row count and the value stays in range; only the duplicate counts move.
+    data = df.drop(columns="CustomerID")
+    i = data.index[data.duplicated()][0]
+    df.loc[i, "CashbackAmount"] = df.loc[i, "CashbackAmount"] + 0.01
+    assert ("duplicates", None) in checks(validate_against_contract(df, contract))
 
 
 def test_out_of_range(df, contract):

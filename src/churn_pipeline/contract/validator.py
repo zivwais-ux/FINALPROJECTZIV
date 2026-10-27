@@ -12,6 +12,7 @@ from typing import Any
 
 import pandas as pd
 
+from churn_pipeline.contract.duplicates import duplicate_counts
 from churn_pipeline.contract.models import ColumnSpec, DatasetContract
 
 
@@ -155,4 +156,27 @@ def _check_dataset(df: pd.DataFrame, contract: DatasetContract) -> list[Violatio
                 out.append(Violation("target_rate", t.name, t.expected_rate, round(rate, 4),
                                      f"{t.name} positive rate is {rate:.4f}, contract expects "
                                      f"{t.expected_rate:.4f} (±{contract.tolerances.target_rate_rel:.0%})"))
+    out += _check_duplicates(df, contract)
+    return out
+
+
+def _check_duplicates(df: pd.DataFrame, contract: DatasetContract) -> list[Violation]:
+    info = contract.dataset
+    if info.duplicate_rows_ignoring_id is None and info.rows_in_duplicate_groups is None:
+        return []
+    ids = [c.name for c in contract.columns if c.role == "id" and c.name in df.columns]
+    actual = duplicate_counts(df, ids)
+    out = []
+    if info.duplicate_rows_ignoring_id is not None \
+            and actual["duplicate_rows_ignoring_id"] != info.duplicate_rows_ignoring_id:
+        out.append(Violation("duplicates", None, info.duplicate_rows_ignoring_id,
+                             actual["duplicate_rows_ignoring_id"],
+                             f"data has {actual['duplicate_rows_ignoring_id']} rows that repeat another row "
+                             f"under a new id, contract expects {info.duplicate_rows_ignoring_id}"))
+    if info.rows_in_duplicate_groups is not None \
+            and actual["rows_in_duplicate_groups"] != info.rows_in_duplicate_groups:
+        out.append(Violation("duplicates", None, info.rows_in_duplicate_groups,
+                             actual["rows_in_duplicate_groups"],
+                             f"data has {actual['rows_in_duplicate_groups']} rows with an exact or "
+                             f"one-value-different copy, contract expects {info.rows_in_duplicate_groups}"))
     return out

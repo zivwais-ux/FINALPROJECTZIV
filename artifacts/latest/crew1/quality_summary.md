@@ -3,80 +3,67 @@
 ## Overview
 - Total rows: 5630
 - Total columns: 20
-- Duplicate rows: 0
-- CustomerID uniqueness: Unique (no duplicates)
-- Rows with any missing values: 1856 (max 1 missing value per row)
+- Duplicate rows: 0 (This holds because every row has its own unique CustomerID)
+- CustomerID uniqueness: True (CustomerID is unique)
+- Duplicates ignoring CustomerID:  
+  "1,112 rows are exact copies of another row except for their id (556 of them repeat an earlier row under a new id). Counting copies with one value changed as well, 3,472 rows form 1,736 groups of at most 2 rows, each row with its own id."
+- Churn rate in duplicate groups: 0.1947
 
 ## Missing Values
-| Column                  | Missing Count | Missing Share | Churn Rate When Missing | Churn Rate When Present |
-|-------------------------|---------------|---------------|-------------------------|-------------------------|
-| Tenure                  | 264           | 4.69%         | 30.68%                  | 16.16%                  |
-| WarehouseToHome         | 251           | 4.46%         | 33.47%                  | 16.06%                  |
-| HourSpendOnApp          | 255           | 4.53%         | 22.75%                  | 16.56%                  |
-| OrderAmountHikeFromlastYear | 265       | 4.71%         | 5.28%                   | 17.41%                  |
-| CouponUsed              | 256           | 4.55%         | 3.12%                   | 17.49%                  |
-| OrderCount              | 258           | 4.58%         | 6.98%                   | 17.31%                  |
-| DaySinceLastOrder       | 307           | 5.45%         | 17.59%                  | 16.80%                  |
+| Column                | Missing Count | Missing Share | Churn Rate When Missing | Churn Rate When Present |
+|-----------------------|---------------|---------------|-------------------------|-------------------------|
+| Tenure                | 264           | 4.69%         | 30.68%                  | 16.16%                  |
+| WarehouseToHome       | 251           | 4.46%         | 33.47%                  | 16.06%                  |
+| HourSpendOnApp        | 255           | 4.53%         | 22.75%                  | 16.56%                  |
+| OrderAmountHikeFromlastYear | 265     | 4.71%         | 5.28%                   | 17.41%                  |
+| CouponUsed            | 256           | 4.55%         | 3.12%                   | 17.49%                  |
+| OrderCount            | 258           | 4.58%         | 6.98%                   | 17.31%                  |
+| DaySinceLastOrder     | 307           | 5.45%         | 17.59%                  | 16.80%                  |
 
 ## Categories
 
 ### PreferredLoginDevice
-| Value         | Count | Churn Rate |
-|---------------|-------|------------|
-| Computer      | 1634  | 19.83%     |
-| Mobile Phone  | 2765  | 12.59%     |
-| Phone         | 1231  | 22.42%     |
-
-Note: "Mobile Phone" and "Phone" are kept separate because their churn rates differ by 9.83 percentage points.
+- Computer: Count 1634, Churn Rate 19.83%
+- Mobile Phone: Count 2765, Churn Rate 12.59%
+- Phone: Count 1231, Churn Rate 22.42%  
+(Note: "Mobile Phone" and "Phone" appear similar but have different churn rates.)
 
 ### PreferredPaymentMode
-| Value           | Count | Churn Rate |
-|-----------------|-------|------------|
-| CC              | 273   | 21.61%     |
-| COD             | 365   | 28.77%     |
-| Cash on Delivery | 149  | 15.44%     |
-| Credit Card     | 1501  | 12.86%     |
-| Debit Card      | 2314  | 15.38%     |
-| E wallet        | 614   | 22.80%     |
-| UPI             | 414   | 17.39%     |
-
-Note: "COD" and "Cash on Delivery" are separate categories with churn rates differing by 13.33 percentage points.
+- CC: Count 273, Churn Rate 21.61%
+- COD: Count 365, Churn Rate 28.77%
+- Cash on Delivery: Count 149, Churn Rate 15.44%  
+(Note: "COD" and "Cash on Delivery" appear similar but have different churn rates.)
+- Credit Card: Count 1501, Churn Rate 12.86%
+- Debit Card: Count 2314, Churn Rate 15.38%
+- E wallet: Count 614, Churn Rate 22.80%
+- UPI: Count 414, Churn Rate 17.39%
 
 ### Gender
-| Value  | Count | Churn Rate |
-|--------|-------|------------|
-| Female | 2246  | 15.49%     |
-| Male   | 3384  | 17.73%     |
+- Female: Count 2246, Churn Rate 15.49%
+- Male: Count 3384, Churn Rate 17.73%
 
 ### PreferedOrderCat
-| Value               | Count | Churn Rate |
-|---------------------|-------|------------|
-| Fashion             | 826   | 15.50%     |
-| Grocery             | 410   | 4.88%      |
-| Laptop & Accessory  | 2050  | 10.24%     |
-| Mobile              | 809   | 27.19%     |
-| Mobile Phone        | 1271  | 27.54%     |
-| Others              | 264   | 7.58%      |
-
-Note: "Mobile" and "Mobile Phone" are separate categories with churn rates differing by 0.35 percentage points.
+- Fashion: Count 826, Churn Rate 15.50%
+- Grocery: Count 410, Churn Rate 4.88%
+- Laptop & Accessory: Count 2050, Churn Rate 10.24%
+- Mobile: Count 809, Churn Rate 27.19%
+- Mobile Phone: Count 1271, Churn Rate 27.54%  
+(Note: "Mobile" and "Mobile Phone" appear similar but have different churn rates.)
+- Others: Count 264, Churn Rate 7.58%
 
 ### MaritalStatus
-| Value    | Count | Churn Rate |
-|----------|-------|------------|
-| Divorced | 848   | 14.62%     |
-| Married  | 2986  | 11.52%     |
-| Single   | 1796  | 26.73%     |
+- Divorced: Count 848, Churn Rate 14.62%
+- Married: Count 2986, Churn Rate 11.52%
+- Single: Count 1796, Churn Rate 26.73%
 
 ## Outliers
-| Column               | Outlier Count | Outlier Values                      | Median Value |
-|----------------------|---------------|-----------------------------------|--------------|
-| Tenure               | 2             | 60.0, 61.0                        | 9.0          |
-| WarehouseToHome      | 2             | 126.0, 127.0                      | 14.0         |
-| NumberOfAddress       | 4             | 19.0, 20.0, 21.0, 22.0           | 3.0          |
-| CouponUsed            | 303           | 6.0 to 16.0 (various values)     | 1.0          |
-| OrderCount            | 263           | 10.0 to 16.0 (various values)    | 2.0          |
-| DaySinceLastOrder     | 3             | 30.0, 31.0, 46.0                 | 3.0          |
+- Tenure: 2 outliers (values 60.0, 61.0) outside [-40.0, 58.0], median 9.0
+- WarehouseToHome: 2 outliers (values 126.0, 127.0) outside [-24.0, 53.0], median 14.0
+- NumberOfAddress: 4 outliers (values 19.0, 20.0, 21.0, 22.0) outside [-10.0, 18.0], median 3.0
+- CouponUsed: 303 outliers (values 6.0 to 16.0) outside [-2.0, 5.0], median 1.0
+- OrderCount: 263 outliers (values 10.0 to 16.0) outside [-5.0, 9.0], median 2.0
+- DaySinceLastOrder: 3 outliers (values 30.0, 31.0, 46.0) outside [-13.0, 22.0], median 3.0
 
 ## Target (Churn)
-- Total positive churn cases: 948
+- Total positives (churned): 948
 - Overall churn rate: 16.84%

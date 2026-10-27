@@ -41,6 +41,14 @@ def test_profile_matches_data_profile(tmp_path):
     assert report["rows_with_any_missing"] == 1856
     assert report["max_missing_per_row"] == 1
     assert report["target"] == {"name": "Churn", "positives": 948, "rate": 0.1684}
+    assert report["duplicate_rows"] == 0
+    assert report["duplicates_ignoring_id"] == {
+        "duplicate_rows_ignoring_id": 556, "rows_with_an_exact_copy": 1112,
+        "duplicate_groups": 1736, "rows_in_duplicate_groups": 3472,
+        "largest_duplicate_group": 2, "churn_rate_in_duplicate_groups": 0.1947,
+        "summary": "1,112 rows are exact copies of another row except for their id (556 of them "
+                   "repeat an earlier row under a new id). Counting copies with one value changed "
+                   "as well, 3,472 rows form 1,736 groups of at most 2 rows, each row with its own id."}
     missing = {m["column"]: m["missing"] for m in report["missing"]}
     assert missing == {"Tenure": 264, "WarehouseToHome": 251, "HourSpendOnApp": 255,
                        "OrderAmountHikeFromlastYear": 265, "CouponUsed": 256,
@@ -67,6 +75,8 @@ def test_build_contract_numbers_match_the_spec(out):
     numbers = json.loads((out / "contract_numbers.json").read_text())
     spec = load_contract(SPEC)
     assert numbers["dataset"]["row_count"] == spec.dataset.row_count
+    assert numbers["dataset"]["duplicate_rows_ignoring_id"] == spec.dataset.duplicate_rows_ignoring_id
+    assert numbers["dataset"]["rows_in_duplicate_groups"] == spec.dataset.rows_in_duplicate_groups
     assert numbers["target"]["expected_rate"] == spec.target.expected_rate
     for col in numbers["columns"]:
         expected = spec.column(col["name"])

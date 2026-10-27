@@ -4,7 +4,9 @@
     "name": "ecommerce_churn",
     "file": "clean_data.csv",
     "sha256": "e0c951d4a9a94a650ff514da4c0152b473b1ab026aeddf0662ced46e5f847019",
-    "row_count": 5630
+    "row_count": 5630,
+    "duplicate_rows_ignoring_id": 556,
+    "rows_in_duplicate_groups": 3472
   },
   "target": {
     "name": "Churn",
@@ -180,7 +182,7 @@
       "name": "NumberOfDeviceRegistered",
       "role": "feature",
       "dtype": "int",
-      "description": "Count of devices registered by the customer.",
+      "description": "Number of devices registered by the customer.",
       "unit": "count",
       "unit_source": "data_dict",
       "expected_null_count": 0,
@@ -197,7 +199,7 @@
       "name": "PreferedOrderCat",
       "role": "feature",
       "dtype": "category",
-      "description": "Customer's preferred order category (e.g., Fashion, Grocery, Laptop & Accessory, Mobile, Mobile Phone, Others).",
+      "description": "Customer's preferred order category (Fashion, Grocery, Laptop & Accessory, Mobile, Mobile Phone, Others).",
       "unit": null,
       "unit_source": null,
       "expected_null_count": 0,
@@ -373,15 +375,15 @@
     "CustomerID"
   ],
   "assumptions": [
-    "No imputation was performed on missing values; missing data is preserved as-is.",
-    "No merging or renaming of categorical values was done; categories are kept exactly as in the raw data.",
+    "No imputation was performed on missing values; missing values are preserved as in the raw data.",
+    "No merging or renaming of categorical values was done; category spellings are kept exactly as in the raw data.",
     "Outliers are retained without any clipping or removal.",
-    "Tenure is measured in months.",
-    "WarehouseToHome distance is measured in kilometers.",
-    "CashbackAmount is measured in Indian Rupees (INR)."
+    "Duplicate rows are kept; 1,112 rows are exact or near-exact copies of another row except for their CustomerID, forming 1,736 groups of duplicates.",
+    "Units are assumed as follows: Tenure in months, WarehouseToHome in kilometers, CashbackAmount in Indian Rupees (INR)."
   ],
   "leakage_notes": [
     "The churn window is undefined, so features labeled as 'last month' such as Complain, CouponUsed, OrderCount, CashbackAmount, and PreferedOrderCat may leak information about churn.",
-    "Different spellings of categories with significantly different churn rates are kept separate to avoid leakage, e.g., 'Mobile Phone' vs 'Phone' and 'COD' vs 'Cash on Delivery'."
+    "Different spellings of similar categories (e.g., 'Mobile Phone' vs 'Phone', 'COD' vs 'Cash on Delivery', 'Mobile' vs 'Mobile Phone') have different churn rates and may cause leakage.",
+    "Duplicate rows leak information between train and test sets unless each group of duplicates is kept entirely on one side of the split."
   ]
 }

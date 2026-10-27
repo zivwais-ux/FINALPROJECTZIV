@@ -5,6 +5,15 @@
   "columns": 20,
   "duplicate_rows": 0,
   "id_unique": true,
+  "duplicates_ignoring_id": {
+    "duplicate_rows_ignoring_id": 556,
+    "rows_with_an_exact_copy": 1112,
+    "duplicate_groups": 1736,
+    "rows_in_duplicate_groups": 3472,
+    "largest_duplicate_group": 2,
+    "summary": "1,112 rows are exact copies of another row except for their id (556 of them repeat an earlier row under a new id). Counting copies with one value changed as well, 3,472 rows form 1,736 groups of at most 2 rows, each row with its own id.",
+    "churn_rate_in_duplicate_groups": 0.1947
+  },
   "rows_with_any_missing": 1856,
   "max_missing_per_row": 1,
   "target": {

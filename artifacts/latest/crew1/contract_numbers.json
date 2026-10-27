@@ -3,7 +3,9 @@
     "name": "ecommerce_churn",
     "file": "clean_data.csv",
     "sha256": "e0c951d4a9a94a650ff514da4c0152b473b1ab026aeddf0662ced46e5f847019",
-    "row_count": 5630
+    "row_count": 5630,
+    "duplicate_rows_ignoring_id": 556,
+    "rows_in_duplicate_groups": 3472
   },
   "target": {
     "name": "Churn",

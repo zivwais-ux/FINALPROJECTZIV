@@ -20,6 +20,7 @@ import pandas as pd  # noqa: E402
 import seaborn as sns  # noqa: E402
 from crewai.tools import tool  # noqa: E402
 
+from churn_pipeline.contract.duplicates import duplicate_counts, duplicate_groups  # noqa: E402
 from churn_pipeline.contract.models import DatasetContract  # noqa: E402
 from churn_pipeline.contract.validator import file_sha256, validate_against_contract  # noqa: E402
 
@@ -118,6 +119,13 @@ def profile_raw_data(raw_path: str | Path, output_dir: str | Path) -> dict[str, 
         "columns": int(df.shape[1]),
         "duplicate_rows": int(df.duplicated().sum()),
         "id_unique": bool(df[ID_COLUMN].is_unique),
+        # duplicate_rows compares whole rows, and the id makes every row unique;
+        # these counts ignore the id. See contract/duplicates.py.
+        "duplicates_ignoring_id": {
+            **duplicate_counts(df, [ID_COLUMN]),
+            "churn_rate_in_duplicate_groups": _r(y[pd.Series(
+                duplicate_groups(df, [ID_COLUMN])).duplicated(keep=False).to_numpy()].mean()),
+        },
         "rows_with_any_missing": int((nulls_per_row > 0).sum()),
         "max_missing_per_row": int(nulls_per_row.max()),
         "target": {"name": TARGET, "positives": int(y.sum()), "rate": _r(y.mean())},
@@ -259,7 +267,8 @@ def run_eda(output_dir: str | Path) -> dict[str, Any]:
     out = Path(output_dir) / "eda_report.html"
     out.write_text(html, encoding="utf-8")
     return {"report": str(out), "rows": int(len(df)), "overall_churn_rate": _r(overall),
-            "churn_by_group": churn_by_group}
+            "churn_by_group": churn_by_group,
+            "duplicates_ignoring_id": duplicate_counts(df, [ID_COLUMN])["summary"]}
 
 
 # ----------------------------------------------------------------- contract
@@ -292,7 +301,9 @@ def build_contract(output_dir: str | Path) -> dict[str, Any]:
 
     numbers = {
         "dataset": {"name": "ecommerce_churn", "file": "clean_data.csv",
-                    "sha256": file_sha256(path), "row_count": int(len(df))},
+                    "sha256": file_sha256(path), "row_count": int(len(df)),
+                    **{k: v for k, v in duplicate_counts(df, [ID_COLUMN]).items()
+                       if k in ("duplicate_rows_ignoring_id", "rows_in_duplicate_groups")}},
         "target": {"name": TARGET, "positive_class": 1, "expected_rate": _r(df[TARGET].mean())},
         "tolerances": {"mean_rel": 0.01, "target_rate_rel": 0.01, "unit_change_factor": 10},
         "forbidden_features": [ID_COLUMN],

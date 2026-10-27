@@ -1,0 +1,115 @@
+review_contract_task:
+  description: >
+    Use the review_contract tool on {input_dir}. It validates clean_data.csv
+    against dataset_contract.json and returns whether it passes, every
+    violation, the target, the usable features, the forbidden features, the
+    duplicate-row counts, the assumptions and the leakage notes.
+
+    If the tool reports any violation, put "CONTRACT FAILED" on the first line,
+    list every violation with its message, and say that modeling must not
+    start. Otherwise report:
+    - the contract version, row count and target with its expected rate
+    - the usable features with type and unit, marking units that are assumed
+    - the forbidden features and why they are excluded
+    - the duplicate rows: quote the tool's duplicates_summary sentence word
+      for word (do not combine the counts in your own words), then say what
+      they mean for the train/test split
+    - the assumptions and leakage notes the model card must carry
+
+    Use only numbers that appear in the tool output.
+  expected_output: >
+    A markdown contract review with sections Verdict, Target, Features,
+    Excluded columns, Duplicates, Assumptions and leakage.
+  agent: contract_reviewer
+  output_file: "{output_dir}/contract_review.md"
+
+engineer_features_task:
+  description: >
+    Use the build_features tool with input_dir {input_dir} and output_dir
+    {output_dir}. It writes {output_dir}/features.csv from clean_data.csv using
+    only the contract, and refuses to run if the data does not match it.
+
+    Document in the feature log:
+    - how each source column became features (unchanged or one-hot) and the
+      number of feature columns
+    - that missing values are kept (give the count) because both models handle
+      them natively, and that no value was imputed
+    - that every category spelling has its own column, so spellings with
+      different churn rates stay separate
+    - that CustomerID is excluded from the features, and that duplicate_group
+      is a split key, not a feature: it labels rows that are copies of each
+      other under different CustomerIDs
+    - the leakage risk of the last-month columns, which stay in by team decision
+
+    Use only numbers that appear in the tool output.
+  expected_output: >
+    A markdown feature log with sections Inputs, Features, Missing values,
+    Categories, Excluded columns and Leakage risk.
+  agent: feature_engineer
+  context:
+    - review_contract_task
+  output_file: "{output_dir}/feature_log.md"
+
+train_evaluate_task:
+  description: >
+    Use the train_and_evaluate tool on {output_dir}. It trains
+    HistGradientBoosting and RandomForest on features.csv, keeps each group of
+    duplicate rows on one side of the 80/20 split, selects one model by
+    cross-validated PR-AUC on the training split, evaluates it once on the test
+    split and saves {output_dir}/model.joblib.
+
+    Write the evaluation report:
+    - the split: method, train and test rows, churn rate in each, and the
+      number of duplicate groups on both sides (it must be 0)
+    - both candidates: cross-validated PR-AUC (mean and std) and test PR-AUC,
+      Recall, Precision and ROC-AUC, in one table
+    - which model was selected and by which rule
+    - the selected model's confusion matrix at the decision threshold, in
+      words a retention manager understands (churners caught, churners
+      missed, loyal customers flagged by mistake)
+    - test PR-AUC and Recall against the quality thresholds, and whether the
+      model meets them; compare PR-AUC with the baseline (the test churn rate)
+    - the top features by permutation importance, described as what the model
+      relies on, not as causes of churn
+
+    Quote only numbers the tool returned.
+  expected_output: >
+    A markdown evaluation report with sections Split, Candidates, Selected
+    model, Quality thresholds and Feature importance.
+  agent: model_trainer_evaluator
+  context:
+    - engineer_features_task
+  output_file: "{output_dir}/evaluation_report.md"
+
+model_card_task:
+  description: >
+    Use the read_model_facts tool with input_dir {input_dir} and output_dir
+    {output_dir}. It returns the contract's dataset, target, assumed units,
+    assumptions and leakage notes, the feature summary and the evaluation
+    metrics.
+
+    Write a model card for Harbor & Vale's retention team with:
+    - model details: selected model, decision threshold, model file
+    - intended use: ranking customers by churn risk to target retention
+      discounts; out of scope: decisions about a single customer without
+      human review
+    - training data: source file, sha256, rows, churn rate, contract version,
+      and the duplicate rows (quote the tool's duplicates_summary sentence word
+      for word) and how the split handles them
+    - features: count, encoding, missing values kept, forbidden columns
+    - metrics: test PR-AUC, Recall, Precision and ROC-AUC, the baseline, and
+      the quality thresholds with pass or fail
+    - assumptions, including the assumed units
+    - risks and limitations: the undefined churn window and last-month
+      columns, category spellings with different churn rates, duplicates,
+      and that the contract must pass before the model is used on new data
+
+    Quote only numbers the tool returned. Do not claim causation.
+  expected_output: >
+    A markdown model card with sections Model details, Intended use, Training
+    data, Features, Metrics, Assumptions, Risks and limitations.
+  agent: model_card_writer
+  context:
+    - review_contract_task
+    - train_evaluate_task
+  output_file: "{output_dir}/model_card.md"

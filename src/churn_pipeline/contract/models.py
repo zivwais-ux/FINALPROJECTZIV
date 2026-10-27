@@ -60,6 +60,9 @@ class DatasetInfo(BaseModel):
     file: str
     sha256: str | None = None
     row_count: int = Field(gt=0)
+    # Rows repeated under a new id (see contract/duplicates.py); None skips the check.
+    duplicate_rows_ignoring_id: int | None = Field(default=None, ge=0)
+    rows_in_duplicate_groups: int | None = Field(default=None, ge=0)
 
 
 class TargetSpec(BaseModel):
