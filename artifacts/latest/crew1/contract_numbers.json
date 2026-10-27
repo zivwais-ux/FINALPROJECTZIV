@@ -1,0 +1,291 @@
+{
+  "dataset": {
+    "name": "ecommerce_churn",
+    "file": "clean_data.csv",
+    "sha256": "e0c951d4a9a94a650ff514da4c0152b473b1ab026aeddf0662ced46e5f847019",
+    "row_count": 5630
+  },
+  "target": {
+    "name": "Churn",
+    "positive_class": 1,
+    "expected_rate": 0.1684
+  },
+  "tolerances": {
+    "mean_rel": 0.01,
+    "target_rate_rel": 0.01,
+    "unit_change_factor": 10
+  },
+  "forbidden_features": [
+    "CustomerID"
+  ],
+  "columns": [
+    {
+      "name": "CustomerID",
+      "expected_null_count": 0,
+      "role": "id",
+      "dtype": "int",
+      "unique": true,
+      "range": {
+        "min": 50001.0,
+        "max": 55630.0
+      }
+    },
+    {
+      "name": "Churn",
+      "expected_null_count": 0,
+      "role": "target",
+      "dtype": "binary",
+      "range": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "expected_mean": 0.1684,
+      "expected_std": 0.3742,
+      "unit": "flag",
+      "unit_source": "data_dict"
+    },
+    {
+      "name": "Tenure",
+      "expected_null_count": 264,
+      "role": "feature",
+      "dtype": "int",
+      "range": {
+        "min": 0.0,
+        "max": 61.0
+      },
+      "expected_mean": 10.1899,
+      "expected_std": 8.5572,
+      "unit": "months",
+      "unit_source": "assumed"
+    },
+    {
+      "name": "PreferredLoginDevice",
+      "expected_null_count": 0,
+      "role": "feature",
+      "dtype": "category",
+      "allowed_values": [
+        "Computer",
+        "Mobile Phone",
+        "Phone"
+      ]
+    },
+    {
+      "name": "CityTier",
+      "expected_null_count": 0,
+      "role": "feature",
+      "dtype": "int",
+      "range": {
+        "min": 1.0,
+        "max": 3.0
+      },
+      "expected_mean": 1.6547,
+      "expected_std": 0.9154,
+      "unit": "tier",
+      "unit_source": "data_dict"
+    },
+    {
+      "name": "WarehouseToHome",
+      "expected_null_count": 251,
+      "role": "feature",
+      "dtype": "int",
+      "range": {
+        "min": 5.0,
+        "max": 127.0
+      },
+      "expected_mean": 15.6399,
+      "expected_std": 8.5315,
+      "unit": "km",
+      "unit_source": "assumed"
+    },
+    {
+      "name": "PreferredPaymentMode",
+      "expected_null_count": 0,
+      "role": "feature",
+      "dtype": "category",
+      "allowed_values": [
+        "CC",
+        "COD",
+        "Cash on Delivery",
+        "Credit Card",
+        "Debit Card",
+        "E wallet",
+        "UPI"
+      ]
+    },
+    {
+      "name": "Gender",
+      "expected_null_count": 0,
+      "role": "feature",
+      "dtype": "category",
+      "allowed_values": [
+        "Female",
+        "Male"
+      ]
+    },
+    {
+      "name": "HourSpendOnApp",
+      "expected_null_count": 255,
+      "role": "feature",
+      "dtype": "int",
+      "range": {
+        "min": 0.0,
+        "max": 5.0
+      },
+      "expected_mean": 2.9315,
+      "expected_std": 0.7219,
+      "unit": "hours",
+      "unit_source": "data_dict"
+    },
+    {
+      "name": "NumberOfDeviceRegistered",
+      "expected_null_count": 0,
+      "role": "feature",
+      "dtype": "int",
+      "range": {
+        "min": 1.0,
+        "max": 6.0
+      },
+      "expected_mean": 3.689,
+      "expected_std": 1.024,
+      "unit": "count",
+      "unit_source": "data_dict"
+    },
+    {
+      "name": "PreferedOrderCat",
+      "expected_null_count": 0,
+      "role": "feature",
+      "dtype": "category",
+      "allowed_values": [
+        "Fashion",
+        "Grocery",
+        "Laptop & Accessory",
+        "Mobile",
+        "Mobile Phone",
+        "Others"
+      ]
+    },
+    {
+      "name": "SatisfactionScore",
+      "expected_null_count": 0,
+      "role": "feature",
+      "dtype": "int",
+      "range": {
+        "min": 1.0,
+        "max": 5.0
+      },
+      "expected_mean": 3.0668,
+      "expected_std": 1.3802,
+      "unit": "score",
+      "unit_source": "data_dict"
+    },
+    {
+      "name": "MaritalStatus",
+      "expected_null_count": 0,
+      "role": "feature",
+      "dtype": "category",
+      "allowed_values": [
+        "Divorced",
+        "Married",
+        "Single"
+      ]
+    },
+    {
+      "name": "NumberOfAddress",
+      "expected_null_count": 0,
+      "role": "feature",
+      "dtype": "int",
+      "range": {
+        "min": 1.0,
+        "max": 22.0
+      },
+      "expected_mean": 4.214,
+      "expected_std": 2.5836,
+      "unit": "count",
+      "unit_source": "data_dict"
+    },
+    {
+      "name": "Complain",
+      "expected_null_count": 0,
+      "role": "feature",
+      "dtype": "binary",
+      "range": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "expected_mean": 0.2849,
+      "expected_std": 0.4514,
+      "unit": "flag (last month)",
+      "unit_source": "data_dict"
+    },
+    {
+      "name": "OrderAmountHikeFromlastYear",
+      "expected_null_count": 265,
+      "role": "feature",
+      "dtype": "int",
+      "range": {
+        "min": 11.0,
+        "max": 26.0
+      },
+      "expected_mean": 15.7079,
+      "expected_std": 3.6755,
+      "unit": "percent",
+      "unit_source": "data_dict"
+    },
+    {
+      "name": "CouponUsed",
+      "expected_null_count": 256,
+      "role": "feature",
+      "dtype": "int",
+      "range": {
+        "min": 0.0,
+        "max": 16.0
+      },
+      "expected_mean": 1.751,
+      "expected_std": 1.8946,
+      "unit": "count (last month)",
+      "unit_source": "data_dict"
+    },
+    {
+      "name": "OrderCount",
+      "expected_null_count": 258,
+      "role": "feature",
+      "dtype": "int",
+      "range": {
+        "min": 1.0,
+        "max": 16.0
+      },
+      "expected_mean": 3.008,
+      "expected_std": 2.9397,
+      "unit": "count (last month)",
+      "unit_source": "data_dict"
+    },
+    {
+      "name": "DaySinceLastOrder",
+      "expected_null_count": 307,
+      "role": "feature",
+      "dtype": "int",
+      "range": {
+        "min": 0.0,
+        "max": 46.0
+      },
+      "expected_mean": 4.5435,
+      "expected_std": 3.6544,
+      "unit": "days",
+      "unit_source": "data_dict"
+    },
+    {
+      "name": "CashbackAmount",
+      "expected_null_count": 0,
+      "role": "feature",
+      "dtype": "float",
+      "range": {
+        "min": 0.0,
+        "max": 324.99
+      },
+      "expected_mean": 177.223,
+      "expected_std": 49.207,
+      "unit": "INR (last month average)",
+      "unit_source": "assumed"
+    }
+  ]
+}

@@ -8,7 +8,9 @@ inspect_raw_data_task:
     - every column with missing values: count, share, and churn rate when the
       value is missing versus present
     - every categorical column with each spelling, its count and churn rate,
-      pointing out spellings that look like the same meaning
+      pointing out spellings that look like the same meaning; they are kept
+      as separate categories because their churn rates differ, so report the
+      difference without guessing its cause (do not call it a data-entry error)
     - numeric outliers the tool flagged
     - the overall churn rate
 
@@ -52,8 +54,15 @@ eda_task:
     Then write business insights for Harbor & Vale's retention team:
     - which customer groups churn most, with their size and churn rate
     - what that means for where the discount budget should go
-    - patterns that may come from data collection rather than customer
-      behaviour (for example different spellings with different churn rates)
+    - spellings that look like the same meaning (for example COD and Cash on
+      Delivery): they are kept as separate categories because their churn
+      rates differ; report both rates and do not guess the cause (do not call
+      it a data-entry error or say the groups behave the same)
+    - missing values whose churn rate differs from present values
+    - SatisfactionScore and the other score columns have no documented
+      direction (the data dictionary does not say whether 5 is best or
+      worst), so name the score value (for example "score 5"), never "lowest"
+      or "highest" satisfaction
     - the known limitation that the churn window is undefined, so last-month
       columns may describe customers after they churned
 

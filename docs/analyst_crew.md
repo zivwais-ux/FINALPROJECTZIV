@@ -59,3 +59,26 @@
 cp .env.example .env    # ולהכניס OPENAI_API_KEY
 crewai run
 ```
+
+## הרצה אמיתית (סגירת שלב 3)
+הרצה עם `uv run kickoff` ו-`gpt-4.1-mini`, ב-`temperature=0`. ה-Flow הסתיים עם exit 0, והתוצרים נשמרו ב-`artifacts/latest/crew1/`.
+
+**מה נבדק:**
+- **כל 8 התוצרים קיימים:** `quality_report.json`, `quality_summary.md`, `clean_data.csv`, `preparation_log.md`,
+  `eda_report.html`, `insights.md`, `contract_numbers.json`, `dataset_contract.json`.
+- **כל סוכן קרא לכלי שלו פעם אחת:** `profile_raw_data`, `export_clean_data`, `run_eda` ו-`build_contract`.
+- **`dataset_contract.json` עובר את `validate_against_contract`** מול `clean_data.csv`, עם 0 הפרות.
+- **`clean_data.csv` זהה לגיליון `E Comm`:** 5,630 שורות ו-20 עמודות. ה-SHA256 שלו הוא `e0c951d4…f847019`.
+- **המספרים בטקסטים:** כל המספרים ב-`quality_summary.md`, ב-`preparation_log.md` וב-`insights.md` חושבו מחדש מהקובץ הגולמי
+  בסקריפט נפרד. כולם תואמים, חוץ משלושה מקרים:
+  - הפרשים שהסוכן חישב, ושנבדקו ידנית (28.77−15.44=13.33)
+  - עיגול שהסוכן כתב במפורש ("~27%")
+  - ספירות ערכים קיצוניים לפי כלל 3×IQR, שתואמות ל-`quality_report.json`
+
+**תיקונים שנדרשו אחרי ההרצה הראשונה:**
+1. **הפרומפט של `eda_task`** הציג כתיבים שונים כ"דפוס שאולי נובע מאיסוף הנתונים", והסוכנים כתבו שזו "כנראה הקלדה לא עקבית".
+   זה סותר את ההחלטה לא לאחד קטגוריות. הפרומפטים של `inspect_raw_data_task` ושל `eda_task` מנחים עכשיו להציג את הכתיבים
+   כקטגוריות נפרדות עם שני שיעורי הנטישה, בלי לנחש את הסיבה.
+2. **הסוכן כתב "lowest satisfaction score (5)".** במילון הנתונים אין כיוון לסולם, ובנתונים שיעור הנטישה עולה עם הציון:
+   11.51% בציון 1 לעומת 23.83% בציון 5. הפרומפט מנחה עכשיו לכתוב "score 5", ולא "נמוך" או "גבוה".
+3. **`kickoff()` החזיר dict ל-`sys.exit`,** ולכן ריצה מוצלחת הסתיימה עם exit 1. הפונקציה לא מחזירה ערך יותר.
