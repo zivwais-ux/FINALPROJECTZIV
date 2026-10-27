@@ -21,7 +21,7 @@
 
 ## Selected Model
 - Model: HistGradientBoosting
-- Selection rule: Highest mean PR-AUC over 5-fold stratified group CV on the training split
+- Selection rule: Highest mean PR-AUC over 5-fold stratified group cross-validation on the training split
 
 ### Confusion Matrix at decision threshold 0.5 (in understandable terms):
 - Churners caught (True Positives): 126
@@ -30,13 +30,16 @@
 - Loyal customers correctly identified (True Negatives): 923
 
 ## Quality Thresholds
-- Test PR-AUC: 0.8636 (Threshold: 0.8) — Meets threshold
-- Test Recall: 0.6667 (Threshold: 0.6) — Meets threshold
+- Test PR-AUC threshold: 0.8
+- Test Recall threshold: 0.6
 - Baseline PR-AUC (test churn rate): 0.1679
-- The model's PR-AUC is substantially higher than the baseline, indicating strong predictive performance.
 
-## Feature Importance (Permutation Importance)
-The model relies most on the following features (in order of importance):
+### Does the selected model meet quality thresholds?
+- Test PR-AUC: 0.8636 (meets threshold, much higher than baseline)
+- Test Recall: 0.6667 (meets threshold)
+
+## Feature Importance (by permutation importance, describing what the model relies on)
+The model relies most on these features to predict churn:
 1. Tenure (largest impact on PR-AUC when permuted)
 2. Complain
 3. NumberOfAddress
@@ -48,4 +51,4 @@ The model relies most on the following features (in order of importance):
 9. PreferredLoginDevice = Computer
 10. MaritalStatus = Single
 
-These features are what the model depends on most for its predictions, not necessarily causes of churn.
+These features are critical for the model's predictive performance but are not necessarily causes of churn.

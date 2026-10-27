@@ -3,22 +3,22 @@
 ## Overview
 - Total rows: 5630
 - Total columns: 20
-- Duplicate rows: 0 (This holds because every row has its own unique CustomerID)
+- Duplicate rows: 0 (This holds only because every row has its own unique CustomerID)
 - CustomerID uniqueness: True (CustomerID is unique)
 - Duplicates ignoring CustomerID:  
   "1,112 rows are exact copies of another row except for their id (556 of them repeat an earlier row under a new id). Counting copies with one value changed as well, 3,472 rows form 1,736 groups of at most 2 rows, each row with its own id."
 - Churn rate in duplicate groups: 0.1947
 
 ## Missing Values
-| Column                | Missing Count | Missing Share | Churn Rate When Missing | Churn Rate When Present |
-|-----------------------|---------------|---------------|-------------------------|-------------------------|
-| Tenure                | 264           | 4.69%         | 30.68%                  | 16.16%                  |
-| WarehouseToHome       | 251           | 4.46%         | 33.47%                  | 16.06%                  |
-| HourSpendOnApp        | 255           | 4.53%         | 22.75%                  | 16.56%                  |
-| OrderAmountHikeFromlastYear | 265     | 4.71%         | 5.28%                   | 17.41%                  |
-| CouponUsed            | 256           | 4.55%         | 3.12%                   | 17.49%                  |
-| OrderCount            | 258           | 4.58%         | 6.98%                   | 17.31%                  |
-| DaySinceLastOrder     | 307           | 5.45%         | 17.59%                  | 16.80%                  |
+| Column                 | Missing Count | Missing Share | Churn Rate When Missing | Churn Rate When Present |
+|------------------------|---------------|---------------|-------------------------|-------------------------|
+| Tenure                 | 264           | 4.69%         | 30.68%                  | 16.16%                  |
+| WarehouseToHome        | 251           | 4.46%         | 33.47%                  | 16.06%                  |
+| HourSpendOnApp         | 255           | 4.53%         | 22.75%                  | 16.56%                  |
+| OrderAmountHikeFromlastYear | 265       | 4.71%         | 5.28%                   | 17.41%                  |
+| CouponUsed             | 256           | 4.55%         | 3.12%                   | 17.49%                  |
+| OrderCount             | 258           | 4.58%         | 6.98%                   | 17.31%                  |
+| DaySinceLastOrder      | 307           | 5.45%         | 17.59%                  | 16.80%                  |
 
 ## Categories
 
@@ -26,13 +26,13 @@
 - Computer: Count 1634, Churn Rate 19.83%
 - Mobile Phone: Count 2765, Churn Rate 12.59%
 - Phone: Count 1231, Churn Rate 22.42%  
-(Note: "Mobile Phone" and "Phone" appear similar but have different churn rates.)
+(Note: "Mobile Phone" and "Phone" appear similar but are kept separate because their churn rates differ by 9.83 percentage points.)
 
 ### PreferredPaymentMode
 - CC: Count 273, Churn Rate 21.61%
 - COD: Count 365, Churn Rate 28.77%
 - Cash on Delivery: Count 149, Churn Rate 15.44%  
-(Note: "COD" and "Cash on Delivery" appear similar but have different churn rates.)
+(Note: "COD" and "Cash on Delivery" appear similar but are kept separate because their churn rates differ by 13.33 percentage points.)
 - Credit Card: Count 1501, Churn Rate 12.86%
 - Debit Card: Count 2314, Churn Rate 15.38%
 - E wallet: Count 614, Churn Rate 22.80%
@@ -48,7 +48,7 @@
 - Laptop & Accessory: Count 2050, Churn Rate 10.24%
 - Mobile: Count 809, Churn Rate 27.19%
 - Mobile Phone: Count 1271, Churn Rate 27.54%  
-(Note: "Mobile" and "Mobile Phone" appear similar but have different churn rates.)
+(Note: "Mobile" and "Mobile Phone" appear similar but are kept separate because their churn rates differ by 0.35 percentage points.)
 - Others: Count 264, Churn Rate 7.58%
 
 ### MaritalStatus

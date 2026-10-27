@@ -12,10 +12,10 @@
 - Compared the CSV content cell by cell against the original raw data.
 
 ## Decisions
-- Missing values were preserved exactly as in the raw data (no imputation or filling).
-- Category spellings were kept exactly as in the raw data (no merging or renaming).
-- Outliers were retained without any clipping or removal.
-- No changes were made to any data values during export.
+- Missing values were preserved exactly as in the raw data; no imputation or synthetic values were introduced.
+- Category spellings were kept exactly as in the raw data; no merging or renaming of categories was performed.
+- Outliers were retained as-is; no clipping or removal was done.
+- No changes were made to any data values to ensure the handoff file is a faithful copy of the raw data.
 
 ## Verification
 - The exported CSV file is identical to the raw data cell by cell.
@@ -24,4 +24,4 @@
 
 ## Output
 - File path: /home/user/FINALPROJECTZIV/artifacts/latest/crew1/clean_data.csv
-- This file is a faithful copy of the raw data with all missing values, category spellings, and outliers preserved exactly.
+- This file is a faithful, unchanged copy of the raw data from the "E Comm" sheet.

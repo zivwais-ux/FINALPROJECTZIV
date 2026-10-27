@@ -1,104 +1,140 @@
 #!/usr/bin/env python
 """Churn pipeline flow.
 
-Step 4 version: runs the Data Analyst Crew, then the Data Scientist Crew on
-Crew 1's clean_data.csv and dataset_contract.json. The validation gates and
-the pass/fail router are added in step 5.
+Crew 1 (Data Analyst) -> handoff gates -> Crew 2 (Data Scientist) -> quality gate.
+
+The gates are plain Python (churn_pipeline.gates). When a handoff gate fails,
+the flow writes validation_report.md and stops before Crew 2; when the model
+misses the quality thresholds, it writes the report and does not approve the
+model. Either way the command exits with 1.
+
+`uv run kickoff --from-gate` skips Crew 1 and starts at the handoff gates with
+the files already in artifacts/latest/crew1, to show a broken handoff fast.
 """
 import json
+import logging
+import sys
 from pathlib import Path
 
+from crewai.flow import Flow, listen, router, start
 from pydantic import BaseModel
-
-from crewai.flow import Flow, listen, start
 
 from churn_pipeline.crews.analyst_crew.analyst_crew import AnalystCrew
 from churn_pipeline.crews.scientist_crew.scientist_crew import ScientistCrew
+from churn_pipeline.gates import (
+    GateResult,
+    gate_model_quality,
+    run_handoff_gates,
+    write_validation_report,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
-
-CREW1_ARTIFACTS = [
-    "quality_report.json",
-    "quality_summary.md",
-    "clean_data.csv",
-    "preparation_log.md",
-    "eda_report.html",
-    "insights.md",
-    "contract_numbers.json",
-    "dataset_contract.json",
-]
-
-CREW2_ARTIFACTS = [
-    "contract_review.md",
-    "features.csv",
-    "feature_spec.json",
-    "feature_log.md",
-    "model.joblib",
-    "evaluation_metrics.json",
-    "evaluation_report.md",
-    "model_card.md",
-]
-
-
-def _missing(directory: str, names: list[str]) -> list[str]:
-    out = Path(directory)
-    return [f for f in names if not (out / f).is_file() or (out / f).stat().st_size == 0]
+log = logging.getLogger("churn_pipeline")
 
 
 class PipelineState(BaseModel):
     raw_data_path: str = str(ROOT / "data" / "raw" / "E Commerce Dataset.xlsx")
     output_dir: str = str(ROOT / "artifacts" / "latest" / "crew1")
     crew2_output_dir: str = str(ROOT / "artifacts" / "latest" / "crew2")
-    crew1_artifacts: list[str] = []
-    crew2_artifacts: list[str] = []
+    lock_path: str = str(ROOT / "contracts" / "dataset_contract.lock.json")
+    report_path: str = str(ROOT / "artifacts" / "latest" / "validation_report.md")
+    from_gate: bool = False
+    gates: list[dict] = []
+    status: str = "running"
 
 
 class ChurnPipelineFlow(Flow[PipelineState]):
 
+    def _record(self, results: list[GateResult]) -> None:
+        for g in results:
+            self.state.gates.append(g.to_dict())
+            log.info("gate %-18s %s  %s", g.name, "PASS" if g.passed else "FAIL", g.summary)
+            for p in g.problems:
+                log.info("    - %s", p)
+
+    def _finish(self, status: str, verdict: str, next_step: str) -> dict:
+        self.state.status = status
+        write_validation_report(self.state.report_path,
+                                [GateResult(**g) for g in self.state.gates], verdict, next_step)
+        log.info("%s: %s (report: %s)", verdict, next_step, self.state.report_path)
+        return {"status": status, "report": self.state.report_path, "gates": self.state.gates}
+
     @start()
     def run_analyst_crew(self):
+        if self.state.from_gate:
+            log.info("--from-gate: skipping Crew 1, using %s", self.state.output_dir)
+            return
+        log.info("Crew 1 (Data Analyst) starting on %s", self.state.raw_data_path)
         Path(self.state.output_dir).mkdir(parents=True, exist_ok=True)
         AnalystCrew().crew().kickoff(inputs={
             "raw_data_path": self.state.raw_data_path,
             "output_dir": self.state.output_dir,
         })
+        log.info("Crew 1 finished")
 
-    @listen(run_analyst_crew)
-    def check_crew1_artifacts(self):
-        missing = _missing(self.state.output_dir, CREW1_ARTIFACTS)
-        if missing:
-            raise RuntimeError(f"Data Analyst Crew did not produce: {missing}")
-        self.state.crew1_artifacts = [str(Path(self.state.output_dir) / f) for f in CREW1_ARTIFACTS]
+    @router(run_analyst_crew)
+    def handoff_gates(self):
+        results = run_handoff_gates(self.state.output_dir, self.state.lock_path)
+        self._record(results)
+        return "handoff_passed" if all(g.passed for g in results) else "handoff_failed"
 
-    @listen(check_crew1_artifacts)
+    @listen("handoff_failed")
+    def stop_before_crew2(self):
+        return self._finish("handoff_failed", "FAILED",
+                            "Crew 2 did not run: fix the data or Crew 1, or update the locked "
+                            "contract on purpose, then run again")
+
+    @listen("handoff_passed")
     def run_scientist_crew(self):
         # Crew 2 reads only Crew 1's clean_data.csv and dataset_contract.json.
+        log.info("Crew 2 (Data Scientist) starting on %s", self.state.output_dir)
         ScientistCrew().crew().kickoff(inputs={
             "input_dir": self.state.output_dir,
             "output_dir": self.state.crew2_output_dir,
         })
+        log.info("Crew 2 finished")
 
-    @listen(run_scientist_crew)
-    def check_crew2_artifacts(self):
-        missing = _missing(self.state.crew2_output_dir, CREW2_ARTIFACTS)
-        if missing:
-            raise RuntimeError(f"Data Scientist Crew did not produce: {missing}")
-        out = Path(self.state.crew2_output_dir)
-        self.state.crew2_artifacts = [str(out / f) for f in CREW2_ARTIFACTS]
-        metrics = json.loads((out / "evaluation_metrics.json").read_text(encoding="utf-8"))
-        return {
-            "status": "crew2_complete",
-            "selected_model": metrics["selected_model"],
-            "test_metrics": metrics["selected_test_metrics"],
-            "meets_quality_thresholds": metrics["meets_quality_thresholds"],
-            "artifacts": self.state.crew1_artifacts + self.state.crew2_artifacts,
-        }
+    @router(run_scientist_crew)
+    def quality_gate(self):
+        result = gate_model_quality(self.state.crew2_output_dir)
+        self._record([result])
+        approval = Path(self.state.crew2_output_dir) / "model_approved.json"
+        approval.unlink(missing_ok=True)
+        if not result.passed:
+            return "model_rejected"
+        approval.write_text(json.dumps({"model": "model.joblib", "gate": result.to_dict()}, indent=2) + "\n",
+                            encoding="utf-8")
+        return "model_accepted"
+
+    @listen("model_rejected")
+    def reject_model(self):
+        return self._finish("model_rejected", "FAILED",
+                            "the model misses the quality thresholds and is not approved")
+
+    @listen("model_accepted")
+    def approve_model(self):
+        return self._finish("passed", "PASSED", "model approved (model_approved.json written)")
+
+
+def _setup_logging(log_path: Path) -> None:
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    handlers = [logging.FileHandler(log_path, mode="w", encoding="utf-8"), logging.StreamHandler()]
+    fmt = logging.Formatter("%(asctime)s %(levelname)s %(message)s", "%Y-%m-%d %H:%M:%S")
+    for h in handlers:
+        h.setFormatter(fmt)
+        log.addHandler(h)
+    log.setLevel(logging.INFO)
 
 
 def kickoff():
-    # No return value: the console script passes it to sys.exit, and a dict exits with 1.
-    result = ChurnPipelineFlow().kickoff()
+    # No return value: the console script passes it to sys.exit. Exit code 1
+    # means a gate failed.
+    from_gate = "--from-gate" in sys.argv[1:]
+    _setup_logging(ROOT / "artifacts" / "latest" / "pipeline.log")
+    result = ChurnPipelineFlow().kickoff(inputs={"from_gate": from_gate})
     print(json.dumps(result, indent=2))
+    if result["status"] != "passed":
+        sys.exit(1)
 
 
 def plot():
@@ -107,8 +143,6 @@ def plot():
 
 def run_with_trigger():
     """Run the flow with a JSON trigger payload of state overrides."""
-    import sys
-
     if len(sys.argv) < 2:
         raise Exception("No trigger payload provided. Please provide JSON payload as argument.")
     try:

@@ -69,14 +69,16 @@
   - **תוצאה:** HistGradientBoosting נבחר, עם PR-AUC של 0.8636 ו-Recall של 0.6667 על סט הבדיקה. **35 טסטים עוברים.**
 - **הרצה:** `uv run kickoff`, שמריץ את Crew 1 ואחריו את Crew 2 ומסתיים עם exit 0. ה-CLI של crewai לא מותקן בקונטיינר.
 
-## הצעד הבא בדיוק: שלב 5, ה-Flow המלא
-לשאול את המשתמש לפני שמתחילים. הספים ל-PR-AUC ול-Recall כבר אושרו.
+- **שלב 5 ✅ נסגר (ה-Flow המלא):** שערי מעבר, router, שער איכות, `validation_report.md`, `pipeline.log`,
+  ו-`--from-gate`. הפרטים ב-`docs/flow.md`. החוזה הנעול נמצא ב-`contracts/dataset_contract.lock.json`. **45 טסטים עוברים.**
+
+## הצעד הבא בדיוק: שלב 6, `scripts/break_it.py`
+מה הוחלט:
+- חמשת התרחישים רצים עם `--from-gate`, ושוברים את `artifacts/latest/crew1/clean_data.csv` אחרי Crew 1.
+- תרחיש אחד נוסף רץ בהרצה מלאה: שינוי יחידות בקובץ הגולמי. שם רק החוזה הנעול תופס את השבירה.
+- לכל תרחיש יש טסט. לשאול את המשתמש לפני שמתחילים.
 
 ## השלבים שאחרי (לעבור צעד צעד, ולשאול לפני כל אחד)
-- **שלב 5, ה-Flow המלא:**
-  - שערים: קבצים קיימים, חוזה מול נתונים, השוואה לחוזה נעול (`contracts/dataset_contract.lock.json`), features נדרשים, איכות המודל.
-  - router בין pass ל-fail. במקרה של fail: `validation_report.md` ו-exit 1, ו-Crew 2 לא רץ.
-  - לוגים, ומצב `--from-gate` שמדלג על Crew 1, לדמו.
 - **שלב 6:** סקריפט `scripts/break_it.py`, עם תרחישים: unit_change, rename_column, out_of_range, bad_category ו-missing_feature, וטסט לכל תרחיש.
 - **שלב 7:** אפליקציית Flask, עם הדפים `/`, `/analyst`, `/scientist`, `/runs` ו-`/checker`.
 - **שלב 8:** פריסה ל-Vercel ול-Supabase, ו-README סופי.
