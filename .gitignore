@@ -18,3 +18,6 @@ artifacts/runs/
 artifacts/broken/*/crew1/*
 artifacts/broken/*/raw/
 !artifacts/broken/raw_unit_change/crew1/dataset_contract.json
+
+# RAG embedding cache, rebuilt from the documents on demand
+artifacts/rag/
