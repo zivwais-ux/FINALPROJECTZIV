@@ -15,6 +15,7 @@ import joblib
 import pandas as pd
 from crewai.tools import tool
 
+from churn_pipeline.news import news_query, search_recent_news
 from churn_pipeline.tools.scientist_tools import split_indices
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -162,6 +163,7 @@ def customer_risk_profile(customer_id: int, crew1_dir: str | Path = CREW1, crew2
         "key_facts": {c: attributes.get(c) for c in KEY_FACTS},
         "missing_facts": [c for c in KEY_FACTS if attributes.get(c) is None],
         "situations": situations(risk_band(score), attributes),
+        "news_query": news_query(attributes.get("PreferedOrderCat")),
         "model": {"name": metrics["selected_model"], "test_pr_auc": metrics["selected_test_metrics"]["pr_auc"],
                   "test_recall": metrics["selected_test_metrics"]["recall"],
                   "top_features": [t["feature"] for t in metrics["top_features_by_permutation"][:5]]},
@@ -176,3 +178,11 @@ def customer_risk_profile_tool(customer_id: int) -> str:
     that apply to the customer with a search query for each, and the model's test metrics.
     Refuses if the latest pipeline run did not pass every gate."""
     return json.dumps(customer_risk_profile(customer_id), ensure_ascii=False)
+
+
+@tool("search_recent_news")
+def search_recent_news_tool(query: str) -> str:
+    """Search the web for news from the last 48 hours (GDELT, English-language sources in India).
+    Pass the news_query from customer_risk_profile exactly as given. Returns JSON with up to five
+    articles (title, url, domain, published) newest first, or an error when the search failed."""
+    return json.dumps(search_recent_news(query), ensure_ascii=False)
