@@ -3,7 +3,7 @@
 פרויקט גמר. מערכת AI לחברת מסחר מקוון בדויה, Harbor & Vale. יש בה שני crews של סוכנים שמחוברים בחוזה נתונים שנאכף בקוד,
 מודל לחיזוי נטישה, RAG על מסמכים פנימיים, ותדרוך שימור בן עמוד אחד לכל לקוח.
 
-**האפליקציה:** https://churn-pipeline-zivwais-uxs-projects.vercel.app
+**האפליקציה:** https://churn-pipeline-zivwais-uxs-projects.vercel.app · [מדריך שימוש והצגה](docs/demo_guide.md)
 
 **הסיפור:** ב-Harbor & Vale, שינוי שקט מסנטים לדולרים בקובץ שעבר בין הצוותים גרם למודל ה-churn לדרג לקוחות כמעט באקראי במשך 5 שבועות.
 הפרויקט בונה את ה-pipeline שהיה תופס את זה: כשהנתונים לא תואמים לחוזה, ה-Flow עוצר ומסביר מה השתנה.
@@ -40,7 +40,7 @@ Supabase (היסטוריית ריצות) ─► אפליקציית Flask ב-Verc
 | מודלי שפה (LLM) | 9 סוכנים ב-CrewAI, ‏`gpt-4.1-mini`, ‏`temperature=0` |
 | סוכנים עם קריאות לכלים | כל סוכן קורא לכלי Python משלו. ההרצות מתועדות ב-`docs/` |
 | RAG על מסמכים פנימיים | `src/churn_pipeline/rag.py`: מדריך שימור, מדיניות הנחות, קמפיינים קודמים, מתחרים ותחקיר התקרית (`knowledge/harbor_vale/`, סינתטיים) |
-| תדרוך בן עמוד אחד | `uv run brief <CustomerID>`: ציון סיכון מהמודל והמלצות מהמסמכים, עם ציטוט לכל המלצה |
+| תדרוך בן עמוד אחד | באתר: מקלידים `CustomerID` ומקבלים מיד את הציון ואת כללי המסמכים הפנימיים (RAG) עם מקור. בנוסף, `uv run brief` מריץ סוכן שכותב תדרוך |
 | מודל ML (בונוס) | HistGradientBoosting מול RandomForest, נבחר לפי PR-AUC בקרוס-ולידציה |
 | אפליקציה פרוסה | Flask ב-Vercel, עם היסטוריית ריצות ב-Supabase |
 | חיפוש ברשת | **לא נכלל.** הוחלט לוותר עליו |
@@ -102,6 +102,7 @@ uv run pytest
 - [`docs/briefing.md`](docs/briefing.md): תדרוך השימור
 - [`docs/app.md`](docs/app.md): האפליקציה
 - [`docs/deploy.md`](docs/deploy.md): הפריסה
+- [`docs/demo_guide.md`](docs/demo_guide.md): מדריך שימוש והצגה למרצה
 
 ## פערים ידועים
 - **חיפוש ברשת לא נכלל.**
