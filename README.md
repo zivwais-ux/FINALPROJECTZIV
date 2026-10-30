@@ -1,56 +1,44 @@
-# {{crew_name}} Crew
+# Churn Pipeline: Industry-Simulated AI Product Workflow
 
-Welcome to the {{crew_name}} Crew project, powered by [crewAI](https://crewai.com). This template is designed to help you set up a multi-agent AI system with ease, leveraging the powerful and flexible framework provided by crewAI. Our goal is to enable your agents to collaborate effectively on complex tasks, maximizing their collective intelligence and capabilities.
+פרויקט גמר: CrewAI Flow שמחבר שני crews, Data Analyst ו-Data Scientist, דרך חוזה נתונים שנאכף בקוד.
+כשהנתונים לא תואמים לחוזה, למשל אחרי שינוי יחידות, ה-Flow עוצר עם דוח ברור, ו-Crew 2 לא רץ.
 
-## Installation
+**הסיפור:** בחברה הבדיונית Harbor & Vale, שינוי מסנטים לדולרים בקובץ שעבר בין הצוותים הרס את מודל ה-churn במשך 5 שבועות, בלי שאיש שם לב.
 
-Ensure you have Python >=3.10 <3.14 installed on your system. This project uses [UV](https://docs.astral.sh/uv/) for dependency management and package handling, offering a seamless setup and execution experience.
-
-First, if you haven't already, install uv:
-
-```bash
-pip install uv
+## מבנה
+```
+Crew 1 (Data Analyst) ─► שערי מעבר ─► Crew 2 (Data Scientist) ─► שער איכות
+                           │                                       │
+                           └─ נכשל: validation_report.md, exit 1    └─ נכשל: המודל לא מאושר, exit 1
 ```
 
-Next, navigate to your project directory and install the dependencies:
+| תיקייה | תוכן |
+|---|---|
+| `data/raw/` | הנתונים: Kaggle E-commerce Customer Churn, ‏5,630 לקוחות |
+| `src/churn_pipeline/crews/` | `analyst_crew` ו-`scientist_crew`, ‏4 סוכנים בכל אחד |
+| `src/churn_pipeline/tools/` | הכלים שמחשבים: הסוכנים מחליטים ומסבירים, והקוד מחשב |
+| `src/churn_pipeline/contract/` | מבנה החוזה, הוולידטור (10 בדיקות), וזיהוי כפילויות |
+| `src/churn_pipeline/gates.py` | 5 שערי הוולידציה של ה-Flow |
+| `contracts/dataset_contract.lock.json` | החוזה הנעול שאושר |
+| `artifacts/latest/` | התוצרים של ההרצה האחרונה |
+| `docs/` | התכנון וההחלטות, לפי שלבים |
+| `tests/` | טסטים, בלי LLM |
 
-(Optional) Lock the dependencies and install them by using the CLI command:
+## הרצה
 ```bash
-crewai install
+uv sync
+cp .env.example .env          # להכניס OPENAI_API_KEY
+uv run kickoff                # Crew 1, שערים, Crew 2, שער איכות
+uv run kickoff --from-gate    # מדלג על Crew 1, לדמו
+uv run pytest
 ```
 
-### Customizing
+## תיעוד
+- [`docs/data_profile.md`](docs/data_profile.md): הנתונים וההחלטות
+- [`docs/contract_spec.md`](docs/contract_spec.md): החוזה והוולידטור
+- [`docs/analyst_crew.md`](docs/analyst_crew.md): Crew 1
+- [`docs/scientist_crew.md`](docs/scientist_crew.md): Crew 2
+- [`docs/flow.md`](docs/flow.md): ה-Flow והשערים
 
-**Add your `OPENAI_API_KEY` into the `.env` file**
-
-- Modify `src/churn_pipeline/config/agents.yaml` to define your agents
-- Modify `src/churn_pipeline/config/tasks.yaml` to define your tasks
-- Modify `src/churn_pipeline/crew.py` to add your own logic, tools and specific args
-- Modify `src/churn_pipeline/main.py` to add custom inputs for your agents and tasks
-
-## Running the Project
-
-To kickstart your flow and begin execution, run this from the root folder of your project:
-
-```bash
-crewai run
-```
-
-This command initializes the churn_pipeline Flow as defined in your configuration.
-
-This example, unmodified, will run a content creation flow on AI Agents and save the output to `output/post.md`.
-
-## Understanding Your Crew
-
-The churn_pipeline Crew is composed of multiple AI agents, each with unique roles, goals, and tools. These agents collaborate on a series of tasks, defined in `config/tasks.yaml`, leveraging their collective skills to achieve complex objectives. The `config/agents.yaml` file outlines the capabilities and configurations of each agent in your crew.
-
-## Support
-
-For support, questions, or feedback regarding the {{crew_name}} Crew or crewAI.
-
-- Visit our [documentation](https://docs.crewai.com)
-- Reach out to us through our [GitHub repository](https://github.com/joaomdmoura/crewai)
-- [Join our Discord](https://discord.com/invite/X4JWnZnxPb)
-- [Chat with our docs](https://chatg.pt/DWjSBZn)
-
-Let's create wonders together with the power and simplicity of crewAI.
+## מצב
+שלבים 1 עד 5 הושלמו. בהמשך: תרחישי שבירה (`scripts/break_it.py`), אפליקציית Flask, ופריסה ל-Vercel ול-Supabase.
