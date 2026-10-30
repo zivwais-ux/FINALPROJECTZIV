@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Contract Checker{% endblock %}
+{% block content %}
+<h1>Contract checker</h1>
+<p class="lead">Check a handoff file against the locked dataset contract, the same checks that stop the pipeline before Crew 2. Nothing is stored.</p>
+<div class="card">
+  <form method="post" enctype="multipart/form-data">
+    <div class="row"><input type="file" name="file" accept=".csv"> <button type="submit">Check CSV</button>
+      <span class="lead" style="margin:0">up to {{ max_mb }} MB</span></div>
+  </form>
+  <form method="post">
+    <div class="row">Or try: <button class="secondary" name="scenario" value="clean">clean_data.csv</button>
+      {% for name in scenarios %}<button class="secondary" name="scenario" value="{{ name }}" title="{{ scenarios[name].description }}">{{ name }}</button>{% endfor %}</div>
+  </form>
+</div>
+{% if error %}<div class="card"><span class="badge fail">error</span> {{ error }}</div>{% endif %}
+{% if result %}
+<div class="card">
+  <p><span class="badge {{ 'pass' if result.passed else 'fail' }}">{{ 'PASSED' if result.passed else 'FAILED' }}</span>
+    {{ source }} · {{ '{:,}'.format(result.rows) }} rows · {{ result.columns }} columns</p>
+  {% if result.passed %}<p>The file matches the locked contract. Crew 2 may use it.</p>
+  {% else %}<p>The pipeline would stop here and Crew 2 would not run.</p>
+  <table><tr><th>Check</th><th>Column</th><th>Problem</th></tr>
+    {% for v in result.violations %}<tr><td><code>{{ v.check }}</code></td><td>{{ v.column or '' }}</td><td>{{ v.message }}</td></tr>{% endfor %}
+    {% for f in result.missing_features %}<tr><td><code>required_features</code></td><td>{{ f }}</td><td>required feature '{{ f }}' is missing</td></tr>{% endfor %}
+  </table>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

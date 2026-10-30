@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Briefings{% endblock %}
+{% block content %}
+<h1>Retention briefings</h1>
+<p class="lead">One-page briefings written by the Retention Briefing crew from the approved churn model and Harbor &amp; Vale's internal documents (RAG).
+Create one with <code>uv run brief &lt;CustomerID&gt;</code>.</p>
+{% if ids %}
+<div class="tabs card">Customer: {% for i in ids %}<a href="{{ url_for('briefings', customer_id=i) }}"{% if i == current %} style="font-weight:600"{% endif %}>{{ i }}</a>{% endfor %}</div>
+<div class="card md">{{ briefing }}</div>
+{% else %}
+<div class="card">No briefings yet.</div>
+{% endif %}
+{% endblock %}

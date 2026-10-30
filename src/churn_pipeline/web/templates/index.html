@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% from "_gates.html" import verdict, gates %}
+{% block title %}Overview{% endblock %}
+{% block content %}
+<h1>Churn pipeline overview</h1>
+<p class="lead">Crew 1 (Data Analyst) hands clean_data.csv and a dataset contract to Crew 2 (Data Scientist).
+Code gates check the handoff; when the data breaks the contract, the flow stops before modeling.</p>
+{% if report %}
+<div class="grid">
+  <div class="stat"><div class="label">Last run</div><div class="value">{{ verdict(report.verdict) }}</div><div class="label">{{ report.time }} UTC</div></div>
+  {% if metrics %}
+  <div class="stat"><div class="label">Selected model</div><div class="value" style="font-size:1.05rem">{{ metrics.selected_model }}</div><div class="label">{{ 'approved' if approved else 'not approved' }}</div></div>
+  <div class="stat"><div class="label">Test PR-AUC (min {{ metrics.quality_thresholds.pr_auc }})</div><div class="value">{{ '%.3f'|format(metrics.selected_test_metrics.pr_auc) }}</div><div class="label">baseline {{ '%.3f'|format(metrics.baseline_pr_auc) }}</div></div>
+  <div class="stat"><div class="label">Test recall (min {{ metrics.quality_thresholds.recall }})</div><div class="value">{{ '%.3f'|format(metrics.selected_test_metrics.recall) }}</div><div class="label">threshold {{ metrics.threshold }}</div></div>
+  {% endif %}
+  {% if contract %}<div class="stat"><div class="label">Contract</div><div class="value">v{{ contract.contract_version }}</div><div class="label">{{ '{:,}'.format(contract.dataset.row_count) }} rows · {{ contract.columns|length }} columns</div></div>{% endif %}
+</div>
+<h2>Gates</h2>
+<div class="card">{{ gates(report) }}<p class="lead" style="margin:10px 0 0">{{ report.next_step }}</p></div>
+{% else %}
+<div class="card">No pipeline run yet. Run <code>uv run kickoff</code>.</div>
+{% endif %}
+{% if log %}<h2>Pipeline log</h2><div class="card"><pre>{{ log }}</pre></div>{% endif %}
+{% endblock %}

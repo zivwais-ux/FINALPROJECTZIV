@@ -1,0 +1,15 @@
+{% macro verdict(text) %}<span class="badge {{ 'pass' if text == 'PASSED' else 'fail' }}">{{ text or 'no run' }}</span>{% endmacro %}
+{% macro gates(report) %}
+<table>
+  <tr><th>Gate</th><th>Result</th><th>Summary</th></tr>
+  {% for g in report.gates %}
+  <tr>
+    <td><code>{{ g.name }}</code></td>
+    <td><span class="badge {{ 'pass' if g.passed else 'fail' }}">{{ 'PASS' if g.passed else 'FAIL' }}</span></td>
+    <td>{{ g.summary }}
+      {% if report.problems.get(g.name) %}<ul class="problems">{% for p in report.problems[g.name] %}<li>{{ p }}</li>{% endfor %}</ul>{% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endmacro %}

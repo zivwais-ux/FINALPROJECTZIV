@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Data Analyst{% endblock %}
+{% block content %}
+<h1>Crew 1 · Data Analyst</h1>
+<p class="lead">Quality profile, exploratory analysis and the dataset contract handed to Crew 2.
+{% if has_eda %}<a href="{{ url_for('eda_report') }}">Open the EDA report with charts →</a>{% endif %}</p>
+{% if quality %}
+<div class="grid">
+  <div class="stat"><div class="label">Customers</div><div class="value">{{ '{:,}'.format(quality.rows) }}</div></div>
+  <div class="stat"><div class="label">Churn rate</div><div class="value">{{ '%.2f'|format(quality.target.rate * 100) }}%</div></div>
+  <div class="stat"><div class="label">Rows with a missing value</div><div class="value">{{ '{:,}'.format(quality.rows_with_any_missing) }}</div><div class="label">kept, not imputed</div></div>
+  <div class="stat"><div class="label">Rows in duplicate groups</div><div class="value">{{ '{:,}'.format(quality.duplicates_ignoring_id.rows_in_duplicate_groups) }}</div><div class="label">ignoring CustomerID</div></div>
+</div>
+{% endif %}
+{% if contract %}
+<h2>Dataset contract v{{ contract.contract_version }}</h2>
+<div class="card"><table>
+  <tr><th>Column</th><th>Role</th><th>Type</th><th>Unit</th><th>Range / allowed values</th><th>Mean</th><th>Missing</th></tr>
+  {% for c in contract.columns %}
+  <tr><td><code>{{ c.name }}</code></td><td>{{ c.role }}</td><td>{{ c.dtype }}</td>
+    <td>{{ c.unit or '' }}{% if c.unit_source == 'assumed' %} <span class="badge fail">assumed</span>{% endif %}</td>
+    <td>{% if c.allowed_values %}{{ c.allowed_values|join(', ') }}{% elif c.range %}{{ '%g'|format(c.range.min) }} – {{ '%g'|format(c.range.max) }}{% endif %}</td>
+    <td>{{ c.expected_mean|round(4) if c.expected_mean is not none else '' }}</td><td>{{ c.expected_null_count }}</td></tr>
+  {% endfor %}
+</table></div>
+{% endif %}
+{% if summary %}<h2>Quality summary (agent)</h2><div class="card md">{{ summary }}</div>{% endif %}
+{% if insights %}<h2>Business insights (agent)</h2><div class="card md">{{ insights }}</div>{% endif %}
+{% endblock %}

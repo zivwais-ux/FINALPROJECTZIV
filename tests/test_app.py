@@ -1,0 +1,88 @@
+"""The web app: every page renders, and the contract checker catches each break."""
+import io
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+from churn_pipeline.scenarios import SCENARIOS
+from churn_pipeline.web.app import create_app, parse_report
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+@pytest.fixture(scope="module")
+def client():
+    # The committed artifacts of the latest run and the break-it scenarios.
+    return create_app(ROOT / "artifacts", ROOT / "contracts" / "dataset_contract.lock.json").test_client()
+
+
+@pytest.mark.parametrize("path, text", [
+    ("/", "Churn pipeline overview"), ("/analyst", "Dataset contract"), ("/scientist", "Candidates"),
+    ("/briefings", "Retention briefings"), ("/runs", "Break-it scenarios"), ("/checker", "Contract checker"),
+    ("/analyst/eda", "exploratory analysis"),
+])
+def test_pages_render(client, path, text):
+    response = client.get(path)
+    assert response.status_code == 200
+    assert text in response.get_data(as_text=True)
+
+
+def test_overview_shows_the_gates_of_the_last_run(client):
+    html = client.get("/").get_data(as_text=True)
+    for gate in ("crew1_artifacts", "contract_vs_data", "locked_contract", "required_features", "model_quality"):
+        assert gate in html
+
+
+def test_runs_lists_every_break_it_scenario(client):
+    html = client.get("/runs").get_data(as_text=True)
+    for name in [*SCENARIOS, "raw_unit_change"]:
+        assert name in html
+
+
+def test_unknown_briefing_is_404(client):
+    assert client.get("/briefings/1").status_code == 404
+
+
+def test_checker_passes_the_clean_handoff(client):
+    html = client.post("/checker", data={"scenario": "clean"}).get_data(as_text=True)
+    assert "PASSED" in html and "Crew 2 may use it" in html
+
+
+@pytest.mark.parametrize("name", list(SCENARIOS))
+def test_checker_catches_every_scenario(client, name):
+    html = client.post("/checker", data={"scenario": name}).get_data(as_text=True)
+    assert "FAILED" in html
+    expected = SCENARIOS[name].expected_text.replace("'", "&#39;")
+    assert expected in html or name == "missing_feature" and "Complain" in html
+
+
+def test_checker_reads_an_uploaded_file(client):
+    clean = (ROOT / "artifacts" / "latest" / "crew1" / "clean_data.csv").read_bytes()
+    html = client.post("/checker", data={"file": (io.BytesIO(clean), "clean_data.csv")},
+                       content_type="multipart/form-data").get_data(as_text=True)
+    assert "PASSED" in html
+
+    broken = clean.replace(b"Debit Card", b"debit card", 1)
+    html = client.post("/checker", data={"file": (io.BytesIO(broken), "broken.csv")},
+                       content_type="multipart/form-data").get_data(as_text=True)
+    assert "FAILED" in html and "debit card" in html
+
+
+def test_checker_rejects_an_unknown_scenario(client):
+    assert client.post("/checker", data={"scenario": "../etc"}).status_code == 400
+
+
+def test_parse_report_reads_gates_and_problems():
+    report = parse_report((ROOT / "artifacts" / "broken" / "unit_change" / "validation_report.md").read_text())
+    assert report["verdict"] == "FAILED"
+    failed = [g["name"] for g in report["gates"] if not g["passed"]]
+    assert failed == ["contract_vs_data"]
+    assert any("possible unit change" in p for p in report["problems"]["contract_vs_data"])
+
+
+def test_app_does_not_load_crewai():
+    code = "import sys, churn_pipeline.web.app; print(any(m.startswith('crewai') for m in sys.modules))"
+    out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, check=True)
+    assert out.stdout.strip() == "False"

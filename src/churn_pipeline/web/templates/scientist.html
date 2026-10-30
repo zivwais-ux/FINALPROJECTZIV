@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Data Scientist{% endblock %}
+{% block content %}
+<h1>Crew 2 · Data Scientist</h1>
+<p class="lead">Two models that handle missing values natively, chosen by cross-validated PR-AUC. Copies of a customer never sit on both sides of the split.</p>
+{% if metrics %}
+{% set t = metrics.selected_test_metrics %}
+<div class="grid">
+  <div class="stat"><div class="label">Quality gate</div><div class="value"><span class="badge {{ 'pass' if approved else 'fail' }}">{{ 'approved' if approved else 'not approved' }}</span></div></div>
+  <div class="stat"><div class="label">Test PR-AUC</div><div class="value">{{ '%.3f'|format(t.pr_auc) }}</div><div class="label">min {{ metrics.quality_thresholds.pr_auc }} · baseline {{ '%.3f'|format(metrics.baseline_pr_auc) }}</div></div>
+  <div class="stat"><div class="label">Test recall</div><div class="value">{{ '%.3f'|format(t.recall) }}</div><div class="label">min {{ metrics.quality_thresholds.recall }}</div></div>
+  <div class="stat"><div class="label">Churners caught</div><div class="value">{{ t.confusion_matrix.tp }} / {{ t.confusion_matrix.tp + t.confusion_matrix.fn }}</div><div class="label">{{ t.confusion_matrix.fp }} loyal customers flagged</div></div>
+</div>
+<h2>Candidates</h2>
+<div class="card"><table>
+  <tr><th>Model</th><th>CV PR-AUC</th><th>Test PR-AUC</th><th>Recall</th><th>Precision</th><th>ROC-AUC</th></tr>
+  {% for name, c in metrics.candidates.items() %}
+  <tr><td>{{ name }}{% if name == metrics.selected_model %} <span class="badge pass">selected</span>{% endif %}</td>
+    <td>{{ '%.4f'|format(c.cv_pr_auc_mean) }} ± {{ '%.4f'|format(c.cv_pr_auc_std) }}</td>
+    <td>{{ '%.4f'|format(c.test.pr_auc) }}</td><td>{{ '%.4f'|format(c.test.recall) }}</td>
+    <td>{{ '%.4f'|format(c.test.precision) }}</td><td>{{ '%.4f'|format(c.test.roc_auc) }}</td></tr>
+  {% endfor %}
+</table>
+<p class="lead" style="margin:10px 0 0">Split: {{ metrics.split.method }}, {{ metrics.split.train_rows }} train / {{ metrics.split.test_rows }} test rows, {{ metrics.split.duplicate_groups_on_both_sides }} duplicate groups on both sides. Model chosen by {{ metrics.selection_rule }}.</p></div>
+<h2>What the model relies on (permutation importance, not causes)</h2>
+<div class="card"><table><tr><th>Feature</th><th>PR-AUC drop when shuffled</th></tr>
+  {% for f in metrics.top_features_by_permutation %}<tr><td><code>{{ f.feature }}</code></td><td>{{ '%.4f'|format(f.pr_auc_drop) }}</td></tr>{% endfor %}
+</table></div>
+{% endif %}
+{% if card %}<h2>Model card (agent)</h2><div class="card md">{{ card }}</div>{% endif %}
+{% if evaluation %}<details class="card"><summary>Evaluation report (agent)</summary><div class="md">{{ evaluation }}</div></details>{% endif %}
+{% endblock %}

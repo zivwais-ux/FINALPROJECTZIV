@@ -23,6 +23,7 @@ Crew 1 (Data Analyst) ─► שערי מעבר ─► Crew 2 (Data Scientist) �
 | `knowledge/harbor_vale/` | מסמכים פנימיים (סינתטיים) של החברה, ל-RAG |
 | `src/churn_pipeline/rag.py` | חיפוש במסמכים הפנימיים (RAG) |
 | `src/churn_pipeline/crews/briefing_crew/` | תדרוך שימור בן עמוד אחד: המודל וה-RAG |
+| `src/churn_pipeline/web/` | אפליקציית Flask: תוצאות ו-Contract Checker, בלי LLM |
 | `artifacts/latest/` | התוצרים של ההרצה האחרונה |
 | `docs/` | התכנון וההחלטות, לפי שלבים |
 | `tests/` | טסטים, בלי LLM |
@@ -36,6 +37,7 @@ uv run kickoff --from-gate    # מדלג על Crew 1, לדמו
 uv run python scripts/break_it.py   # 5 תרחישי שבירה
 uv run python scripts/ask_docs.py "How much discount can an agent approve?"   # RAG
 uv run brief 51809            # תדרוך שימור ללקוח
+uv run web                    # האפליקציה: http://127.0.0.1:5000
 uv run pytest
 ```
 
@@ -48,6 +50,7 @@ uv run pytest
 - [`docs/break_it.md`](docs/break_it.md): תרחישי השבירה
 - [`docs/rag.md`](docs/rag.md): RAG על המסמכים הפנימיים
 - [`docs/briefing.md`](docs/briefing.md): תדרוך השימור
+- [`docs/app.md`](docs/app.md): האפליקציה
 
 ## מצב
-שלבים 1 עד 6 הושלמו, כולל RAG ותדרוך שימור. חיפוש ברשת לא נכלל. בהמשך: אפליקציית Flask, ופריסה ל-Vercel ול-Supabase.
+שלבים 1 עד 7 הושלמו, כולל RAG, תדרוך שימור ואפליקציית Flask. חיפוש ברשת לא נכלל. בהמשך: פריסה ל-Vercel ול-Supabase.
