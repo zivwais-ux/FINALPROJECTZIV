@@ -14,6 +14,7 @@ the files already in artifacts/latest/crew1, to show a broken handoff fast.
 import json
 import logging
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 from crewai.flow import Flow, listen, router, start
@@ -27,6 +28,7 @@ from churn_pipeline.gates import (
     run_handoff_gates,
     write_validation_report,
 )
+from churn_pipeline.run_history import record_run, run_row
 
 ROOT = Path(__file__).resolve().parents[2]
 log = logging.getLogger("churn_pipeline")
@@ -39,6 +41,9 @@ class PipelineState(BaseModel):
     lock_path: str = str(ROOT / "contracts" / "dataset_contract.lock.json")
     report_path: str = str(ROOT / "artifacts" / "latest" / "validation_report.md")
     from_gate: bool = False
+    # "pipeline" for a normal run, "scenario" when break_it.py runs it on broken data.
+    run_kind: str = "pipeline"
+    scenario: str | None = None
     gates: list[dict] = []
     status: str = "running"
 
@@ -54,9 +59,15 @@ class ChurnPipelineFlow(Flow[PipelineState]):
 
     def _finish(self, status: str, verdict: str, next_step: str) -> dict:
         self.state.status = status
+        when = datetime.now(timezone.utc)
         write_validation_report(self.state.report_path,
-                                [GateResult(**g) for g in self.state.gates], verdict, next_step)
+                                [GateResult(**g) for g in self.state.gates], verdict, next_step, when)
         log.info("%s: %s (report: %s)", verdict, next_step, self.state.report_path)
+        metrics_path = Path(self.state.crew2_output_dir) / "evaluation_metrics.json"
+        metrics = json.loads(metrics_path.read_text(encoding="utf-8")) if metrics_path.is_file() else None
+        log.info(record_run(run_row(when.isoformat(timespec="seconds"), self.state.run_kind,
+                                    self.state.scenario, status, verdict, self.state.gates,
+                                    next_step, metrics)))
         return {"status": status, "report": self.state.report_path, "gates": self.state.gates}
 
     @start()

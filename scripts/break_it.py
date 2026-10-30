@@ -44,7 +44,7 @@ def run_scenario(name: str, source: Path = CREW1, out_root: Path = BROKEN) -> di
     shutil.rmtree(out, ignore_errors=True)
     out.mkdir(parents=True)
     inputs = {"output_dir": str(out / "crew1"), "crew2_output_dir": str(out / "crew2"),
-              "report_path": str(out / "validation_report.md")}
+              "report_path": str(out / "validation_report.md"), "run_kind": "scenario", "scenario": name}
 
     if name == "raw_unit_change":
         scenario = RAW_SCENARIO

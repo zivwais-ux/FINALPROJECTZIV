@@ -1,0 +1,295 @@
+{
+  "source": "/home/user/FINALPROJECTZIV/data/raw/E Commerce Dataset.xlsx",
+  "sheet": "E Comm",
+  "rows": 5630,
+  "columns": 20,
+  "duplicate_rows": 0,
+  "id_unique": true,
+  "duplicates_ignoring_id": {
+    "duplicate_rows_ignoring_id": 556,
+    "rows_with_an_exact_copy": 1112,
+    "duplicate_groups": 1736,
+    "rows_in_duplicate_groups": 3472,
+    "largest_duplicate_group": 2,
+    "summary": "1,112 rows are exact copies of another row except for their id (556 of them repeat an earlier row under a new id). Counting copies with one value changed as well, 3,472 rows form 1,736 groups of at most 2 rows, each row with its own id.",
+    "churn_rate_in_duplicate_groups": 0.1947
+  },
+  "rows_with_any_missing": 1856,
+  "max_missing_per_row": 1,
+  "target": {
+    "name": "Churn",
+    "positives": 948,
+    "rate": 0.1684
+  },
+  "missing": [
+    {
+      "column": "Tenure",
+      "missing": 264,
+      "share": 0.0469,
+      "churn_rate_when_missing": 0.3068,
+      "churn_rate_when_present": 0.1616
+    },
+    {
+      "column": "WarehouseToHome",
+      "missing": 251,
+      "share": 0.0446,
+      "churn_rate_when_missing": 0.3347,
+      "churn_rate_when_present": 0.1606
+    },
+    {
+      "column": "HourSpendOnApp",
+      "missing": 255,
+      "share": 0.0453,
+      "churn_rate_when_missing": 0.2275,
+      "churn_rate_when_present": 0.1656
+    },
+    {
+      "column": "OrderAmountHikeFromlastYear",
+      "missing": 265,
+      "share": 0.0471,
+      "churn_rate_when_missing": 0.0528,
+      "churn_rate_when_present": 0.1741
+    },
+    {
+      "column": "CouponUsed",
+      "missing": 256,
+      "share": 0.0455,
+      "churn_rate_when_missing": 0.0312,
+      "churn_rate_when_present": 0.1749
+    },
+    {
+      "column": "OrderCount",
+      "missing": 258,
+      "share": 0.0458,
+      "churn_rate_when_missing": 0.0698,
+      "churn_rate_when_present": 0.1731
+    },
+    {
+      "column": "DaySinceLastOrder",
+      "missing": 307,
+      "share": 0.0545,
+      "churn_rate_when_missing": 0.1759,
+      "churn_rate_when_present": 0.168
+    }
+  ],
+  "categories": {
+    "PreferredLoginDevice": [
+      {
+        "value": "Computer",
+        "count": 1634,
+        "churn_rate": 0.1983
+      },
+      {
+        "value": "Mobile Phone",
+        "count": 2765,
+        "churn_rate": 0.1259
+      },
+      {
+        "value": "Phone",
+        "count": 1231,
+        "churn_rate": 0.2242
+      }
+    ],
+    "PreferredPaymentMode": [
+      {
+        "value": "CC",
+        "count": 273,
+        "churn_rate": 0.2161
+      },
+      {
+        "value": "COD",
+        "count": 365,
+        "churn_rate": 0.2877
+      },
+      {
+        "value": "Cash on Delivery",
+        "count": 149,
+        "churn_rate": 0.1544
+      },
+      {
+        "value": "Credit Card",
+        "count": 1501,
+        "churn_rate": 0.1286
+      },
+      {
+        "value": "Debit Card",
+        "count": 2314,
+        "churn_rate": 0.1538
+      },
+      {
+        "value": "E wallet",
+        "count": 614,
+        "churn_rate": 0.228
+      },
+      {
+        "value": "UPI",
+        "count": 414,
+        "churn_rate": 0.1739
+      }
+    ],
+    "Gender": [
+      {
+        "value": "Female",
+        "count": 2246,
+        "churn_rate": 0.1549
+      },
+      {
+        "value": "Male",
+        "count": 3384,
+        "churn_rate": 0.1773
+      }
+    ],
+    "PreferedOrderCat": [
+      {
+        "value": "Fashion",
+        "count": 826,
+        "churn_rate": 0.155
+      },
+      {
+        "value": "Grocery",
+        "count": 410,
+        "churn_rate": 0.0488
+      },
+      {
+        "value": "Laptop & Accessory",
+        "count": 2050,
+        "churn_rate": 0.1024
+      },
+      {
+        "value": "Mobile",
+        "count": 809,
+        "churn_rate": 0.2719
+      },
+      {
+        "value": "Mobile Phone",
+        "count": 1271,
+        "churn_rate": 0.2754
+      },
+      {
+        "value": "Others",
+        "count": 264,
+        "churn_rate": 0.0758
+      }
+    ],
+    "MaritalStatus": [
+      {
+        "value": "Divorced",
+        "count": 848,
+        "churn_rate": 0.1462
+      },
+      {
+        "value": "Married",
+        "count": 2986,
+        "churn_rate": 0.1152
+      },
+      {
+        "value": "Single",
+        "count": 1796,
+        "churn_rate": 0.2673
+      }
+    ]
+  },
+  "outliers": [
+    {
+      "column": "Tenure",
+      "rule": "outside Q1-3*IQR .. Q3+3*IQR",
+      "fence": [
+        -40.0,
+        58.0
+      ],
+      "count": 2,
+      "values": [
+        60.0,
+        61.0
+      ],
+      "median": 9.0
+    },
+    {
+      "column": "WarehouseToHome",
+      "rule": "outside Q1-3*IQR .. Q3+3*IQR",
+      "fence": [
+        -24.0,
+        53.0
+      ],
+      "count": 2,
+      "values": [
+        126.0,
+        127.0
+      ],
+      "median": 14.0
+    },
+    {
+      "column": "NumberOfAddress",
+      "rule": "outside Q1-3*IQR .. Q3+3*IQR",
+      "fence": [
+        -10.0,
+        18.0
+      ],
+      "count": 4,
+      "values": [
+        19.0,
+        20.0,
+        21.0,
+        22.0
+      ],
+      "median": 3.0
+    },
+    {
+      "column": "CouponUsed",
+      "rule": "outside Q1-3*IQR .. Q3+3*IQR",
+      "fence": [
+        -2.0,
+        5.0
+      ],
+      "count": 303,
+      "values": [
+        6.0,
+        7.0,
+        8.0,
+        9.0,
+        10.0,
+        11.0,
+        12.0,
+        13.0,
+        14.0,
+        15.0,
+        16.0
+      ],
+      "median": 1.0
+    },
+    {
+      "column": "OrderCount",
+      "rule": "outside Q1-3*IQR .. Q3+3*IQR",
+      "fence": [
+        -5.0,
+        9.0
+      ],
+      "count": 263,
+      "values": [
+        10.0,
+        11.0,
+        12.0,
+        13.0,
+        14.0,
+        15.0,
+        16.0
+      ],
+      "median": 2.0
+    },
+    {
+      "column": "DaySinceLastOrder",
+      "rule": "outside Q1-3*IQR .. Q3+3*IQR",
+      "fence": [
+        -13.0,
+        22.0
+      ],
+      "count": 3,
+      "values": [
+        30.0,
+        31.0,
+        46.0
+      ],
+      "median": 3.0
+    }
+  ]
+}

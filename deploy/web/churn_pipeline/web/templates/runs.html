@@ -1,0 +1,37 @@
+{% extends "base.html" %}{% from "_gates.html" import verdict, gates %}
+{% block title %}Runs{% endblock %}
+{% block content %}
+<h1>Runs</h1>
+<p class="lead">The latest pipeline run and the break-it scenarios (<code>scripts/break_it.py</code>), each with its validation report and log.</p>
+<h2>Run history (Supabase)</h2>
+{% if history %}
+<div class="card"><table>
+  <tr><th>Time (UTC)</th><th>Run</th><th>Verdict</th><th>Failed gates</th><th>Model</th><th>PR-AUC</th><th>Recall</th></tr>
+  {% for r in history %}
+  <tr><td>{{ r.run_at[:19]|replace('T', ' ') }}</td>
+    <td>{{ r.kind }}{% if r.scenario %}: <code>{{ r.scenario }}</code>{% endif %}</td>
+    <td>{{ verdict(r.verdict) }}</td><td>{{ r.failed_gates|join(', ') or '–' }}</td>
+    <td>{{ r.selected_model or '–' }}</td>
+    <td>{{ '%.4f'|format(r.pr_auc) if r.pr_auc is not none else '–' }}</td>
+    <td>{{ '%.4f'|format(r.recall) if r.recall is not none else '–' }}</td></tr>
+  {% endfor %}
+</table></div>
+{% elif history is none %}
+<div class="card">Run history is not connected (set <code>SUPABASE_URL</code> and <code>SUPABASE_PUBLISHABLE_KEY</code>). The reports below come from the files.</div>
+{% else %}
+<div class="card">No runs recorded yet.</div>
+{% endif %}
+<h2>Latest run {% if latest %}{{ verdict(latest.verdict) }}{% endif %}</h2>
+{% if latest %}<div class="card">{{ gates(latest) }}
+  {% if latest_log %}<details><summary>Log</summary><pre>{{ latest_log }}</pre></details>{% endif %}</div>
+{% else %}<div class="card">No run yet.</div>{% endif %}
+<h2>Break-it scenarios</h2>
+{% for s in scenarios %}
+<div class="card">
+  <strong><code>{{ s.name }}</code></strong> {{ verdict(s.report.verdict) }}
+  <p class="lead" style="margin:4px 0 10px">{{ s.description }} · {{ s.report.time }} UTC</p>
+  {{ gates(s.report) }}
+  {% if s.log %}<details><summary>Log</summary><pre>{{ s.log }}</pre></details>{% endif %}
+</div>
+{% else %}<div class="card">No scenarios run yet. Run <code>uv run python scripts/break_it.py</code>.</div>{% endfor %}
+{% endblock %}

@@ -1,0 +1,112 @@
+{
+  "split": {
+    "method": "StratifiedGroupKFold(5), first fold is the test set",
+    "stratified_on": "Churn",
+    "grouped_by": "duplicate_group",
+    "random_state": 42,
+    "train_rows": 4504,
+    "test_rows": 1126,
+    "test_share": 0.2,
+    "train_churn_rate": 0.1685,
+    "test_churn_rate": 0.1679,
+    "duplicate_groups_on_both_sides": 0
+  },
+  "selection_rule": "highest mean PR-AUC over 5-fold stratified group CV on the training split",
+  "threshold": 0.5,
+  "baseline_pr_auc": 0.1679,
+  "candidates": {
+    "hist_gradient_boosting": {
+      "cv_pr_auc_mean": 0.8167,
+      "cv_pr_auc_std": 0.0364,
+      "test": {
+        "pr_auc": 0.8636,
+        "recall": 0.6667,
+        "precision": 0.9,
+        "roc_auc": 0.9497,
+        "confusion_matrix": {
+          "tn": 923,
+          "fp": 14,
+          "fn": 63,
+          "tp": 126
+        }
+      }
+    },
+    "random_forest": {
+      "cv_pr_auc_mean": 0.8132,
+      "cv_pr_auc_std": 0.0335,
+      "test": {
+        "pr_auc": 0.8447,
+        "recall": 0.5185,
+        "precision": 0.9159,
+        "roc_auc": 0.9411,
+        "confusion_matrix": {
+          "tn": 928,
+          "fp": 9,
+          "fn": 91,
+          "tp": 98
+        }
+      }
+    }
+  },
+  "selected_model": "hist_gradient_boosting",
+  "selected_test_metrics": {
+    "pr_auc": 0.8636,
+    "recall": 0.6667,
+    "precision": 0.9,
+    "roc_auc": 0.9497,
+    "confusion_matrix": {
+      "tn": 923,
+      "fp": 14,
+      "fn": 63,
+      "tp": 126
+    }
+  },
+  "quality_thresholds": {
+    "pr_auc": 0.8,
+    "recall": 0.6
+  },
+  "meets_quality_thresholds": true,
+  "top_features_by_permutation": [
+    {
+      "feature": "Tenure",
+      "pr_auc_drop": 0.5003
+    },
+    {
+      "feature": "Complain",
+      "pr_auc_drop": 0.1734
+    },
+    {
+      "feature": "NumberOfAddress",
+      "pr_auc_drop": 0.0814
+    },
+    {
+      "feature": "SatisfactionScore",
+      "pr_auc_drop": 0.0494
+    },
+    {
+      "feature": "WarehouseToHome",
+      "pr_auc_drop": 0.0465
+    },
+    {
+      "feature": "CityTier",
+      "pr_auc_drop": 0.0286
+    },
+    {
+      "feature": "PreferedOrderCat=Laptop & Accessory",
+      "pr_auc_drop": 0.0264
+    },
+    {
+      "feature": "DaySinceLastOrder",
+      "pr_auc_drop": 0.0254
+    },
+    {
+      "feature": "PreferredLoginDevice=Computer",
+      "pr_auc_drop": 0.023
+    },
+    {
+      "feature": "MaritalStatus=Single",
+      "pr_auc_drop": 0.0193
+    }
+  ],
+  "model_file": "/home/user/FINALPROJECTZIV/artifacts/latest/crew2/model.joblib"
+}

@@ -1,0 +1,170 @@
+{
+  "output": "/home/user/FINALPROJECTZIV/artifacts/latest/crew2/features.csv",
+  "rows": 5630,
+  "id_columns": [
+    "CustomerID"
+  ],
+  "group_column": "duplicate_group",
+  "duplicate_groups": 1736,
+  "rows_in_duplicate_groups": 3472,
+  "target": "Churn",
+  "feature_count": 34,
+  "feature_columns": [
+    "Tenure",
+    "PreferredLoginDevice=Computer",
+    "PreferredLoginDevice=Mobile Phone",
+    "PreferredLoginDevice=Phone",
+    "CityTier",
+    "WarehouseToHome",
+    "PreferredPaymentMode=CC",
+    "PreferredPaymentMode=COD",
+    "PreferredPaymentMode=Cash on Delivery",
+    "PreferredPaymentMode=Credit Card",
+    "PreferredPaymentMode=Debit Card",
+    "PreferredPaymentMode=E wallet",
+    "PreferredPaymentMode=UPI",
+    "Gender=Female",
+    "Gender=Male",
+    "HourSpendOnApp",
+    "NumberOfDeviceRegistered",
+    "PreferedOrderCat=Fashion",
+    "PreferedOrderCat=Grocery",
+    "PreferedOrderCat=Laptop & Accessory",
+    "PreferedOrderCat=Mobile",
+    "PreferedOrderCat=Mobile Phone",
+    "PreferedOrderCat=Others",
+    "SatisfactionScore",
+    "MaritalStatus=Divorced",
+    "MaritalStatus=Married",
+    "MaritalStatus=Single",
+    "NumberOfAddress",
+    "Complain",
+    "OrderAmountHikeFromlastYear",
+    "CouponUsed",
+    "OrderCount",
+    "DaySinceLastOrder",
+    "CashbackAmount"
+  ],
+  "missing_values_kept": 1856,
+  "excluded": [
+    "CustomerID"
+  ],
+  "sources": [
+    {
+      "source": "Tenure",
+      "encoding": "unchanged",
+      "missing_kept": 264
+    },
+    {
+      "source": "PreferredLoginDevice",
+      "encoding": "one-hot",
+      "columns": [
+        "PreferredLoginDevice=Computer",
+        "PreferredLoginDevice=Mobile Phone",
+        "PreferredLoginDevice=Phone"
+      ]
+    },
+    {
+      "source": "CityTier",
+      "encoding": "unchanged",
+      "missing_kept": 0
+    },
+    {
+      "source": "WarehouseToHome",
+      "encoding": "unchanged",
+      "missing_kept": 251
+    },
+    {
+      "source": "PreferredPaymentMode",
+      "encoding": "one-hot",
+      "columns": [
+        "PreferredPaymentMode=CC",
+        "PreferredPaymentMode=COD",
+        "PreferredPaymentMode=Cash on Delivery",
+        "PreferredPaymentMode=Credit Card",
+        "PreferredPaymentMode=Debit Card",
+        "PreferredPaymentMode=E wallet",
+        "PreferredPaymentMode=UPI"
+      ]
+    },
+    {
+      "source": "Gender",
+      "encoding": "one-hot",
+      "columns": [
+        "Gender=Female",
+        "Gender=Male"
+      ]
+    },
+    {
+      "source": "HourSpendOnApp",
+      "encoding": "unchanged",
+      "missing_kept": 255
+    },
+    {
+      "source": "NumberOfDeviceRegistered",
+      "encoding": "unchanged",
+      "missing_kept": 0
+    },
+    {
+      "source": "PreferedOrderCat",
+      "encoding": "one-hot",
+      "columns": [
+        "PreferedOrderCat=Fashion",
+        "PreferedOrderCat=Grocery",
+        "PreferedOrderCat=Laptop & Accessory",
+        "PreferedOrderCat=Mobile",
+        "PreferedOrderCat=Mobile Phone",
+        "PreferedOrderCat=Others"
+      ]
+    },
+    {
+      "source": "SatisfactionScore",
+      "encoding": "unchanged",
+      "missing_kept": 0
+    },
+    {
+      "source": "MaritalStatus",
+      "encoding": "one-hot",
+      "columns": [
+        "MaritalStatus=Divorced",
+        "MaritalStatus=Married",
+        "MaritalStatus=Single"
+      ]
+    },
+    {
+      "source": "NumberOfAddress",
+      "encoding": "unchanged",
+      "missing_kept": 0
+    },
+    {
+      "source": "Complain",
+      "encoding": "unchanged",
+      "missing_kept": 0
+    },
+    {
+      "source": "OrderAmountHikeFromlastYear",
+      "encoding": "unchanged",
+      "missing_kept": 265
+    },
+    {
+      "source": "CouponUsed",
+      "encoding": "unchanged",
+      "missing_kept": 256
+    },
+    {
+      "source": "OrderCount",
+      "encoding": "unchanged",
+      "missing_kept": 258
+    },
+    {
+      "source": "DaySinceLastOrder",
+      "encoding": "unchanged",
+      "missing_kept": 307
+    },
+    {
+      "source": "CashbackAmount",
+      "encoding": "unchanged",
+      "missing_kept": 0
+    }
+  ]
+}

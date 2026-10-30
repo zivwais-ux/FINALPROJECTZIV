@@ -181,12 +181,13 @@ def gate_model_quality(crew2_dir: str | Path) -> GateResult:
 # ---------------------------------------------------------------- reporting
 
 def write_validation_report(path: str | Path, gates: list[GateResult], verdict: str,
-                            next_step: str) -> None:
+                            next_step: str, when: datetime | None = None) -> None:
+    when = when or datetime.now(timezone.utc)
     lines = [
         "# Validation report",
         "",
         f"- Verdict: **{verdict}**",
-        f"- Time (UTC): {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}",
+        f"- Time (UTC): {when.strftime('%Y-%m-%d %H:%M:%S')}",
         f"- Next step: {next_step}",
         "",
         "| Gate | Result | Summary |",

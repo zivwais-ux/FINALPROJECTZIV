@@ -21,3 +21,4 @@ artifacts/broken/*/raw/
 
 # RAG embedding cache, rebuilt from the documents on demand
 artifacts/rag/
+deploy/web/**/__pycache__/

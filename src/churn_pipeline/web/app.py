@@ -21,6 +21,7 @@ from markupsafe import Markup
 
 from churn_pipeline.contract.models import load_contract
 from churn_pipeline.contract.validator import validate_against_contract
+from churn_pipeline.run_history import fetch_runs
 from churn_pipeline.scenarios import SCENARIOS
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -135,7 +136,8 @@ def create_app(artifacts_dir: str | Path | None = None, lock_path: str | Path | 
                                   "description": SCENARIOS[d.name].description if d.name in SCENARIOS
                                   else "full run on a broken raw file (Crew 1 included)"})
         return render_template("runs.html", latest=parse_report(_read(latest / "validation_report.md")),
-                               latest_log=_read(latest / "pipeline.log"), scenarios=scenarios)
+                               latest_log=_read(latest / "pipeline.log"), scenarios=scenarios,
+                               history=fetch_runs())
 
     @app.route("/checker", methods=["GET", "POST"])
     def checker():

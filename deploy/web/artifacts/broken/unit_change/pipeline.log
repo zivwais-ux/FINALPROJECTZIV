@@ -1,0 +1,10 @@
+2026-10-30 14:43:32 INFO break_it scenario unit_change: CashbackAmount switched from INR to paise (x100), the Harbor & Vale incident
+2026-10-30 14:43:33 INFO --from-gate: skipping Crew 1, using /home/user/FINALPROJECTZIV/artifacts/broken/unit_change/crew1
+2026-10-30 14:43:33 INFO gate crew1_artifacts    PASS  all 8 Crew 1 artifacts present
+2026-10-30 14:43:33 INFO gate contract_vs_data   FAIL  clean_data.csv breaks dataset_contract.json (3 violations)
+2026-10-30 14:43:33 INFO     - CashbackAmount ranges 0..32499, contract allows 0..324.99
+2026-10-30 14:43:33 INFO     - CashbackAmount mean is 17,722.30, contract expects 177.22 (±1%); about 100x off, possible unit change (contract unit: INR (last month average))
+2026-10-30 14:43:33 INFO     - clean_data.csv has changed since the contract was written
+2026-10-30 14:43:33 INFO gate locked_contract    PASS  dataset_contract.json matches the locked contract
+2026-10-30 14:43:33 INFO gate required_features  PASS  all 18 required features available
+2026-10-30 14:43:33 INFO FAILED: Crew 2 did not run: fix the data or Crew 1, or update the locked contract on purpose, then run again (report: /home/user/FINALPROJECTZIV/artifacts/broken/unit_change/validation_report.md)
