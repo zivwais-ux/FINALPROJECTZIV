@@ -1,0 +1,156 @@
+[
+  {
+    "crew": "analyst_crew",
+    "title": "Crew 1 · Data Analyst",
+    "agents": [
+      {
+        "key": "data_quality_inspector",
+        "role": "Data Quality Inspector",
+        "goal": "Inspect the raw e-commerce churn dataset and produce an exact quality report: missing values per column, category spellings, outliers and the churn rate. Every number in the report must come from the profiling tool's output.",
+        "tools": [
+          "profile_raw_data"
+        ],
+        "tasks": [
+          {
+            "key": "inspect_raw_data_task",
+            "description": "Profile the raw dataset at {raw_data_path} (sheet \"E Comm\") with the profile_raw_data tool. The tool writes {output_dir}/quality_report.json.\nFrom the tool output, summarise for the team: - row count, duplicate rows and whether CustomerID is unique - duplicates once CustomerID is ignored: quote the tool's\n  duplicates_ignoring_id.summary sentence word for word, then give the\n  churn rate in duplicate groups. Do not combine the counts in your own\n  words. Say plainly that \"duplicate rows: 0\" only holds because every\n  row has its own id\n- every column with missing values: count, share, and churn rate when the\n  value is missing versus present\n- every categorical column with each spelling, its count and churn rate,\n  pointing out spellings that look like the same meaning; they are kept\n  as separate categories because their churn rates differ, so report the\n  difference without guessing its cause (do not call it a data-entry error)\n- numeric outliers the tool flagged - the overall churn rate\nUse only numbers that appear in the tool output. Do not recommend imputing, merging categories or clipping outliers: the team decided against all three.",
+            "expected_output": "A markdown quality summary with sections Overview, Missing values, Categories, Outliers and Target, where every number matches quality_report.json."
+          }
+        ]
+      },
+      {
+        "key": "data_preparation_engineer",
+        "role": "Data Preparation Engineer",
+        "goal": "Produce clean_data.csv as a faithful copy of the raw data: keep every missing value as missing, keep every category spelling as it is, keep outliers, and prove with the comparison tool that no value changed. Document every decision in the preparation log.",
+        "tools": [
+          "export_clean_data"
+        ],
+        "tasks": [
+          {
+            "key": "prepare_clean_data_task",
+            "description": "Create the handoff file with the export_clean_data tool: it reads sheet \"E Comm\" from {raw_data_path}, writes {output_dir}/clean_data.csv without changing any value, re-reads the CSV and compares it to the raw data cell by cell, and returns the comparison result and the file's sha256.\nThe team decisions you must follow and document: - missing values stay missing (no imputation, no synthetic values) - category spellings stay as they are (no merging) - outliers stay as they are (no clipping or removal)\nIf the tool reports any difference between the CSV and the raw data, say so plainly at the top of the log and do not describe the file as faithful.",
+            "expected_output": "A markdown preparation log with sections Source, Steps, Decisions, Verification (the tool's comparison result and the sha256) and Output."
+          }
+        ]
+      },
+      {
+        "key": "eda_insights_analyst",
+        "role": "EDA & Insights Analyst",
+        "goal": "Produce an exploratory analysis report with charts and descriptive statistics, and write business insights that tell the retention team which customer groups churn most and what that means for the discount budget.",
+        "tools": [
+          "run_eda"
+        ],
+        "tasks": [
+          {
+            "key": "eda_task",
+            "description": "Run the run_eda tool on {output_dir}/clean_data.csv. It writes {output_dir}/eda_report.html with descriptive statistics, distributions and churn-rate charts, and returns the computed churn rates by group.\nThen write business insights for Harbor & Vale's retention team: - which customer groups churn most, with their size and churn rate - what that means for where the discount budget should go - spellings that look like the same meaning (for example COD and Cash on\n  Delivery): they are kept as separate categories because their churn\n  rates differ; report both rates and do not guess the cause (do not call\n  it a data-entry error or say the groups behave the same)\n- missing values whose churn rate differs from present values - rows repeated under a new CustomerID: quote the tool's\n  duplicates_ignoring_id sentence word for word (do not combine the counts\n  in your own words), and say that every copy is counted as a separate\n  customer in the group sizes and churn rates above\n- SatisfactionScore and the other score columns have no documented\n  direction (the data dictionary does not say whether 5 is best or\n  worst), so name the score value (for example \"score 5\"), never \"lowest\"\n  or \"highest\" satisfaction\n- the known limitation that the churn window is undefined, so last-month\n  columns may describe customers after they churned\n\nQuote only numbers the tool returned. Do not claim causation.",
+            "expected_output": "A markdown insights document with an executive summary of three to five bullet points, then sections Who churns, Budget implications, Data caveats."
+          }
+        ]
+      },
+      {
+        "key": "contract_steward",
+        "role": "Contract Steward",
+        "goal": "Publish dataset_contract.json, the only interface the Data Scientist crew may rely on. The numbers (types, ranges, means, null counts, allowed values, row count, sha256) come from the contract tool; you add only the text fields: column descriptions, assumptions and leakage notes.",
+        "tools": [
+          "build_contract"
+        ],
+        "tasks": [
+          {
+            "key": "publish_contract_task",
+            "description": "Use the build_contract tool on {output_dir}/clean_data.csv. It computes every number of the contract (types, ranges, means, null counts, allowed values, row count, target rate, sha256) and returns the column list.\nYour part is the text the tool cannot know. Return: - a one-sentence description for every column, based on the data\n  dictionary sheet \"Data Dict\" in {raw_data_path} and the tool output\n- the assumptions the Data Scientist crew must know: no imputation, no\n  category merging, outliers kept, duplicate rows kept (rows repeated\n  under a new CustomerID, exactly or with one value changed; counts are in\n  the tool output under dataset), and which units are assumed\n  (Tenure in months, WarehouseToHome in km, CashbackAmount in INR)\n- leakage notes: the churn window is undefined, so Complain, CouponUsed,\n  OrderCount, CashbackAmount and PreferedOrderCat (all \"last month\") may\n  leak; the different spellings with different churn rates; and the\n  duplicate rows, which leak between train and test unless each group of\n  copies stays on one side of the split\n\nDo not return or change any number; the code merges your text with the tool's numbers into {output_dir}/dataset_contract.json.",
+            "expected_output": "Column descriptions for all 20 columns, a list of assumptions and a list of leakage notes, in the structured format requested."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "crew": "scientist_crew",
+    "title": "Crew 2 · Data Scientist",
+    "agents": [
+      {
+        "key": "contract_reviewer",
+        "role": "Contract Reviewer",
+        "goal": "Confirm that clean_data.csv matches dataset_contract.json before any modeling starts, and tell the team exactly which columns may be used, which are forbidden, and which assumptions and leakage risks come with them.",
+        "tools": [
+          "review_contract"
+        ],
+        "tasks": [
+          {
+            "key": "review_contract_task",
+            "description": "Use the review_contract tool on {input_dir}. It validates clean_data.csv against dataset_contract.json and returns whether it passes, every violation, the target, the usable features, the forbidden features, the duplicate-row counts, the assumptions and the leakage notes.\nIf the tool reports any violation, put \"CONTRACT FAILED\" on the first line, list every violation with its message, and say that modeling must not start. Otherwise report: - the contract version, row count and target with its expected rate - the usable features with type and unit, marking units that are assumed - the forbidden features and why they are excluded - the duplicate rows: quote the tool's duplicates_summary sentence word\n  for word (do not combine the counts in your own words), then say what\n  they mean for the train/test split\n- the assumptions and leakage notes the model card must carry\nUse only numbers that appear in the tool output.",
+            "expected_output": "A markdown contract review with sections Verdict, Target, Features, Excluded columns, Duplicates, Assumptions and leakage."
+          }
+        ]
+      },
+      {
+        "key": "feature_engineer",
+        "role": "Feature Engineer",
+        "goal": "Build features.csv from the contract alone: numeric features unchanged with their missing values, one 0/1 column per allowed category value, no forbidden columns, and explain every choice in the feature log.",
+        "tools": [
+          "build_features"
+        ],
+        "tasks": [
+          {
+            "key": "engineer_features_task",
+            "description": "Use the build_features tool with input_dir {input_dir} and output_dir {output_dir}. It writes {output_dir}/features.csv from clean_data.csv using only the contract, and refuses to run if the data does not match it.\nDocument in the feature log: - how each source column became features (unchanged or one-hot) and the\n  number of feature columns\n- that missing values are kept (give the count) because both models handle\n  them natively, and that no value was imputed\n- that every category spelling has its own column, so spellings with\n  different churn rates stay separate\n- that CustomerID is excluded from the features, and that duplicate_group\n  is a split key, not a feature: it labels rows that are copies of each\n  other under different CustomerIDs\n- the leakage risk of the last-month columns, which stay in by team decision\nUse only numbers that appear in the tool output.",
+            "expected_output": "A markdown feature log with sections Inputs, Features, Missing values, Categories, Excluded columns and Leakage risk."
+          }
+        ]
+      },
+      {
+        "key": "model_trainer_evaluator",
+        "role": "Model Trainer & Evaluator",
+        "goal": "Train HistGradientBoosting and RandomForest, choose one by cross-validated PR-AUC on the training split, and report its test PR-AUC and Recall against the team's quality thresholds, with every number taken from the tool.",
+        "tools": [
+          "train_and_evaluate"
+        ],
+        "tasks": [
+          {
+            "key": "train_evaluate_task",
+            "description": "Use the train_and_evaluate tool on {output_dir}. It trains HistGradientBoosting and RandomForest on features.csv, keeps each group of duplicate rows on one side of the 80/20 split, selects one model by cross-validated PR-AUC on the training split, evaluates it once on the test split and saves {output_dir}/model.joblib.\nWrite the evaluation report: - the split: method, train and test rows, churn rate in each, and the\n  number of duplicate groups on both sides (it must be 0)\n- both candidates: cross-validated PR-AUC (mean and std) and test PR-AUC,\n  Recall, Precision and ROC-AUC, in one table\n- which model was selected and by which rule - the selected model's confusion matrix at the decision threshold, in\n  words a retention manager understands (churners caught, churners\n  missed, loyal customers flagged by mistake)\n- test PR-AUC and Recall against the quality thresholds, and whether the\n  model meets them; compare PR-AUC with the baseline (the test churn rate)\n- the top features by permutation importance, described as what the model\n  relies on, not as causes of churn\n\nQuote only numbers the tool returned.",
+            "expected_output": "A markdown evaluation report with sections Split, Candidates, Selected model, Quality thresholds and Feature importance."
+          }
+        ]
+      },
+      {
+        "key": "model_card_writer",
+        "role": "Model Card Writer",
+        "goal": "Write the model card the retention team and reviewers read before they use the model: intended use, data, features, metrics, thresholds, assumptions, leakage risks and limitations.",
+        "tools": [
+          "read_model_facts"
+        ],
+        "tasks": [
+          {
+            "key": "model_card_task",
+            "description": "Use the read_model_facts tool with input_dir {input_dir} and output_dir {output_dir}. It returns the contract's dataset, target, assumed units, assumptions and leakage notes, the feature summary and the evaluation metrics.\nWrite a model card for Harbor & Vale's retention team with: - model details: selected model, decision threshold, model file - intended use: ranking customers by churn risk to target retention\n  discounts; out of scope: decisions about a single customer without\n  human review\n- training data: source file, sha256, rows, churn rate, contract version,\n  and the duplicate rows (quote the tool's duplicates_summary sentence word\n  for word) and how the split handles them\n- features: count, encoding, missing values kept, forbidden columns - metrics: test PR-AUC, Recall, Precision and ROC-AUC, the baseline, and\n  the quality thresholds with pass or fail\n- assumptions, including the assumed units - risks and limitations: the undefined churn window and last-month\n  columns, category spellings with different churn rates, duplicates,\n  and that the contract must pass before the model is used on new data\n\nQuote only numbers the tool returned. Do not claim causation.",
+            "expected_output": "A markdown model card with sections Model details, Intended use, Training data, Features, Metrics, Assumptions, Risks and limitations."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "crew": "briefing_crew",
+    "title": "Crew 3 · Retention Briefing",
+    "agents": [
+      {
+        "key": "retention_briefing_writer",
+        "role": "Retention Briefing Writer",
+        "goal": "Give a Harbor & Vale retention agent a one-page briefing on one customer before they make contact: how likely the customer is to churn, what the company's own playbook and discount policy say to do for this kind of customer, and what not to do.",
+        "tools": [
+          "customer_risk_profile",
+          "search_internal_docs"
+        ],
+        "tasks": [
+          {
+            "key": "write_briefing_task",
+            "description": "Prepare a retention briefing for customer {customer_id}.\n1. Call customer_risk_profile with customer_id {customer_id}. 2. For every entry in the profile's situations, call search_internal_docs\n   once with that entry's query, exactly as given. Do not search for\n   anything else.\n3. Write the briefing from what the documents say about those situations.\n   Where two rules apply, follow the order the documents give (for\n   example, a complaint is resolved before any offer is made, and a new\n   customer gets no discount on the first contact). Apply a rule only to\n   the situations the profile lists: a search can return sections about\n   other situations (for example a new-customer rule for a low-risk\n   customer), and those do not apply.\n\nRules: - Quote the risk score exactly as the tool returned it, with its band. - If scored_out_of_sample is false, say the score comes from a customer the\n  model was trained on.\n- List the key facts with their values only. Do not label a value as low,\n  high, good, bad or urban: the scales are not documented.\n- Every recommendation ends with its source, copied from the search\n  result's cite_as field, for example [discount_policy.md > Approval levels].\n  Cite only sections the search returned.\n- Offers must stay within the discount policy; say who must approve them.\n  If the documents say no offer applies, say there is no offer.\n- Never suggest telling the customer their churn score. - Use only facts from the two tools. Do not claim causes of churn. - At most 400 words: short bullets, no closing paragraph.",
+            "expected_output": "A markdown briefing of at most 400 words with the sections Customer snapshot, Churn risk, Recommended action, Offer, Do not, and Sources (each cite_as value used)."
+          }
+        ]
+      }
+    ]
+  }
+]

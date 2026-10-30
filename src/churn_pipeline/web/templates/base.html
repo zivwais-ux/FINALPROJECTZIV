@@ -4,13 +4,45 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Churn Pipeline{% endblock %} · Harbor &amp; Vale</title>
+  <meta name="description" content="A CrewAI pipeline with a data contract enforced in code, a churn model, RAG over internal documents and one-page retention briefings.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231f4e79'/%3E%3Cpath d='M8 21l5-6 4 3 7-9' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 </head>
 <body>
-<header><div class="wrap">
-  <span class="brand">Harbor &amp; Vale · Churn Pipeline</span>
-  <nav>{% for endpoint, label in nav %}<a href="{{ url_for(endpoint) }}" class="{{ 'active' if request.endpoint == endpoint else '' }}">{{ label }}</a>{% endfor %}</nav>
+<header class="site-header"><div class="wrap">
+  <a class="brand" href="{{ url_for('index') }}">
+    <span class="brand-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16l5-6 4 3 7-8"/></svg></span>
+    <span>Churn Pipeline<small>Harbor &amp; Vale · AI final project</small></span>
+  </a>
+  <nav class="nav" aria-label="Main">{% for endpoint, label in nav %}<a href="{{ url_for(endpoint) }}" class="{{ 'active' if request.endpoint == endpoint else '' }}">{{ label }}</a>{% endfor %}</nav>
 </div></header>
-<main class="wrap">{% block content %}{% endblock %}</main>
+<main><div class="wrap">{% block content %}{% endblock %}</div></main>
+<footer class="site-footer"><div class="wrap">
+  <span>Built with CrewAI, scikit-learn, Flask, Supabase and Vercel. Harbor &amp; Vale is a fictional company; the data is the public Kaggle E-commerce Customer Churn dataset.</span>
+  <a href="{{ repo_url }}">Source code on GitHub →</a>
+</div></footer>
+<script>
+// Filter chips and table search; no framework needed.
+document.querySelectorAll('[data-filter-group]').forEach(group => {
+  const target = document.querySelector(group.dataset.filterGroup);
+  group.querySelectorAll('.chip').forEach(chip => chip.addEventListener('click', () => {
+    group.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c === chip));
+    target.querySelectorAll('[data-kind]').forEach(row => {
+      row.hidden = chip.dataset.value !== 'all' && row.dataset.kind !== chip.dataset.value;
+    });
+  }));
+});
+document.querySelectorAll('input.search[data-table]').forEach(input => {
+  const rows = document.querySelectorAll(input.dataset.table + ' tbody tr');
+  input.addEventListener('input', () => {
+    const q = input.value.toLowerCase();
+    rows.forEach(r => { r.hidden = q && !r.textContent.toLowerCase().includes(q); });
+  });
+});
+</script>
+{% block scripts %}{% endblock %}
 </body>
 </html>

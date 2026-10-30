@@ -1,15 +1,26 @@
-{% macro verdict(text) %}<span class="badge {{ 'pass' if text == 'PASSED' else 'fail' }}">{{ text or 'no run' }}</span>{% endmacro %}
+{% macro verdict(text) %}<span class="badge {{ 'pass' if text == 'PASSED' else 'fail' }}">{{ '✓ PASSED' if text == 'PASSED' else ('✕ ' ~ text if text else 'no run') }}</span>{% endmacro %}
 {% macro gates(report) %}
-<table>
-  <tr><th>Gate</th><th>Result</th><th>Summary</th></tr>
+<ul class="gates">
   {% for g in report.gates %}
-  <tr>
-    <td><code>{{ g.name }}</code></td>
-    <td><span class="badge {{ 'pass' if g.passed else 'fail' }}">{{ 'PASS' if g.passed else 'FAIL' }}</span></td>
-    <td>{{ g.summary }}
+  <li>
+    <span class="dot {{ 'pass' if g.passed else 'fail' }}" aria-label="{{ 'passed' if g.passed else 'failed' }}">{{ '✓' if g.passed else '✕' }}</span>
+    <div>
+      <div class="name">{{ g.name }}</div>
+      <div class="summary">{{ g.summary }}</div>
       {% if report.problems.get(g.name) %}<ul class="problems">{% for p in report.problems[g.name] %}<li>{{ p }}</li>{% endfor %}</ul>{% endif %}
-    </td>
-  </tr>
+    </div>
+  </li>
   {% endfor %}
-</table>
+</ul>
+{% endmacro %}
+{% macro ai_card(title, body, note='') %}
+<div class="card ai-card">
+  <div class="ai-head"><h3 style="margin:0">{{ title }}</h3><span class="badge ai">✦ AI-written{% if note %} · {{ note }}{% endif %}</span></div>
+  <div class="md">{{ body }}</div>
+</div>
+{% endmacro %}
+{% macro bar(label, value, max, text, hot=false, ref=none) %}
+<div class="bar"><span class="lbl" title="{{ label }}">{{ label }}</span>
+  <span class="track"><span class="fill{{ ' hot' if hot else '' }}" style="width: {{ (100 * value / max) | round(1) if max else 0 }}%"></span>{% if ref is not none %}<span class="ref" style="left: {{ (100 * ref / max) | round(1) }}%"></span>{% endif %}</span>
+  <span class="val">{{ text }}</span></div>
 {% endmacro %}

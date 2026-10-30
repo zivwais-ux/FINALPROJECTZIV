@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Architecture{% endblock %}
+{% block content %}
+<div class="eyebrow">System design</div>
+<h1>Architecture</h1>
+<p class="lead">How data, agents, tools and gates connect. {{ agent_count }} agents across three crews; each agent calls its own Python tool, and every gate is plain code.</p>
+
+<div class="card">
+<svg viewBox="0 0 1040 380" width="100%" role="img" aria-label="Pipeline architecture diagram" style="font-family: var(--font); max-width: 100%">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--faint)"/></marker>
+  </defs>
+  <style>
+    .bx { fill: var(--surface); stroke: var(--border-strong); stroke-width: 1.2; }
+    .ag { fill: var(--ai-soft); stroke: var(--ai); }
+    .gt { fill: var(--fail-soft); stroke: var(--fail); }
+    .dt { fill: var(--accent-soft); stroke: var(--accent); }
+    .ap { fill: var(--brand-soft); stroke: var(--brand); }
+    .t1 { fill: var(--text); font-size: 13px; font-weight: 700; }
+    .t2 { fill: var(--muted); font-size: 11px; }
+    .ln { stroke: var(--faint); stroke-width: 1.5; fill: none; marker-end: url(#arr); }
+    .ln.stop { stroke: var(--fail); stroke-dasharray: 4 3; }
+    .lbl { fill: var(--fail); font-size: 11px; font-weight: 600; }
+  </style>
+  <!-- Row 1: the flow -->
+  <rect class="bx dt" x="10" y="40" width="130" height="70" rx="10"/><text class="t1" x="75" y="68" text-anchor="middle">Raw data</text><text class="t2" x="75" y="86" text-anchor="middle">Kaggle xlsx</text>
+  <rect class="bx ag" x="175" y="40" width="150" height="70" rx="10"/><text class="t1" x="250" y="68" text-anchor="middle">Crew 1 · Analyst</text><text class="t2" x="250" y="86" text-anchor="middle">4 agents · 4 tools</text>
+  <rect class="bx gt" x="360" y="40" width="150" height="70" rx="10"/><text class="t1" x="435" y="68" text-anchor="middle">Handoff gates</text><text class="t2" x="435" y="86" text-anchor="middle">code · no LLM</text>
+  <rect class="bx ag" x="545" y="40" width="150" height="70" rx="10"/><text class="t1" x="620" y="68" text-anchor="middle">Crew 2 · Scientist</text><text class="t2" x="620" y="86" text-anchor="middle">4 agents · 4 tools</text>
+  <rect class="bx gt" x="730" y="40" width="130" height="70" rx="10"/><text class="t1" x="795" y="68" text-anchor="middle">Quality gate</text><text class="t2" x="795" y="86" text-anchor="middle">PR-AUC · recall</text>
+  <rect class="bx dt" x="895" y="40" width="135" height="70" rx="10"/><text class="t1" x="962" y="68" text-anchor="middle">Approved model</text><text class="t2" x="962" y="86" text-anchor="middle">model.joblib</text>
+  <path class="ln" d="M140 75H173"/><path class="ln" d="M325 75H358"/><path class="ln" d="M510 75H543"/><path class="ln" d="M695 75H728"/><path class="ln" d="M860 75H893"/>
+  <text class="t2" x="342" y="30" text-anchor="middle">clean_data.csv</text><text class="t2" x="342" y="130" text-anchor="middle">contract.json</text>
+  <!-- stop path -->
+  <path class="ln stop" d="M435 110V160H300"/><text class="lbl" x="440" y="150">fail → report, exit 1</text>
+  <rect class="bx gt" x="150" y="140" width="150" height="40" rx="8"/><text class="t1" x="225" y="165" text-anchor="middle" style="font-size:12px">validation_report.md</text>
+  <!-- lock -->
+  <rect class="bx" x="360" y="195" width="150" height="44" rx="8"/><text class="t1" x="435" y="215" text-anchor="middle" style="font-size:12px">Locked contract</text><text class="t2" x="435" y="231" text-anchor="middle">approved numbers</text>
+  <path class="ln" d="M435 195V112"/>
+  <!-- Row 2: RAG + briefing -->
+  <rect class="bx dt" x="10" y="285" width="160" height="70" rx="10"/><text class="t1" x="90" y="313" text-anchor="middle">Internal documents</text><text class="t2" x="90" y="331" text-anchor="middle">playbook · policy · campaigns</text>
+  <rect class="bx" x="205" y="285" width="150" height="70" rx="10"/><text class="t1" x="280" y="313" text-anchor="middle">RAG index</text><text class="t2" x="280" y="331" text-anchor="middle">sections → embeddings</text>
+  <rect class="bx ag" x="545" y="285" width="190" height="70" rx="10"/><text class="t1" x="640" y="313" text-anchor="middle">Briefing agent</text><text class="t2" x="640" y="331" text-anchor="middle">risk tool + search tool</text>
+  <rect class="bx ap" x="800" y="285" width="230" height="70" rx="10"/><text class="t1" x="915" y="313" text-anchor="middle">One-page briefing</text><text class="t2" x="915" y="331" text-anchor="middle">score + cited recommendations</text>
+  <path class="ln" d="M170 320H203"/><path class="ln" d="M355 320H543"/><text class="t2" x="450" y="312" text-anchor="middle">search_internal_docs</text>
+  <path class="ln" d="M962 110V250H640V283"/><text class="t2" x="800" y="244" text-anchor="middle">customer_risk_profile</text>
+  <path class="ln" d="M735 320H798"/>
+</svg>
+<div class="legend"><span><i style="background:var(--ai-soft);border:1px solid var(--ai)"></i>AI agents</span><span><i style="background:var(--fail-soft);border:1px solid var(--fail)"></i>Gates in code</span><span><i style="background:var(--accent-soft);border:1px solid var(--accent)"></i>Data and artifacts</span><span><i style="background:var(--brand-soft);border:1px solid var(--brand)"></i>Output</span></div>
+</div>
+
+<h2>Design principles</h2>
+<div class="grid g3">
+  <div class="card"><h3>Agents decide, tools compute</h3><p class="small">Every number in an agent's text comes from a Python tool's output. Agents choose, explain and write; they never do arithmetic.</p></div>
+  <div class="card"><h3>Gates are code</h3><p class="small">The contract check, the lock comparison and the quality gate are plain Python. No LLM can talk the flow past a broken handoff.</p></div>
+  <div class="card"><h3>Fail loudly, explain precisely</h3><p class="small">A failed gate writes a report naming the column and the change, for example "about 100x off, possible unit change", and exits with 1.</p></div>
+</div>
+
+<h2>The RAG pipeline</h2>
+<p class="sub">Retrieval over Harbor &amp; Vale's internal documents (<code>src/churn_pipeline/rag.py</code>).</p>
+<div class="flow">
+  <div class="node data"><div class="kind">Corpus</div><h3>7 documents</h3><p>Retention playbook, discount policy, past campaigns, competitor offers, postmortem, latest insights, model card.</p></div>
+  <div class="node code"><div class="kind">Chunk</div><h3>One chunk per section</h3><p>40 sections, each prefixed with "document &gt; section" for context.</p></div>
+  <div class="node code"><div class="kind">Embed</div><h3>text-embedding-3-small</h3><p>Cached by the text's SHA-256; only changed sections are embedded again.</p></div>
+  <div class="node code"><div class="kind">Retrieve</div><h3>Top 4 by cosine</h3><p>Each hit carries <code>cite_as</code>, so the briefing can cite its source.</p></div>
+  <div class="node gate"><div class="kind">Guardrail</div><h3>Check every citation</h3><p>A briefing that cites a section that does not exist is sent back.</p></div>
+</div>
+
+<h2>The agents and their prompts</h2>
+<p class="sub">Roles, goals, tools and task prompts, read from the crews' YAML configuration.</p>
+{% for crew in crews %}
+<h3 style="margin-top:22px">{{ crew.title }}</h3>
+<div class="grid g2">
+  {% for a in crew.agents %}
+  <div class="agent">
+    <div class="role">{{ a.role }}</div>
+    <div class="goal">{{ a.goal }}</div>
+    <div>{% for t in a.tools %}<span class="tool">{{ t }}()</span>{% endfor %}</div>
+    {% for t in a.tasks %}
+    <details style="margin-top:8px"><summary>Task prompt: <code>{{ t.key }}</code></summary>
+      <pre>{{ t.description }}</pre>
+      <p class="small"><strong>Expected output:</strong> {{ t.expected_output }}</p>
+    </details>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+{% endfor %}
+{% endblock %}

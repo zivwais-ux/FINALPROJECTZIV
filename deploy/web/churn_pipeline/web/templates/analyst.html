@@ -1,29 +1,75 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% from "_gates.html" import ai_card, bar %}
 {% block title %}Data Analyst{% endblock %}
 {% block content %}
-<h1>Crew 1 · Data Analyst</h1>
-<p class="lead">Quality profile, exploratory analysis and the dataset contract handed to Crew 2.
-{% if has_eda %}<a href="{{ url_for('eda_report') }}">Open the EDA report with charts →</a>{% endif %}</p>
-{% if quality %}
-<div class="grid">
-  <div class="stat"><div class="label">Customers</div><div class="value">{{ '{:,}'.format(quality.rows) }}</div></div>
-  <div class="stat"><div class="label">Churn rate</div><div class="value">{{ '%.2f'|format(quality.target.rate * 100) }}%</div></div>
-  <div class="stat"><div class="label">Rows with a missing value</div><div class="value">{{ '{:,}'.format(quality.rows_with_any_missing) }}</div><div class="label">kept, not imputed</div></div>
-  <div class="stat"><div class="label">Rows in duplicate groups</div><div class="value">{{ '{:,}'.format(quality.duplicates_ignoring_id.rows_in_duplicate_groups) }}</div><div class="label">ignoring CustomerID</div></div>
+<div class="eyebrow">Crew 1 · 4 agents</div>
+<h1>Data Analyst</h1>
+<p class="lead">Profiles the raw data, hands Crew 2 an unchanged <code>clean_data.csv</code>, explores who churns, and writes the dataset contract.
+{% if has_eda %}<a href="{{ url_for('eda_report') }}">Open the full EDA report with charts →</a>{% endif %}</p>
+
+{% if quality %}{% set rate = quality.target.rate %}{% set d = quality.duplicates_ignoring_id %}
+<div class="grid g4">
+  <div class="stat"><div class="label">Customers</div><div class="value">{{ '{:,}'.format(quality.rows) }}</div><div class="hint">{{ quality.columns }} columns</div></div>
+  <div class="stat"><div class="label">Churn rate</div><div class="value">{{ '%.2f'|format(rate * 100) }}%</div><div class="hint">{{ quality.target.positives }} churned</div></div>
+  <div class="stat"><div class="label">Rows with a missing value</div><div class="value">{{ '{:,}'.format(quality.rows_with_any_missing) }}</div><div class="hint">kept as missing, never imputed</div></div>
+  <div class="stat"><div class="label">Rows repeated under a new id</div><div class="value">{{ '{:,}'.format(d.rows_in_duplicate_groups) }}</div><div class="hint">in {{ '{:,}'.format(d.duplicate_groups) }} groups</div></div>
+</div>
+
+<div class="callout warn" style="margin-top:16px"><span class="ico">⚠</span><div><strong>Duplicates hidden behind unique ids.</strong> {{ d.summary }}
+  A random train/test split would put copies of training rows in the test set; Crew 2 keeps each group on one side.</div></div>
+
+<h2>Who churns</h2>
+<p class="sub">Churn rate by segment, computed by the profiling tool. The dark line marks the overall rate ({{ '%.1f'|format(rate * 100) }}%).
+Spellings that look alike, such as <code>COD</code> and <code>Cash on Delivery</code>, are kept apart on purpose: their churn rates differ.</p>
+<div class="grid g2">
+  {% for col, values in quality.categories.items() %}
+  <div class="card">
+    <h3>{{ col }}</h3>
+    <div class="bars">
+      {% for v in values|sort(attribute='churn_rate', reverse=true) %}
+      {{ bar(v.value ~ ' (' ~ v.count ~ ')', v.churn_rate, 0.35, '%.1f%%'|format(v.churn_rate * 100), v.churn_rate > rate * 1.3, rate) }}
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<h2>Missing values tell a story</h2>
+<p class="sub">Churn rate when a value is missing versus present. Missing values are kept: both models handle them natively.</p>
+<div class="card">
+  <div class="bars">
+  {% for m in quality.missing|sort(attribute='churn_rate_when_missing', reverse=true) %}
+    {{ bar(m.column ~ ' · missing', m.churn_rate_when_missing, 0.35, '%.1f%%'|format(m.churn_rate_when_missing * 100), true, rate) }}
+    {{ bar(m.column ~ ' · present', m.churn_rate_when_present, 0.35, '%.1f%%'|format(m.churn_rate_when_present * 100), false, rate) }}
+  {% endfor %}
+  </div>
+  <div class="legend"><span><i style="background:var(--fail)"></i>value missing</span><span><i style="background:var(--brand)"></i>value present</span><span><i style="background:var(--text);opacity:.55"></i>overall churn rate</span></div>
 </div>
 {% endif %}
+
 {% if contract %}
-<h2>Dataset contract v{{ contract.contract_version }}</h2>
-<div class="card"><table>
-  <tr><th>Column</th><th>Role</th><th>Type</th><th>Unit</th><th>Range / allowed values</th><th>Mean</th><th>Missing</th></tr>
-  {% for c in contract.columns %}
-  <tr><td><code>{{ c.name }}</code></td><td>{{ c.role }}</td><td>{{ c.dtype }}</td>
-    <td>{{ c.unit or '' }}{% if c.unit_source == 'assumed' %} <span class="badge fail">assumed</span>{% endif %}</td>
-    <td>{% if c.allowed_values %}{{ c.allowed_values|join(', ') }}{% elif c.range %}{{ '%g'|format(c.range.min) }} – {{ '%g'|format(c.range.max) }}{% endif %}</td>
-    <td>{{ c.expected_mean|round(4) if c.expected_mean is not none else '' }}</td><td>{{ c.expected_null_count }}</td></tr>
-  {% endfor %}
-</table></div>
+<h2>The dataset contract</h2>
+<p class="sub">v{{ contract.contract_version }} · the only thing Crew 2 may assume about the data. Numbers come from a tool; descriptions from the Contract Steward agent.
+Units marked <span class="badge warn">assumed</span> are not stated by the source.</p>
+<div class="card">
+  <input class="search" data-table="#contract" placeholder="Filter columns…" aria-label="Filter columns">
+  <table id="contract">
+    <thead><tr><th>Column</th><th>Role</th><th>Type</th><th>Unit</th><th>Range / allowed values</th><th class="num">Mean</th><th class="num">Missing</th></tr></thead>
+    <tbody>
+    {% for c in contract.columns %}
+    <tr><td><code>{{ c.name }}</code><div class="small">{{ c.description }}</div></td><td>{{ c.role }}</td><td>{{ c.dtype }}</td>
+      <td>{{ c.unit or '' }}{% if c.unit_source == 'assumed' %} <span class="badge warn">assumed</span>{% endif %}</td>
+      <td>{% if c.allowed_values %}{{ c.allowed_values|join(', ') }}{% elif c.range %}{{ '%g'|format(c.range.min) }} – {{ '%g'|format(c.range.max) }}{% endif %}</td>
+      <td class="num">{{ '%.2f'|format(c.expected_mean) if c.expected_mean is not none else '' }}</td><td class="num">{{ c.expected_null_count }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div class="grid g2">
+  <div class="card"><h3>Assumptions</h3><ul class="small">{% for a in contract.assumptions %}<li>{{ a }}</li>{% endfor %}</ul></div>
+  <div class="card"><h3>Leakage notes</h3><ul class="small">{% for a in contract.leakage_notes %}<li>{{ a }}</li>{% endfor %}</ul></div>
+</div>
 {% endif %}
-{% if summary %}<h2>Quality summary (agent)</h2><div class="card md">{{ summary }}</div>{% endif %}
-{% if insights %}<h2>Business insights (agent)</h2><div class="card md">{{ insights }}</div>{% endif %}
+
+{% if insights %}<h2>Business insights</h2>{{ ai_card('Insights for the retention team', insights, 'EDA & Insights Analyst') }}{% endif %}
+{% if summary %}<details class="card"><summary>Quality summary written by the Data Quality Inspector</summary><div class="md" style="margin-top:10px">{{ summary }}</div></details>{% endif %}
 {% endblock %}

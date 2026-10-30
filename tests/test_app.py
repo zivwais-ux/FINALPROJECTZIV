@@ -19,7 +19,8 @@ def client():
 
 
 @pytest.mark.parametrize("path, text", [
-    ("/", "Churn pipeline overview"), ("/analyst", "Dataset contract"), ("/scientist", "Candidates"),
+    ("/", "refuses to run on bad data"), ("/architecture", "The RAG pipeline"), ("/analyst", "The dataset contract"),
+    ("/scientist", "Two models, compared"),
     ("/briefings", "Retention briefings"), ("/runs", "Break-it scenarios"), ("/checker", "Contract checker"),
     ("/analyst/eda", "exploratory analysis"),
 ])
@@ -42,12 +43,32 @@ def test_runs_lists_every_break_it_scenario(client):
 
 
 def test_unknown_briefing_is_404(client):
-    assert client.get("/briefings/1").status_code == 404
+    response = client.get("/briefings/1")
+    assert response.status_code == 404
+    assert "not part of the pipeline" in response.get_data(as_text=True)
+
+
+def test_architecture_lists_every_agent_with_its_tool(client):
+    html = client.get("/architecture").get_data(as_text=True)
+    for role, tool in [("Data Quality Inspector", "profile_raw_data"), ("Contract Steward", "build_contract"),
+                       ("Model Trainer &amp; Evaluator", "train_and_evaluate"),
+                       ("Retention Briefing Writer", "search_internal_docs")]:
+        assert role in html and f"{tool}()" in html
+
+
+def test_overview_maps_the_course_requirements(client):
+    html = client.get("/").get_data(as_text=True)
+    assert "RAG over the company" in html and "Web search for the latest news" in html
+
+
+def test_briefings_show_each_customers_score(client):
+    html = client.get("/briefings").get_data(as_text=True)
+    assert "0.95" in html and "high risk" in html
 
 
 def test_checker_passes_the_clean_handoff(client):
     html = client.post("/checker", data={"scenario": "clean"}).get_data(as_text=True)
-    assert "PASSED" in html and "Crew 2 may use it" in html
+    assert "PASSED" in html and "hand it to Crew 2" in html
 
 
 @pytest.mark.parametrize("name", list(SCENARIOS))

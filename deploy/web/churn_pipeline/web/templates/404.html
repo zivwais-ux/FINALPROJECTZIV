@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Not found{% endblock %}
+{% block content %}
+<div class="hero"><div class="eyebrow">404</div><h1>This page is not part of the pipeline</h1>
+<p class="lead">The address may be mistyped, or the briefing you are looking for was never generated.</p>
+<a class="btn btn-primary" href="{{ url_for('index') }}">Back to the overview</a></div>
+{% endblock %}

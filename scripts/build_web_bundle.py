@@ -12,6 +12,8 @@ tests/test_web_bundle.py fails while the folder is out of date.
 """
 from __future__ import annotations
 
+import json
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -21,8 +23,11 @@ BUNDLE = ROOT / "deploy" / "web"
 SRC = ROOT / "src" / "churn_pipeline"
 
 CODE = ["__init__.py", "scenarios.py", "run_history.py", "contract", "web"]
+CREWS = [("analyst_crew", "Crew 1 · Data Analyst"), ("scientist_crew", "Crew 2 · Data Scientist"),
+         ("briefing_crew", "Crew 3 · Retention Briefing")]
+AGENTS_JSON = ROOT / "artifacts" / "latest" / "agents.json"
 ARTIFACTS = [
-    "latest/validation_report.md", "latest/pipeline.log",
+    "latest/agents.json", "latest/validation_report.md", "latest/pipeline.log",
     "latest/crew1/clean_data.csv", "latest/crew1/dataset_contract.json", "latest/crew1/quality_report.json",
     "latest/crew1/quality_summary.md", "latest/crew1/insights.md", "latest/crew1/eda_report.html",
     "latest/crew2/evaluation_metrics.json", "latest/crew2/feature_spec.json",
@@ -58,6 +63,31 @@ app = create_app(HERE / "artifacts", HERE / "contracts" / "dataset_contract.lock
 '''
 
 
+def agents_json() -> str:
+    """Every agent with its role, goal, tools and task prompt, read from the crews' YAML.
+
+    The web app shows them on its Architecture page without importing crewai.
+    """
+    import yaml
+
+    crews = []
+    for folder, title in CREWS:
+        base = SRC / "crews" / folder
+        agents = yaml.safe_load((base / "config" / "agents.yaml").read_text(encoding="utf-8"))
+        tasks = yaml.safe_load((base / "config" / "tasks.yaml").read_text(encoding="utf-8"))
+        code = (base / f"{folder}.py").read_text(encoding="utf-8")
+        tools = {m[0]: re.findall(r"(\w+)_tool", m[1]) for m in
+                 re.findall(r'agents_config\["(\w+)"\].*?tools=\[([^\]]*)\]', code, re.S)}
+        crews.append({"crew": folder, "title": title, "agents": [
+            {"key": key, "role": a["role"].strip(), "goal": " ".join(a["goal"].split()),
+             "tools": tools.get(key, []),
+             "tasks": [{"key": t_key, "description": t["description"].strip(),
+                        "expected_output": " ".join(t["expected_output"].split())}
+                       for t_key, t in tasks.items() if t["agent"] == key]}
+            for key, a in agents.items()]})
+    return json.dumps(crews, indent=2, ensure_ascii=False) + "\n"
+
+
 def _copy(src: Path, dst: Path) -> None:
     if src.is_dir():
         for child in sorted(src.iterdir()):
@@ -91,6 +121,11 @@ def main(argv: list[str]) -> int:
     if "--check" in argv:
         import tempfile
 
+        if not AGENTS_JSON.is_file() or AGENTS_JSON.read_text(encoding="utf-8") != agents_json():
+            print("artifacts/latest/agents.json is out of date")
+            print("rebuild with: uv run python scripts/build_web_bundle.py")
+            return 1
+
         with tempfile.TemporaryDirectory() as tmp:
             build(Path(tmp) / "web")
             expected, actual = snapshot(Path(tmp) / "web"), snapshot(BUNDLE) if BUNDLE.is_dir() else {}
@@ -101,6 +136,7 @@ def main(argv: list[str]) -> int:
             return 1
         print("deploy/web is up to date")
         return 0
+    AGENTS_JSON.write_text(agents_json(), encoding="utf-8")
     build(BUNDLE)
     files = snapshot(BUNDLE)
     print(f"deploy/web built: {len(files)} files, {sum(map(len, files.values())) / 1e6:.1f} MB")

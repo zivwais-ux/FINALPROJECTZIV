@@ -26,6 +26,29 @@ from churn_pipeline.scenarios import SCENARIOS
 
 ROOT = Path(__file__).resolve().parents[3]
 MAX_UPLOAD_MB = 10
+REPO_URL = "https://github.com/zivwais-ux/FINALPROJECTZIV"
+
+# The course brief (Deal-Prep Copilot, part 1) and where each of its points lives here.
+REQUIREMENTS = [
+    {"need": "LLMs and AI agents that call tools", "status": "done",
+     "where": "9 CrewAI agents on gpt-4.1-mini, each with its own Python tool", "page": "architecture"},
+    {"need": "RAG over the company's internal documents", "status": "done",
+     "where": "Playbook, discount policy, past campaigns, competitor offers and a postmortem, searched by embeddings",
+     "page": "architecture"},
+    {"need": "A one-page briefing an employee gets for a name they type", "status": "partial",
+     "where": "Retention briefings per CustomerID from the churn model and the RAG; generated offline with `uv run brief`",
+     "page": "briefings"},
+    {"need": "Web search for the latest news", "status": "skipped",
+     "where": "Left out by decision; the briefing uses internal documents only", "page": None},
+    {"need": "Bonus: a predictive ML model that scores probability", "status": "done",
+     "where": "HistGradientBoosting vs RandomForest, test PR-AUC 0.864, approved by a quality gate", "page": "scientist"},
+    {"need": "System design: the RAG pipeline and the tool-calling flow", "status": "done",
+     "where": "Architecture diagram, every agent's role, tool and prompt", "page": "architecture"},
+    {"need": "Data schemas", "status": "done",
+     "where": "A dataset contract enforced in code at the handoff between the crews", "page": "analyst"},
+    {"need": "A working, deployed application", "status": "done",
+     "where": "This Flask app on Vercel, with run history in Supabase", "page": "runs"},
+]
 
 
 def _read(path: Path) -> str | None:
@@ -58,6 +81,13 @@ def parse_report(text: str | None) -> dict[str, Any] | None:
             "gates": gates, "problems": problems}
 
 
+def briefing_meta(text: str) -> dict[str, Any]:
+    """Risk score and band quoted in a briefing (the guardrail makes sure they are there)."""
+    score = re.search(r"Risk score:\s*([01]\.\d+)", text)
+    band = re.search(r"\b(high|medium|low)\b", text.split("## Churn risk", 1)[-1], re.I)
+    return {"score": float(score[1]) if score else None, "band": band[1].lower() if band else None}
+
+
 def check_dataframe(df: pd.DataFrame, file_path: Path, lock_path: Path) -> dict[str, Any]:
     """Validate a handoff file against the locked contract, as the pipeline's gates would."""
     contract = load_contract(lock_path)
@@ -77,23 +107,37 @@ def create_app(artifacts_dir: str | Path | None = None, lock_path: str | Path | 
     app = Flask(__name__)
     app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_MB * 1024 * 1024
 
+    def briefing_ids() -> list[int]:
+        return sorted(int(f.stem.split("_")[1]) for f in (latest / "briefings").glob("customer_*.md"))
+
     @app.context_processor
-    def nav():
-        return {"nav": [("index", "Overview"), ("analyst", "Data Analyst"), ("scientist", "Data Scientist"),
-                        ("briefings", "Briefings"), ("runs", "Runs"), ("checker", "Contract Checker")]}
+    def shared():
+        return {"nav": [("index", "Overview"), ("architecture", "Architecture"), ("analyst", "Data Analyst"),
+                        ("scientist", "Data Scientist"), ("briefings", "Briefings"), ("runs", "Runs"),
+                        ("checker", "Contract Checker")],
+                "repo_url": REPO_URL}
 
     @app.route("/")
     def index():
         metrics = _json(crew2 / "evaluation_metrics.json")
+        scenarios = sorted(p.name for p in (artifacts / "broken").glob("*")
+                           if (p / "validation_report.md").is_file())
         return render_template("index.html", report=parse_report(_read(latest / "validation_report.md")),
                                metrics=metrics, contract=_json(crew1 / "dataset_contract.json"),
+                               quality=_json(crew1 / "quality_report.json"),
                                approved=(crew2 / "model_approved.json").is_file(),
-                               log=_read(latest / "pipeline.log"))
+                               requirements=REQUIREMENTS, scenarios=scenarios, briefings=briefing_ids())
+
+    @app.route("/architecture")
+    def architecture():
+        crews = _json(latest / "agents.json") or []
+        return render_template("architecture.html", crews=crews,
+                               agent_count=sum(len(c["agents"]) for c in crews))
 
     @app.route("/analyst")
     def analyst():
-        return render_template("analyst.html", contract=_json(crew1 / "dataset_contract.json"),
-                               quality=_json(crew1 / "quality_report.json"),
+        quality = _json(crew1 / "quality_report.json")
+        return render_template("analyst.html", contract=_json(crew1 / "dataset_contract.json"), quality=quality,
                                summary=render_md(_read(crew1 / "quality_summary.md")),
                                insights=render_md(_read(crew1 / "insights.md")),
                                has_eda=(crew1 / "eda_report.html").is_file())
@@ -116,14 +160,14 @@ def create_app(artifacts_dir: str | Path | None = None, lock_path: str | Path | 
     @app.route("/briefings")
     @app.route("/briefings/<int:customer_id>")
     def briefings(customer_id: int | None = None):
-        files = sorted((latest / "briefings").glob("customer_*.md"))
-        ids = [int(f.stem.split("_")[1]) for f in files]
+        ids = briefing_ids()
         if customer_id is None and ids:
             customer_id = ids[0]
         if customer_id is not None and customer_id not in ids:
             abort(404)
+        cards = [{"id": i, **briefing_meta(_read(latest / "briefings" / f"customer_{i}.md") or "")} for i in ids]
         text = _read(latest / "briefings" / f"customer_{customer_id}.md") if customer_id else None
-        return render_template("briefings.html", ids=ids, current=customer_id, briefing=render_md(text))
+        return render_template("briefings.html", cards=cards, current=customer_id, briefing=render_md(text))
 
     @app.route("/runs")
     def runs():
@@ -141,7 +185,7 @@ def create_app(artifacts_dir: str | Path | None = None, lock_path: str | Path | 
 
     @app.route("/checker", methods=["GET", "POST"])
     def checker():
-        result, source, error = None, None, None
+        result, source, error, chosen = None, None, None, None
         if request.method == "POST":
             scenario = request.form.get("scenario")
             upload = request.files.get("file")
@@ -150,6 +194,7 @@ def create_app(artifacts_dir: str | Path | None = None, lock_path: str | Path | 
                 if scenario:
                     if scenario != "clean" and scenario not in SCENARIOS:
                         abort(400)
+                    chosen = scenario
                     df = pd.read_csv(crew1 / "clean_data.csv")
                     if scenario != "clean":
                         df = SCENARIOS[scenario].change(df)
@@ -169,12 +214,16 @@ def create_app(artifacts_dir: str | Path | None = None, lock_path: str | Path | 
                     except (pd.errors.ParserError, UnicodeDecodeError, ValueError) as e:
                         error, source = f"Could not read the file as CSV: {e}", None
         return render_template("checker.html", scenarios=SCENARIOS, result=result, source=source,
-                               error=error, max_mb=MAX_UPLOAD_MB)
+                               error=error, chosen=chosen, max_mb=MAX_UPLOAD_MB)
 
     @app.errorhandler(413)
     def too_large(_):
-        return render_template("checker.html", scenarios=SCENARIOS, result=None, source=None,
+        return render_template("checker.html", scenarios=SCENARIOS, result=None, source=None, chosen=None,
                                error=f"The file is larger than {MAX_UPLOAD_MB} MB.", max_mb=MAX_UPLOAD_MB), 413
+
+    @app.errorhandler(404)
+    def not_found(_):
+        return render_template("404.html"), 404
 
     return app
 
