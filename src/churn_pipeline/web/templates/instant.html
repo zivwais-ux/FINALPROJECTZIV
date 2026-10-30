@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Instant briefing{% endblock %}
+{% block content %}
+<div class="eyebrow">Type a customer · get a briefing</div>
+<h1>Retention briefing</h1>
+<p class="lead">Type any CustomerID to get a one-page briefing at once: the approved churn model's score, and the rules from Harbor &amp; Vale's internal documents
+that the RAG retrieves for this customer's situation, each with its source.</p>
+
+<form method="get" action="{{ url_for('instant_briefing') }}" class="card" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+  <label for="cid" style="font-weight:600">CustomerID</label>
+  <input id="cid" name="id" value="{{ query }}" inputmode="numeric" placeholder="e.g. 51809" class="search" style="margin:0;max-width:220px" autofocus>
+  <button class="btn btn-primary" type="submit">Get briefing</button>
+  <span class="small">Try: {% for e in examples %}<a href="{{ url_for('instant_briefing', id=e) }}">{{ e }}</a>{% if not loop.last %} · {% endif %}{% endfor %}
+    {% if data %}· any ID from {{ data.customers|map('int')|min }} to {{ data.customers|map('int')|max }}{% endif %}</span>
+</form>
+
+{% if error %}<div class="callout warn"><span class="ico">⚠</span><div>{{ error }}</div></div>{% endif %}
+
+{% if view %}
+{% set colour = 'var(--fail)' if view.band == 'high' else ('var(--warn)' if view.band == 'medium' else 'var(--pass)') %}
+<div class="grid g2">
+  <div class="card">
+    <div style="display:flex;gap:18px;align-items:center">
+      <div class="score-ring" style="--p: {{ view.score * 100 }}; --c: {{ colour }}; width:88px; height:88px; font-size:1.3rem">{{ '%.2f'|format(view.score) }}</div>
+      <div>
+        <div class="small">Customer</div><div style="font-size:1.5rem;font-weight:800">{{ view.id }}</div>
+        <span class="badge {{ view.band }}">{{ view.band }} churn risk</span>
+      </div>
+    </div>
+    <p class="small" style="margin:14px 0 0">Score from the approved model ({{ data.model|replace('_', ' ') }}). Band rule from the playbook: high ≥ {{ data.band_rule.high }}, medium ≥ {{ data.band_rule.medium }}.
+      {% if view.out_of_sample %}<strong>The model never saw this customer in training.</strong>{% else %}This customer was in the training data, so the score is optimistic about the model.{% endif %}</p>
+  </div>
+  <div class="card">
+    <h3>Customer snapshot</h3>
+    <table><tbody>
+      {% for k, v in view.facts.items() %}<tr><td class="small">{{ k }}</td><td class="num">{{ v if v is not none else 'missing' }}</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+</div>
+
+<h2>What applies to this customer, and what the documents say</h2>
+<p class="sub">The situations are decided in code from the score and the customer's data; for each, the RAG searched the internal documents.
+Read the rules in this order: a complaint is resolved before any offer, and a new customer gets no discount on the first contact.</p>
+{% for s in view.situations %}
+<div class="card">
+  <div class="ai-head"><h3 style="margin:0">{{ loop.index }}. {{ s.situation|capitalize }}</h3><span class="badge neutral" title="RAG query">⌕ {{ s.query }}</span></div>
+  {% for sec in s.sections %}
+  <div style="border-left:3px solid var(--accent);padding:2px 0 2px 14px;margin:10px 0">
+    <div class="md">{{ sec.body }}</div>
+    <div class="small">Source: <code>{{ sec.cite_as }}</code></div>
+  </div>
+  {% else %}<p class="small">The documents already shown above cover this situation.</p>{% endfor %}
+</div>
+{% endfor %}
+
+<div class="callout info"><span class="ico">ℹ</span><div>
+  This briefing is <strong>assembled in code</strong> from the model's precomputed scores and the RAG results, so it is instant and needs no API key.
+  {% if view.id in written %}An <a href="{{ url_for('briefings', customer_id=view.id) }}">agent-written briefing for customer {{ view.id }}</a> is also available.
+  {% else %}Agent-written briefings, where an LLM turns the same facts into a one-page brief, exist for {% for w in written %}<a href="{{ url_for('briefings', customer_id=w) }}">{{ w }}</a>{% if not loop.last %}, {% endif %}{% endfor %} and are made with <code>uv run brief &lt;CustomerID&gt;</code>.{% endif %}
+</div></div>
+{% elif not error %}
+<div class="grid g3">
+  <div class="card flat"><div class="eyebrow">1 · Score</div><p class="small" style="margin:0">The approved model scored all customers; nothing is shown unless the latest run passed every gate.</p></div>
+  <div class="card flat"><div class="eyebrow">2 · Situations</div><p class="small" style="margin:0">Code picks what applies: the risk band, a complaint, a new customer, cash on delivery, the category, an offer.</p></div>
+  <div class="card flat"><div class="eyebrow">3 · Retrieve</div><p class="small" style="margin:0">For each situation, the RAG's top sections from the playbook, the discount policy, past campaigns and competitor offers.</p></div>
+</div>
+{% endif %}
+{% endblock %}

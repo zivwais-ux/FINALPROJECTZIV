@@ -1,0 +1,272 @@
+{
+ "who we contact first and which channel for high risk customers": [
+  {
+   "source": "knowledge/harbor_vale/retention_playbook.md",
+   "section": "Who we contact first",
+   "cite_as": "[retention_playbook.md > Who we contact first]",
+   "score": 0.5235,
+   "text": "Harbor & Vale Retention Playbook > Who we contact first\nRetention outreach is ranked by the churn model's risk score. Contact customers in this order:\n1. Customers with a risk score of 0.70 or higher, newest first.\n2. Customers who filed a complaint in the last month, whatever their score.\n3. Customers with a risk score between 0.40 and 0.70.\nCustomers below 0.40 receive no individual outreach; they stay in the regular newsletter."
+  },
+  {
+   "source": "knowledge/harbor_vale/retention_playbook.md",
+   "section": "Channels",
+   "cite_as": "[retention_playbook.md > Channels]",
+   "score": 0.5023,
+   "text": "Harbor & Vale Retention Playbook > Channels\n- High risk (0.70 and above): phone call by a retention agent.\n- Medium risk (0.40 to 0.70): app push notification, then email after 2 days without response.\n- Never contact the same customer more than twice in 14 days."
+  },
+  {
+   "source": "knowledge/harbor_vale/retention_playbook.md",
+   "section": "New customers (tenure 0 to 1 months)",
+   "cite_as": "[retention_playbook.md > New customers (tenure 0 to 1 months)]",
+   "score": 0.4513,
+   "text": "Harbor & Vale Retention Playbook > New customers (tenure 0 to 1 months)\nNew customers churn far more often than established ones. Every new customer flagged by the\nmodel gets a welcome call within 3 days of the flag, plus a first-order follow-up email asking\nwhether delivery and payment went smoothly. Do not offer a discount on the first contact:\nfirst fix the experience, then offer an incentive if the customer is still at risk a week later."
+  },
+  {
+   "source": "artifacts/latest/crew1/insights.md",
+   "section": "Budget Implications",
+   "cite_as": "[insights.md > Budget Implications]",
+   "score": 0.4097,
+   "text": "Exploratory Data Analysis Insights for Harbor & Vale Retention Team > Budget Implications\n- Focus discount budget on customers using \"Phone\" as login device and those paying with \"COD\" payment mode, as these groups have the highest churn rates.\n- The \"Mobile\" and \"Mobile Phone\" order categories also show very high churn and could be targeted for retention incentives.\n- Single customers have a high churn rate (26.73%) and may benefit from targeted retention efforts.\n- Missing data groups with high churn rates (e.g., missing Tenure or WarehouseToHome) might indicate customers with incomplete profiles who are at risk; consider outreach or data enrichment.\n- Groups with similar category names but different churn rates (e.g., COD vs Cash on Delivery) should be treated separately in budget allocation due to their differing churn behaviors.\n\n---"
+  }
+ ],
+ "new customers in their first months welcome call first contact discount": [
+  {
+   "source": "knowledge/harbor_vale/retention_playbook.md",
+   "section": "New customers (tenure 0 to 1 months)",
+   "cite_as": "[retention_playbook.md > New customers (tenure 0 to 1 months)]",
+   "score": 0.6071,
+   "text": "Harbor & Vale Retention Playbook > New customers (tenure 0 to 1 months)\nNew customers churn far more often than established ones. Every new customer flagged by the\nmodel gets a welcome call within 3 days of the flag, plus a first-order follow-up email asking\nwhether delivery and payment went smoothly. Do not offer a discount on the first contact:\nfirst fix the experience, then offer an incentive if the customer is still at risk a week later."
+  },
+  {
+   "source": "knowledge/harbor_vale/past_campaigns.md",
+   "section": "Campaign \"Welcome Back\" (new customers)",
+   "cite_as": "[past_campaigns.md > Campaign \"Welcome Back\" (new customers)]",
+   "score": 0.5458,
+   "text": "Harbor & Vale Retention Campaign Results, Last Two Quarters > Campaign \"Welcome Back\" (new customers)\n- Target: customers in their first two months, flagged by the model.\n- Offer: welcome call plus a free-delivery voucher on the second order.\n- Result: churn in the treated group was 9 percentage points lower than in the holdout.\n- Lesson: the call mattered more than the voucher; customers who only got the voucher by email\n  showed almost no uplift."
+  },
+  {
+   "source": "knowledge/harbor_vale/competitor_offers.md",
+   "section": "CartNest",
+   "cite_as": "[competitor_offers.md > CartNest]",
+   "score": 0.3957,
+   "text": "Competitor Offers Tracker > CartNest\n- Positioning: low prices on electronics, especially phones and laptops.\n- Current offer: 10% off the first phone order for new customers, paid as instant discount.\n- Threat to us: high for customers whose preferred category is Mobile or Mobile Phone."
+  },
+  {
+   "source": "knowledge/harbor_vale/past_campaigns.md",
+   "section": "Campaign \"Sorry We Missed\" (complaints)",
+   "cite_as": "[past_campaigns.md > Campaign \"Sorry We Missed\" (complaints)]",
+   "score": 0.3911,
+   "text": "Harbor & Vale Retention Campaign Results, Last Two Quarters > Campaign \"Sorry We Missed\" (complaints)\n- Target: customers with a complaint in the last month.\n- Offer: coupon of INR 250 sent the same day as the complaint.\n- Result: no improvement over the holdout; churn was slightly higher among customers whose\n  complaint was still open when the coupon arrived.\n- Lesson: this campaign led to the \"resolve before you reward\" rule in the playbook."
+  }
+ ],
+ "cash on delivery customers cashback free delivery voucher": [
+  {
+   "source": "knowledge/harbor_vale/retention_playbook.md",
+   "section": "Cash on delivery (COD) customers",
+   "cite_as": "[retention_playbook.md > Cash on delivery (COD) customers]",
+   "score": 0.6127,
+   "text": "Harbor & Vale Retention Playbook > Cash on delivery (COD) customers\nCOD customers cannot be reached with wallet cashback, because they pay at the door. For them\nuse free-delivery vouchers or a small discount printed on the next invoice. Encourage, but never\nrequire, a switch to UPI or a card."
+  },
+  {
+   "source": "knowledge/harbor_vale/discount_policy.md",
+   "section": "Offers that need extra care",
+   "cite_as": "[discount_policy.md > Offers that need extra care]",
+   "score": 0.483,
+   "text": "Harbor & Vale Discount and Retention Budget Policy > Offers that need extra care\n- Free delivery vouchers are preferred for cash on delivery customers.\n- Do not offer discounts in the Grocery category: its churn is already low and margins are thin.\n- Offers to customers with a risk score below 0.40 are not funded from this budget."
+  },
+  {
+   "source": "knowledge/harbor_vale/past_campaigns.md",
+   "section": "Campaign \"Wallet Boost\" (cashback)",
+   "cite_as": "[past_campaigns.md > Campaign \"Wallet Boost\" (cashback)]",
+   "score": 0.4734,
+   "text": "Harbor & Vale Retention Campaign Results, Last Two Quarters > Campaign \"Wallet Boost\" (cashback)\n- Target: medium-risk customers paying by UPI or E wallet.\n- Offer: INR 150 cashback on the next order above INR 1,000.\n- Result: 3 percentage points lower churn than the holdout; cost per retained customer was high.\n- Lesson: cashback works for wallet users but is wasted on COD customers, who cannot use it."
+  },
+  {
+   "source": "knowledge/harbor_vale/discount_policy.md",
+   "section": "Limits per customer",
+   "cite_as": "[discount_policy.md > Limits per customer]",
+   "score": 0.466,
+   "text": "Harbor & Vale Discount and Retention Budget Policy > Limits per customer\n- Maximum discount per customer per month: INR 500 or 15% of the next order, whichever is lower.\n- Cashback offers are capped at INR 300 per customer per month and are paid to the wallet.\n- A customer may receive at most one retention offer per 30 days."
+  }
+ ],
+ "competitor offers for phone buyers mobile category": [
+  {
+   "source": "knowledge/harbor_vale/competitor_offers.md",
+   "section": "CartNest",
+   "cite_as": "[competitor_offers.md > CartNest]",
+   "score": 0.6654,
+   "text": "Competitor Offers Tracker > CartNest\n- Positioning: low prices on electronics, especially phones and laptops.\n- Current offer: 10% off the first phone order for new customers, paid as instant discount.\n- Threat to us: high for customers whose preferred category is Mobile or Mobile Phone."
+  },
+  {
+   "source": "knowledge/harbor_vale/competitor_offers.md",
+   "section": "BazaarLane",
+   "cite_as": "[competitor_offers.md > BazaarLane]",
+   "score": 0.5774,
+   "text": "Competitor Offers Tracker > BazaarLane\n- Positioning: fashion and lifestyle, strong mobile app.\n- Current offer: free delivery with no minimum order for app users.\n- Threat to us: medium for Fashion customers who log in from a phone."
+  },
+  {
+   "source": "knowledge/harbor_vale/competitor_offers.md",
+   "section": "Overview",
+   "cite_as": "[competitor_offers.md > Overview]",
+   "score": 0.5068,
+   "text": "Competitor Offers Tracker > Overview\n> Synthetic internal document written for this course project. Harbor & Vale, CartNest,\n> BazaarLane and QuickKart are fictional companies; every offer below is invented.\n\nOwner: Category Management. Updated monthly from public advertising."
+  },
+  {
+   "source": "knowledge/harbor_vale/past_campaigns.md",
+   "section": "Campaign \"Mobile Upgrade\" (mobile phone buyers)",
+   "cite_as": "[past_campaigns.md > Campaign \"Mobile Upgrade\" (mobile phone buyers)]",
+   "score": 0.487,
+   "text": "Harbor & Vale Retention Campaign Results, Last Two Quarters > Campaign \"Mobile Upgrade\" (mobile phone buyers)\n- Target: customers whose preferred category is Mobile or Mobile Phone.\n- Offer: extended warranty on the next phone accessory order.\n- Result: 5 percentage points lower churn than the holdout.\n- Lesson: the two category spellings responded differently; analyse them separately."
+  }
+ ],
+ "discount limits per customer and approval levels": [
+  {
+   "source": "knowledge/harbor_vale/discount_policy.md",
+   "section": "Limits per customer",
+   "cite_as": "[discount_policy.md > Limits per customer]",
+   "score": 0.5521,
+   "text": "Harbor & Vale Discount and Retention Budget Policy > Limits per customer\n- Maximum discount per customer per month: INR 500 or 15% of the next order, whichever is lower.\n- Cashback offers are capped at INR 300 per customer per month and are paid to the wallet.\n- A customer may receive at most one retention offer per 30 days."
+  },
+  {
+   "source": "knowledge/harbor_vale/discount_policy.md",
+   "section": "Approval levels",
+   "cite_as": "[discount_policy.md > Approval levels]",
+   "score": 0.546,
+   "text": "Harbor & Vale Discount and Retention Budget Policy > Approval levels\n- Up to INR 300: the retention agent decides.\n- INR 301 to 500: team lead approval in the CRM.\n- Above INR 500: not allowed for retention; escalate to the Head of Customer Experience."
+  },
+  {
+   "source": "knowledge/harbor_vale/discount_policy.md",
+   "section": "Offers that need extra care",
+   "cite_as": "[discount_policy.md > Offers that need extra care]",
+   "score": 0.4091,
+   "text": "Harbor & Vale Discount and Retention Budget Policy > Offers that need extra care\n- Free delivery vouchers are preferred for cash on delivery customers.\n- Do not offer discounts in the Grocery category: its churn is already low and margins are thin.\n- Offers to customers with a risk score below 0.40 are not funded from this budget."
+  },
+  {
+   "source": "knowledge/harbor_vale/discount_policy.md",
+   "section": "Monthly retention budget",
+   "cite_as": "[discount_policy.md > Monthly retention budget]",
+   "score": 0.4002,
+   "text": "Harbor & Vale Discount and Retention Budget Policy > Monthly retention budget\nThe retention budget is INR 1,200,000 per month. It is split as follows:\n- 50% for high-risk customers (risk score 0.70 and above)\n- 30% for medium-risk customers (0.40 to 0.70)\n- 20% reserve for complaint recovery, released by the support lead\n\nUnused budget does not roll over to the next month."
+  }
+ ],
+ "discounts in the Grocery category": [
+  {
+   "source": "knowledge/harbor_vale/discount_policy.md",
+   "section": "Offers that need extra care",
+   "cite_as": "[discount_policy.md > Offers that need extra care]",
+   "score": 0.5453,
+   "text": "Harbor & Vale Discount and Retention Budget Policy > Offers that need extra care\n- Free delivery vouchers are preferred for cash on delivery customers.\n- Do not offer discounts in the Grocery category: its churn is already low and margins are thin.\n- Offers to customers with a risk score below 0.40 are not funded from this budget."
+  },
+  {
+   "source": "knowledge/harbor_vale/competitor_offers.md",
+   "section": "CartNest",
+   "cite_as": "[competitor_offers.md > CartNest]",
+   "score": 0.435,
+   "text": "Competitor Offers Tracker > CartNest\n- Positioning: low prices on electronics, especially phones and laptops.\n- Current offer: 10% off the first phone order for new customers, paid as instant discount.\n- Threat to us: high for customers whose preferred category is Mobile or Mobile Phone."
+  },
+  {
+   "source": "knowledge/harbor_vale/competitor_offers.md",
+   "section": "QuickKart",
+   "cite_as": "[competitor_offers.md > QuickKart]",
+   "score": 0.4225,
+   "text": "Competitor Offers Tracker > QuickKart\n- Positioning: fast grocery delivery within 30 minutes in tier 1 cities.\n- Current offer: cash on delivery with no extra fee.\n- Threat to us: low, because our Grocery customers churn least."
+  },
+  {
+   "source": "knowledge/harbor_vale/discount_policy.md",
+   "section": "Limits per customer",
+   "cite_as": "[discount_policy.md > Limits per customer]",
+   "score": 0.4012,
+   "text": "Harbor & Vale Discount and Retention Budget Policy > Limits per customer\n- Maximum discount per customer per month: INR 500 or 15% of the next order, whichever is lower.\n- Cashback offers are capped at INR 300 per customer per month and are paid to the wallet.\n- A customer may receive at most one retention offer per 30 days."
+  }
+ ],
+ "customer complained coupon resolve before you reward": [
+  {
+   "source": "knowledge/harbor_vale/retention_playbook.md",
+   "section": "Customers who complained",
+   "cite_as": "[retention_playbook.md > Customers who complained]",
+   "score": 0.5854,
+   "text": "Harbor & Vale Retention Playbook > Customers who complained\nA complaint in the last month is the strongest single warning sign we track. The rule is\n\"resolve before you reward\": a support agent closes the complaint first, and only then may the\nretention team offer a coupon. A coupon sent while the complaint is still open is treated as an\napology for nothing and usually increases churn."
+  },
+  {
+   "source": "knowledge/harbor_vale/past_campaigns.md",
+   "section": "Campaign \"Sorry We Missed\" (complaints)",
+   "cite_as": "[past_campaigns.md > Campaign \"Sorry We Missed\" (complaints)]",
+   "score": 0.551,
+   "text": "Harbor & Vale Retention Campaign Results, Last Two Quarters > Campaign \"Sorry We Missed\" (complaints)\n- Target: customers with a complaint in the last month.\n- Offer: coupon of INR 250 sent the same day as the complaint.\n- Result: no improvement over the holdout; churn was slightly higher among customers whose\n  complaint was still open when the coupon arrived.\n- Lesson: this campaign led to the \"resolve before you reward\" rule in the playbook."
+  },
+  {
+   "source": "knowledge/harbor_vale/retention_playbook.md",
+   "section": "Cash on delivery (COD) customers",
+   "cite_as": "[retention_playbook.md > Cash on delivery (COD) customers]",
+   "score": 0.4004,
+   "text": "Harbor & Vale Retention Playbook > Cash on delivery (COD) customers\nCOD customers cannot be reached with wallet cashback, because they pay at the door. For them\nuse free-delivery vouchers or a small discount printed on the next invoice. Encourage, but never\nrequire, a switch to UPI or a card."
+  },
+  {
+   "source": "knowledge/harbor_vale/discount_policy.md",
+   "section": "Limits per customer",
+   "cite_as": "[discount_policy.md > Limits per customer]",
+   "score": 0.3653,
+   "text": "Harbor & Vale Discount and Retention Budget Policy > Limits per customer\n- Maximum discount per customer per month: INR 500 or 15% of the next order, whichever is lower.\n- Cashback offers are capped at INR 300 per customer per month and are paid to the wallet.\n- A customer may receive at most one retention offer per 30 days."
+  }
+ ],
+ "who we contact first and which channel for medium risk customers": [
+  {
+   "source": "knowledge/harbor_vale/retention_playbook.md",
+   "section": "Who we contact first",
+   "cite_as": "[retention_playbook.md > Who we contact first]",
+   "score": 0.4875,
+   "text": "Harbor & Vale Retention Playbook > Who we contact first\nRetention outreach is ranked by the churn model's risk score. Contact customers in this order:\n1. Customers with a risk score of 0.70 or higher, newest first.\n2. Customers who filed a complaint in the last month, whatever their score.\n3. Customers with a risk score between 0.40 and 0.70.\nCustomers below 0.40 receive no individual outreach; they stay in the regular newsletter."
+  },
+  {
+   "source": "knowledge/harbor_vale/retention_playbook.md",
+   "section": "Channels",
+   "cite_as": "[retention_playbook.md > Channels]",
+   "score": 0.4794,
+   "text": "Harbor & Vale Retention Playbook > Channels\n- High risk (0.70 and above): phone call by a retention agent.\n- Medium risk (0.40 to 0.70): app push notification, then email after 2 days without response.\n- Never contact the same customer more than twice in 14 days."
+  },
+  {
+   "source": "knowledge/harbor_vale/retention_playbook.md",
+   "section": "New customers (tenure 0 to 1 months)",
+   "cite_as": "[retention_playbook.md > New customers (tenure 0 to 1 months)]",
+   "score": 0.4138,
+   "text": "Harbor & Vale Retention Playbook > New customers (tenure 0 to 1 months)\nNew customers churn far more often than established ones. Every new customer flagged by the\nmodel gets a welcome call within 3 days of the flag, plus a first-order follow-up email asking\nwhether delivery and payment went smoothly. Do not offer a discount on the first contact:\nfirst fix the experience, then offer an incentive if the customer is still at risk a week later."
+  },
+  {
+   "source": "knowledge/harbor_vale/discount_policy.md",
+   "section": "Monthly retention budget",
+   "cite_as": "[discount_policy.md > Monthly retention budget]",
+   "score": 0.3792,
+   "text": "Harbor & Vale Discount and Retention Budget Policy > Monthly retention budget\nThe retention budget is INR 1,200,000 per month. It is split as follows:\n- 50% for high-risk customers (risk score 0.70 and above)\n- 30% for medium-risk customers (0.40 to 0.70)\n- 20% reserve for complaint recovery, released by the support lead\n\nUnused budget does not roll over to the next month."
+  }
+ ],
+ "who we contact first and which channel for low risk customers": [
+  {
+   "source": "knowledge/harbor_vale/retention_playbook.md",
+   "section": "Who we contact first",
+   "cite_as": "[retention_playbook.md > Who we contact first]",
+   "score": 0.5211,
+   "text": "Harbor & Vale Retention Playbook > Who we contact first\nRetention outreach is ranked by the churn model's risk score. Contact customers in this order:\n1. Customers with a risk score of 0.70 or higher, newest first.\n2. Customers who filed a complaint in the last month, whatever their score.\n3. Customers with a risk score between 0.40 and 0.70.\nCustomers below 0.40 receive no individual outreach; they stay in the regular newsletter."
+  },
+  {
+   "source": "knowledge/harbor_vale/retention_playbook.md",
+   "section": "Channels",
+   "cite_as": "[retention_playbook.md > Channels]",
+   "score": 0.4919,
+   "text": "Harbor & Vale Retention Playbook > Channels\n- High risk (0.70 and above): phone call by a retention agent.\n- Medium risk (0.40 to 0.70): app push notification, then email after 2 days without response.\n- Never contact the same customer more than twice in 14 days."
+  },
+  {
+   "source": "knowledge/harbor_vale/retention_playbook.md",
+   "section": "New customers (tenure 0 to 1 months)",
+   "cite_as": "[retention_playbook.md > New customers (tenure 0 to 1 months)]",
+   "score": 0.4796,
+   "text": "Harbor & Vale Retention Playbook > New customers (tenure 0 to 1 months)\nNew customers churn far more often than established ones. Every new customer flagged by the\nmodel gets a welcome call within 3 days of the flag, plus a first-order follow-up email asking\nwhether delivery and payment went smoothly. Do not offer a discount on the first contact:\nfirst fix the experience, then offer an incentive if the customer is still at risk a week later."
+  },
+  {
+   "source": "knowledge/harbor_vale/discount_policy.md",
+   "section": "Offers that need extra care",
+   "cite_as": "[discount_policy.md > Offers that need extra care]",
+   "score": 0.3998,
+   "text": "Harbor & Vale Discount and Retention Budget Policy > Offers that need extra care\n- Free delivery vouchers are preferred for cash on delivery customers.\n- Do not offer discounts in the Grocery category: its churn is already low and margins are thin.\n- Offers to customers with a risk score below 0.40 are not funded from this budget."
+  }
+ ]
+}

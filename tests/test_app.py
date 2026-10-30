@@ -21,7 +21,8 @@ def client():
 @pytest.mark.parametrize("path, text", [
     ("/", "refuses to run on bad data"), ("/architecture", "The RAG pipeline"), ("/analyst", "The dataset contract"),
     ("/scientist", "Two models, compared"),
-    ("/briefings", "Retention briefings"), ("/runs", "Break-it scenarios"), ("/checker", "Contract checker"),
+    ("/briefings", "Agent-written briefings"), ("/briefing", "Type any CustomerID"), ("/code", "The code behind"),
+    ("/runs", "Break-it scenarios"), ("/checker", "Contract checker"),
     ("/analyst/eda", "exploratory analysis"),
 ])
 def test_pages_render(client, path, text):
@@ -107,3 +108,38 @@ def test_app_does_not_load_crewai():
     code = "import sys, churn_pipeline.web.app; print(any(m.startswith('crewai') for m in sys.modules))"
     out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, check=True)
     assert out.stdout.strip() == "False"
+
+
+def test_instant_briefing_for_any_customer(client):
+    html = client.get("/briefing?id=51809").get_data(as_text=True)
+    assert "0.95" in html and "high churn risk" in html
+    # The situations the code decided, each with the section the RAG found.
+    assert "Complained in the last month" in html
+    assert "[retention_playbook.md &gt; Customers who complained]" in html
+    assert "[retention_playbook.md &gt; Cash on delivery (COD) customers]" in html
+    assert "agent-written briefing for customer 51809" in html
+
+
+def test_instant_briefing_for_a_customer_without_an_agent_briefing(client):
+    html = client.get("/briefing?id=50001").get_data(as_text=True)
+    assert "churn risk" in html and "Source:" in html
+
+
+def test_instant_briefing_explains_bad_input(client):
+    assert "is not in the data" in client.get("/briefing?id=1").get_data(as_text=True)
+    assert "is not a CustomerID" in client.get("/briefing?id=abc").get_data(as_text=True)
+
+
+def test_instant_briefing_refuses_without_an_approved_model(tmp_path):
+    import shutil
+    shutil.copytree(ROOT / "artifacts" / "latest", tmp_path / "latest")
+    (tmp_path / "latest" / "crew2" / "model_approved.json").unlink()
+    app = create_app(tmp_path, ROOT / "contracts" / "dataset_contract.lock.json")
+    html = app.test_client().get("/briefing?id=51809").get_data(as_text=True)
+    assert "No briefing" in html and "0.95" not in html
+
+
+def test_code_page_shows_the_gates_and_the_validator(client):
+    html = client.get("/code").get_data(as_text=True)
+    assert "def run_handoff_gates" in html and "def validate_against_contract" in html
+    assert "possible unit change" in html

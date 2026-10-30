@@ -26,8 +26,31 @@ CODE = ["__init__.py", "scenarios.py", "run_history.py", "contract", "web"]
 CREWS = [("analyst_crew", "Crew 1 · Data Analyst"), ("scientist_crew", "Crew 2 · Data Scientist"),
          ("briefing_crew", "Crew 3 · Retention Briefing")]
 AGENTS_JSON = ROOT / "artifacts" / "latest" / "agents.json"
+SOURCE_JSON = ROOT / "artifacts" / "latest" / "source_files.json"
+# Shown on the app's Code page: (title, path, why it matters).
+SOURCE_FILES = [
+    ("Flow and router", "src/churn_pipeline/main.py",
+     "Crew 1, the handoff gates, a router that stops before Crew 2, the quality gate and the exit code."),
+    ("Gates", "src/churn_pipeline/gates.py",
+     "The five gates in plain Python, including the comparison with the locked contract."),
+    ("Contract validator", "src/churn_pipeline/contract/validator.py",
+     "The ten checks, among them the mean drift that reports a possible unit change."),
+    ("Duplicate detection", "src/churn_pipeline/contract/duplicates.py",
+     "Rows repeated under a new id, exactly or with one value changed."),
+    ("Training and evaluation", "src/churn_pipeline/tools/scientist_tools.py",
+     "Features from the contract, the grouped split and the model comparison."),
+    ("RAG", "src/churn_pipeline/rag.py",
+     "Chunking by section, embeddings with a cache, cosine search with citations."),
+    ("Briefing situations", "src/churn_pipeline/tools/briefing_tools.py",
+     "Code decides which situations apply and what the RAG searches for."),
+    ("Briefing guardrail", "src/churn_pipeline/crews/briefing_crew/briefing_crew.py",
+     "A crew that refuses to start without an approved model, and checks every citation."),
+    ("An agent's prompts", "src/churn_pipeline/crews/analyst_crew/config/tasks.yaml",
+     "The Data Analyst crew's task prompts."),
+]
 ARTIFACTS = [
-    "latest/agents.json", "latest/validation_report.md", "latest/pipeline.log",
+    "latest/agents.json", "latest/source_files.json", "latest/instant",
+    "latest/validation_report.md", "latest/pipeline.log",
     "latest/crew1/clean_data.csv", "latest/crew1/dataset_contract.json", "latest/crew1/quality_report.json",
     "latest/crew1/quality_summary.md", "latest/crew1/insights.md", "latest/crew1/eda_report.html",
     "latest/crew2/evaluation_metrics.json", "latest/crew2/feature_spec.json",
@@ -88,6 +111,14 @@ def agents_json() -> str:
     return json.dumps(crews, indent=2, ensure_ascii=False) + "\n"
 
 
+def source_json() -> str:
+    files = [{"title": title, "path": path, "why": why,
+              "language": "yaml" if path.endswith(".yaml") else "python",
+              "content": (ROOT / path).read_text(encoding="utf-8")}
+             for title, path, why in SOURCE_FILES]
+    return json.dumps(files, indent=1, ensure_ascii=False) + "\n"
+
+
 def _copy(src: Path, dst: Path) -> None:
     if src.is_dir():
         for child in sorted(src.iterdir()):
@@ -121,10 +152,11 @@ def main(argv: list[str]) -> int:
     if "--check" in argv:
         import tempfile
 
-        if not AGENTS_JSON.is_file() or AGENTS_JSON.read_text(encoding="utf-8") != agents_json():
-            print("artifacts/latest/agents.json is out of date")
-            print("rebuild with: uv run python scripts/build_web_bundle.py")
-            return 1
+        for path, content in ((AGENTS_JSON, agents_json), (SOURCE_JSON, source_json)):
+            if not path.is_file() or path.read_text(encoding="utf-8") != content():
+                print(f"{path.relative_to(ROOT)} is out of date")
+                print("rebuild with: uv run python scripts/build_web_bundle.py")
+                return 1
 
         with tempfile.TemporaryDirectory() as tmp:
             build(Path(tmp) / "web")
@@ -137,6 +169,7 @@ def main(argv: list[str]) -> int:
         print("deploy/web is up to date")
         return 0
     AGENTS_JSON.write_text(agents_json(), encoding="utf-8")
+    SOURCE_JSON.write_text(source_json(), encoding="utf-8")
     build(BUNDLE)
     files = snapshot(BUNDLE)
     print(f"deploy/web built: {len(files)} files, {sum(map(len, files.values())) / 1e6:.1f} MB")

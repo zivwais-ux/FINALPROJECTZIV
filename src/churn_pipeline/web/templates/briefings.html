@@ -2,7 +2,8 @@
 {% block title %}Briefings{% endblock %}
 {% block content %}
 <div class="eyebrow">Crew 3 · 1 agent + RAG</div>
-<h1>Retention briefings</h1>
+<h1>Agent-written briefings</h1>
+<p class="small"><a href="{{ url_for('instant_briefing') }}">← Instant briefing for any CustomerID</a></p>
 <p class="lead">One page a retention agent reads before calling a customer: the churn model's score, and what Harbor &amp; Vale's own playbook and discount policy say to do,
 with every recommendation citing its source document.</p>
 

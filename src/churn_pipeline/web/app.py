@@ -16,7 +16,7 @@ from typing import Any
 
 import markdown
 import pandas as pd
-from flask import Flask, abort, render_template, request, send_file
+from flask import Flask, abort, redirect, render_template, request, send_file, url_for
 from markupsafe import Markup
 
 from churn_pipeline.contract.models import load_contract
@@ -35,15 +35,19 @@ REQUIREMENTS = [
     {"need": "RAG over the company's internal documents", "status": "done",
      "where": "Playbook, discount policy, past campaigns, competitor offers and a postmortem, searched by embeddings",
      "page": "architecture"},
-    {"need": "A one-page briefing an employee gets for a name they type", "status": "partial",
-     "where": "Retention briefings per CustomerID from the churn model and the RAG; generated offline with `uv run brief`",
-     "page": "briefings"},
+    {"need": "A one-page briefing an employee gets for a name they type", "status": "done",
+     "where": "Type any CustomerID for an instant briefing: the approved model's score plus the playbook rules the RAG "
+              "retrieves; agent-written briefings for selected customers",
+     "page": "instant_briefing"},
     {"need": "Web search for the latest news", "status": "skipped",
      "where": "Left out by decision; the briefing uses internal documents only", "page": None},
     {"need": "Bonus: a predictive ML model that scores probability", "status": "done",
      "where": "HistGradientBoosting vs RandomForest, test PR-AUC 0.864, approved by a quality gate", "page": "scientist"},
     {"need": "System design: the RAG pipeline and the tool-calling flow", "status": "done",
      "where": "Architecture diagram, every agent's role, tool and prompt", "page": "architecture"},
+    {"need": "Prompts and code behind the decisions", "status": "done",
+     "where": "Every agent's prompt on the Architecture page; the gates, validator, flow and guardrail on the Code page",
+     "page": "code"},
     {"need": "Data schemas", "status": "done",
      "where": "A dataset contract enforced in code at the handoff between the crews", "page": "analyst"},
     {"need": "A working, deployed application", "status": "done",
@@ -88,6 +92,35 @@ def briefing_meta(text: str) -> dict[str, Any]:
     return {"score": float(score[1]) if score else None, "band": band[1].lower() if band else None}
 
 
+def section_body(hit: dict[str, Any]) -> str:
+    """A RAG hit's text without its "document > section" first line."""
+    return hit["text"].split("\n", 1)[1] if "\n" in hit["text"] else hit["text"]
+
+
+def instant_briefing_view(customer_id: int, data: dict[str, Any], hits: dict[str, list]) -> dict[str, Any] | None:
+    """Everything the instant briefing shows for one customer, from the precomputed tables.
+
+    Each situation gets the top two sections the RAG returned for its query; a
+    section already shown for an earlier situation is not repeated.
+    """
+    row = data["customers"].get(str(customer_id))
+    if row is None:
+        return None
+    score, band, out_of_sample, facts, refs = row
+    shown: set[str] = set()
+    situations = []
+    for ref in refs:
+        s = data["situations"][ref]
+        sections = []
+        for hit in hits.get(s["query"], [])[:2]:
+            if hit["cite_as"] not in shown:
+                shown.add(hit["cite_as"])
+                sections.append({"cite_as": hit["cite_as"], "body": render_md(section_body(hit))})
+        situations.append({"situation": s["situation"], "query": s["query"], "sections": sections})
+    return {"id": customer_id, "score": score, "band": band, "out_of_sample": bool(out_of_sample),
+            "facts": dict(zip(data["key_facts"], facts)), "situations": situations}
+
+
 def check_dataframe(df: pd.DataFrame, file_path: Path, lock_path: Path) -> dict[str, Any]:
     """Validate a handoff file against the locked contract, as the pipeline's gates would."""
     contract = load_contract(lock_path)
@@ -107,14 +140,22 @@ def create_app(artifacts_dir: str | Path | None = None, lock_path: str | Path | 
     app = Flask(__name__)
     app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_MB * 1024 * 1024
 
+    cache: dict[str, Any] = {}
+
+    def instant_data() -> tuple[dict | None, dict | None]:
+        if "instant" not in cache:
+            cache["instant"] = (_json(latest / "instant" / "customers.json"),
+                                _json(latest / "instant" / "rag_hits.json"))
+        return cache["instant"]
+
     def briefing_ids() -> list[int]:
         return sorted(int(f.stem.split("_")[1]) for f in (latest / "briefings").glob("customer_*.md"))
 
     @app.context_processor
     def shared():
         return {"nav": [("index", "Overview"), ("architecture", "Architecture"), ("analyst", "Data Analyst"),
-                        ("scientist", "Data Scientist"), ("briefings", "Briefings"), ("runs", "Runs"),
-                        ("checker", "Contract Checker")],
+                        ("scientist", "Data Scientist"), ("instant_briefing", "Briefing"), ("runs", "Runs"),
+                        ("checker", "Contract Checker"), ("code", "Code")],
                 "repo_url": REPO_URL}
 
     @app.route("/")
@@ -168,6 +209,32 @@ def create_app(artifacts_dir: str | Path | None = None, lock_path: str | Path | 
         cards = [{"id": i, **briefing_meta(_read(latest / "briefings" / f"customer_{i}.md") or "")} for i in ids]
         text = _read(latest / "briefings" / f"customer_{customer_id}.md") if customer_id else None
         return render_template("briefings.html", cards=cards, current=customer_id, briefing=render_md(text))
+
+    @app.route("/briefing")
+    def instant_briefing():
+        data, hits = instant_data()
+        report = parse_report(_read(latest / "validation_report.md"))
+        approved = (crew2 / "model_approved.json").is_file() and bool(report) and report["verdict"] == "PASSED"
+        raw = request.args.get("id", "").strip()
+        view, error = None, None
+        if raw:
+            if not raw.isdigit():
+                error = f"“{raw}” is not a CustomerID: type a number such as 51809."
+            elif not data or not hits or not approved:
+                error = ("No briefing: the latest pipeline run did not approve a model, and the playbook says "
+                         "never to act on a score from a run that did not pass.")
+            else:
+                view = instant_briefing_view(int(raw), data, hits)
+                if view is None:
+                    first, last = min(map(int, data["customers"])), max(map(int, data["customers"]))
+                    error = f"Customer {raw} is not in the data. CustomerIDs run from {first} to {last}."
+        return render_template("instant.html", view=view, error=error, query=raw, data=data,
+                               written=briefing_ids(), examples=[51809, 50230, 50036])
+
+    @app.route("/code")
+    def code():
+        files = _json(latest / "source_files.json") or []
+        return render_template("code.html", files=files)
 
     @app.route("/runs")
     def runs():

@@ -6,6 +6,7 @@ score anything unless the latest pipeline run passed every gate.
 """
 from __future__ import annotations
 
+import itertools
 import json
 from pathlib import Path
 from typing import Any
@@ -74,6 +75,56 @@ def situations(band: str, attributes: dict[str, Any]) -> list[dict[str, str]]:
         out.append({"situation": "an offer may be made",
                     "query": "discount limits per customer and approval levels"})
     return out
+
+
+def all_situation_queries() -> list[str]:
+    """Every search query situations() can produce, for every band and attribute that matters."""
+    queries: dict[str, None] = {}
+    for band, tenure, complain, payment, category in itertools.product(
+            ("high", "medium", "low"), (0, 5), (0, 1), ("COD", "UPI"), ("Mobile", "Grocery", "Fashion")):
+        for s in situations(band, {"Tenure": tenure, "Complain": complain,
+                                   "PreferredPaymentMode": payment, "PreferedOrderCat": category}):
+            queries[s["query"]] = None
+    return list(queries)
+
+
+def _plain(v: Any) -> Any:
+    """A JSON-friendly value: NaN becomes None, floats are rounded to 2 places."""
+    if pd.isna(v):
+        return None
+    v = v.item() if hasattr(v, "item") else v
+    return round(v, 2) if isinstance(v, float) else v
+
+
+def all_customer_profiles(crew1_dir: str | Path = CREW1, crew2_dir: str | Path = CREW2,
+                          report_path: str | Path = REPORT) -> dict[str, Any]:
+    """Score every customer at once, with the same rules as customer_risk_profile.
+
+    The web app shows an instant briefing for any CustomerID from this table,
+    so it needs neither scikit-learn nor the model file.
+    """
+    require_approved_model(crew2_dir, report_path)
+    crew2_dir = Path(crew2_dir)
+    bundle = joblib.load(crew2_dir / "model.joblib")
+    spec = json.loads((crew2_dir / "feature_spec.json").read_text(encoding="utf-8"))
+    metrics = json.loads((crew2_dir / "evaluation_metrics.json").read_text(encoding="utf-8"))
+    features = pd.read_csv(crew2_dir / "features.csv")
+    clean = pd.read_csv(Path(crew1_dir) / "clean_data.csv").set_index(spec["id_columns"][0])
+    scores = bundle["model"].predict_proba(features[bundle["feature_columns"]])[:, 1]
+    test = set(split_indices(features, spec)[1])
+
+    customers = {}
+    for i, (customer_id, score) in enumerate(zip(features[spec["id_columns"][0]], scores)):
+        attributes = {c: _plain(v) for c, v in clean.loc[customer_id].items() if c != spec["target"]}
+        band = risk_band(float(score))
+        customers[str(int(customer_id))] = {
+            "score": round(float(score), 2), "band": band, "out_of_sample": i in test,
+            "facts": [attributes.get(c) for c in KEY_FACTS],
+            "situations": [s["situation"] for s in situations(band, attributes)],
+            "queries": [s["query"] for s in situations(band, attributes)],
+        }
+    return {"model": metrics["selected_model"], "key_facts": KEY_FACTS,
+            "band_rule": {"high": HIGH_RISK, "medium": MEDIUM_RISK}, "customers": customers}
 
 
 def customer_risk_profile(customer_id: int, crew1_dir: str | Path = CREW1, crew2_dir: str | Path = CREW2,

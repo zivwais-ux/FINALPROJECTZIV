@@ -12,7 +12,7 @@
   <div class="hero-actions">
     <a class="btn btn-primary" href="{{ url_for('checker') }}">Try to break the pipeline →</a>
     <a class="btn btn-ghost" href="{{ url_for('architecture') }}">See the architecture</a>
-    {% if briefings %}<a class="btn btn-ghost" href="{{ url_for('briefings') }}">Read a briefing</a>{% endif %}
+    <a class="btn btn-ghost" href="{{ url_for('instant_briefing', id=51809) }}">Get a customer briefing</a>
   </div>
 </section>
 
@@ -27,15 +27,16 @@
 </div>
 {% endif %}
 
-<h2>A three-minute tour</h2>
+<h2>A five-minute tour</h2>
 <p class="sub">Where to look, in order.</p>
 <div class="grid g3">
   <a class="card" style="text-decoration:none;color:inherit" href="{{ url_for('architecture') }}"><div class="eyebrow">1 · Design</div><h3>Architecture</h3><p class="small">The flow, the 9 agents with their tools and prompts, and how the RAG works.</p></a>
   <a class="card" style="text-decoration:none;color:inherit" href="{{ url_for('analyst') }}"><div class="eyebrow">2 · Crew 1</div><h3>Data Analyst</h3><p class="small">Data quality, churn by segment, and the contract handed to Crew 2.</p></a>
   <a class="card" style="text-decoration:none;color:inherit" href="{{ url_for('scientist') }}"><div class="eyebrow">3 · Crew 2</div><h3>Data Scientist</h3><p class="small">Two models compared honestly, the quality gate and the model card.</p></a>
-  <a class="card" style="text-decoration:none;color:inherit" href="{{ url_for('briefings') }}"><div class="eyebrow">4 · Output</div><h3>Retention briefings</h3><p class="small">One page per customer: model score plus the company's playbook, with sources.</p></a>
+  <a class="card" style="text-decoration:none;color:inherit" href="{{ url_for('instant_briefing') }}"><div class="eyebrow">4 · Output</div><h3>Customer briefing</h3><p class="small">Type any CustomerID: the model's score plus the company's playbook rules the RAG retrieves, with sources.</p></a>
   <a class="card" style="text-decoration:none;color:inherit" href="{{ url_for('checker') }}"><div class="eyebrow">5 · Try it</div><h3>Contract checker</h3><p class="small">Upload a CSV or break the data in one click and watch the gates stop it.</p></a>
   <a class="card" style="text-decoration:none;color:inherit" href="{{ url_for('runs') }}"><div class="eyebrow">6 · Evidence</div><h3>Runs</h3><p class="small">Every run and break-it scenario, stored in Supabase, with reports and logs.</p></a>
+  <a class="card" style="text-decoration:none;color:inherit" href="{{ url_for('code') }}"><div class="eyebrow">7 · Code</div><h3>Code</h3><p class="small">The flow, the gates, the validator, the RAG and the guardrail, highlighted.</p></a>
 </div>
 
 <h2>How the flow works</h2>

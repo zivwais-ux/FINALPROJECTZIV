@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Code{% endblock %}
+{% block content %}
+<div class="eyebrow">Under the hood</div>
+<h1>The code behind the decisions</h1>
+<p class="lead">The parts of the source that enforce the rules: the flow and its router, the gates, the validator, the RAG, the briefing's guardrail and an agent's prompt.
+The whole project is on <a href="{{ repo_url }}">GitHub</a>.</p>
+{% if files %}
+<div class="chips" role="tablist">
+  {% for f in files %}<button class="chip{{ ' on' if loop.first else '' }}" data-tab="f{{ loop.index }}" role="tab">{{ f.title }}</button>{% endfor %}
+</div>
+{% for f in files %}
+<section class="card code-file" id="f{{ loop.index }}"{% if not loop.first %} hidden{% endif %}>
+  <div class="ai-head"><div><h3 style="margin:0">{{ f.title }}</h3><div class="small">{{ f.why }}</div></div>
+    <a class="small" href="{{ repo_url }}/blob/main/{{ f.path }}"><code>{{ f.path }}</code> on GitHub →</a></div>
+  <pre class="code"><code class="language-{{ f.language }}">{{ f.content }}</code></pre>
+</section>
+{% endfor %}
+{% else %}
+<div class="card">The source files are exported when the web bundle is built (<code>scripts/build_web_bundle.py</code>).</div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" media="(prefers-color-scheme: light)">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+<script>
+document.querySelectorAll('[data-tab]').forEach(tab => tab.addEventListener('click', () => {
+  document.querySelectorAll('[data-tab]').forEach(t => t.classList.toggle('on', t === tab));
+  document.querySelectorAll('.code-file').forEach(s => { s.hidden = s.id !== tab.dataset.tab; });
+}));
+if (window.hljs) hljs.highlightAll();
+</script>
+{% endblock %}
