@@ -90,8 +90,11 @@
 
 - **שלב 7 ✅ נסגר (אפליקציית Flask):** `uv run web`, עם 6 דפים, בלי LLM ובלי crewai. הפרטים ב-`docs/app.md`. **90 טסטים עוברים.**
 
-## הצעד הבא בדיוק: שלב 8, פריסה ל-Vercel ול-Supabase, ו-README סופי
-לשאול את המשתמש לפני שמתחילים. צריך ממנו את פרויקט ה-Vercel ואת פרויקט ה-Supabase, או אישור ליצור אותם.
+- **שלב 8 ✅ (פריסה):**
+  - **Supabase:** פרויקט `churn-pipeline`, טבלה `pipeline_runs` עם 7 ריצות.
+  - **Vercel:** פרויקט `churn-pipeline`, מ-`deploy/web`. הכתובת: https://churn-pipeline-zivwais-uxs-projects.vercel.app
+  - **פרטים:** `docs/deploy.md`. **97 טסטים עוברים.**
+- **פתוח:** האם להפוך את האתר לציבורי. כרגע מופעלת הגנת Vercel Authentication.
 
 ## השלבים שאחרי (לעבור צעד צעד, ולשאול לפני כל אחד)
 - **שלב 8:** פריסה ל-Vercel ול-Supabase, ו-README סופי.
