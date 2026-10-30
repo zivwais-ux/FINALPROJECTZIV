@@ -1,11 +1,12 @@
-2026-10-30 14:43:33 INFO break_it scenario rename_column: Tenure renamed to TenureMonths upstream
-2026-10-30 14:43:33 INFO --from-gate: skipping Crew 1, using /home/user/FINALPROJECTZIV/artifacts/broken/rename_column/crew1
-2026-10-30 14:43:34 INFO gate crew1_artifacts    PASS  all 8 Crew 1 artifacts present
-2026-10-30 14:43:34 INFO gate contract_vs_data   FAIL  clean_data.csv breaks dataset_contract.json (3 violations)
-2026-10-30 14:43:34 INFO     - column 'Tenure' is in the contract but not in the data; possible rename to one of ['TenureMonths']
-2026-10-30 14:43:34 INFO     - column 'TenureMonths' is in the data but not in the contract
-2026-10-30 14:43:34 INFO     - clean_data.csv has changed since the contract was written
-2026-10-30 14:43:34 INFO gate locked_contract    PASS  dataset_contract.json matches the locked contract
-2026-10-30 14:43:34 INFO gate required_features  FAIL  1 of 18 required features unavailable
-2026-10-30 14:43:34 INFO     - required feature 'Tenure' is not in clean_data.csv
-2026-10-30 14:43:34 INFO FAILED: Crew 2 did not run: fix the data or Crew 1, or update the locked contract on purpose, then run again (report: /home/user/FINALPROJECTZIV/artifacts/broken/rename_column/validation_report.md)
+2026-10-30 17:37:14 INFO break_it scenario rename_column: Tenure renamed to TenureMonths upstream
+2026-10-30 17:37:14 INFO --from-gate: skipping Crew 1, using /home/user/FINALPROJECTZIV/artifacts/broken/rename_column/crew1
+2026-10-30 17:37:14 INFO gate crew1_artifacts    PASS  all 8 Crew 1 artifacts present
+2026-10-30 17:37:14 INFO gate contract_vs_data   FAIL  clean_data.csv breaks dataset_contract.json (3 violations)
+2026-10-30 17:37:14 INFO     - column 'Tenure' is in the contract but not in the data; possible rename to one of ['TenureMonths']
+2026-10-30 17:37:14 INFO     - column 'TenureMonths' is in the data but not in the contract
+2026-10-30 17:37:14 INFO     - clean_data.csv has changed since the contract was written
+2026-10-30 17:37:14 INFO gate locked_contract    PASS  dataset_contract.json matches the locked contract
+2026-10-30 17:37:14 INFO gate required_features  FAIL  1 of 18 required features unavailable
+2026-10-30 17:37:14 INFO     - required feature 'Tenure' is not in clean_data.csv
+2026-10-30 17:37:14 INFO FAILED: Crew 2 did not run: fix the data or Crew 1, or update the locked contract on purpose, then run again (report: /home/user/FINALPROJECTZIV/artifacts/broken/rename_column/validation_report.md)
+2026-10-30 17:37:14 INFO run history skipped: SUPABASE_URL or SUPABASE_SECRET_KEY not set

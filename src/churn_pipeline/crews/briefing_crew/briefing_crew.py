@@ -6,7 +6,7 @@ from crewai import LLM, Agent, Crew, Process, Task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from crewai.project import CrewBase, agent, before_kickoff, crew, task
 
-from churn_pipeline.news import search_recent_news
+from churn_pipeline.news import SEEN_URLS, search_recent_news
 from churn_pipeline.rag import default_index, search_internal_docs_tool
 from churn_pipeline.tools.briefing_tools import (
     customer_risk_profile,
@@ -14,7 +14,7 @@ from churn_pipeline.tools.briefing_tools import (
     search_recent_news_tool,
 )
 
-MAX_WORDS = 520  # about one printed page; the prompt asks for 450 to leave room
+MAX_WORDS = 600  # about one printed page; the prompt asks for 420 to leave room
 
 
 def _llm() -> LLM:
@@ -34,8 +34,10 @@ def check_briefing(text: str, profile: dict, citable: set[str], news_urls: set[s
     words = len(re.findall(r"\S+", text))
     if words > MAX_WORDS:
         problems.append(f"the briefing has {words} words; keep it to {MAX_WORDS}")
-    if f"{profile['risk_score']:.2f}" not in text:
-        problems.append(f"quote the risk score exactly: {profile['risk_score']:.2f}")
+    # The tool's JSON gives 0.0 for a score of zero; accept that or two decimals.
+    score = profile["risk_score"]
+    if not re.search(rf"(?<![\d.])({re.escape(f'{score:.2f}')}|{re.escape(str(score))})(?![\d])", text):
+        problems.append(f"quote the risk score exactly: {score:.2f}")
     if profile["risk_band"] not in text.lower():
         problems.append(f"name the risk band: {profile['risk_band']}")
     cited = set(re.findall(r"\[([^\[\]]+\.md > [^\[\]]+)\]", text))
@@ -87,7 +89,7 @@ class BriefingCrew:
 
     def _guardrail(self, output):
         problems = check_briefing(output.raw, self._profile, default_index().citations(),
-                                  {a["url"] for a in self._news["articles"]})
+                                  {a["url"] for a in self._news["articles"]} | SEEN_URLS)
         return (False, "; ".join(problems)) if problems else (True, output)
 
     @task

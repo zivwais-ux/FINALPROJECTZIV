@@ -126,7 +126,7 @@
       "name": "PreferredPaymentMode",
       "role": "feature",
       "dtype": "category",
-      "description": "The payment method preferred by the customer, including options like CC, COD, Cash on Delivery, Credit Card, Debit Card, E wallet, and UPI.",
+      "description": "The payment mode preferred by the customer, including options like CC, COD, Cash on Delivery, Credit Card, Debit Card, E wallet, and UPI.",
       "unit": null,
       "unit_source": null,
       "expected_null_count": 0,
@@ -165,7 +165,7 @@
       "name": "HourSpendOnApp",
       "role": "feature",
       "dtype": "int",
-      "description": "Average number of hours the customer spends on the app.",
+      "description": "Number of hours the customer spends on the app daily.",
       "unit": "hours",
       "unit_source": "data_dict",
       "expected_null_count": 255,
@@ -306,7 +306,7 @@
       "name": "CouponUsed",
       "role": "feature",
       "dtype": "int",
-      "description": "Number of coupons used by the customer in the last month.",
+      "description": "Count of coupons used by the customer in the last month.",
       "unit": "count (last month)",
       "unit_source": "data_dict",
       "expected_null_count": 256,
@@ -375,15 +375,15 @@
     "CustomerID"
   ],
   "assumptions": [
-    "No imputation was performed on missing values; missing data is preserved as in the raw dataset.",
+    "No imputation was performed on missing values; missing data is preserved as-is.",
     "No merging or renaming of categorical values was done; categories are kept exactly as in the raw data.",
-    "Outliers are retained as-is without clipping or removal.",
-    "Duplicate rows are kept, including those repeated under a new CustomerID either exactly or with one value changed; counts of duplicates are provided in the tool output.",
+    "Outliers are retained without any clipping or removal.",
+    "Duplicate rows are kept, including rows repeated under a new CustomerID either exactly or with one value changed; counts of duplicates are provided in the tool output.",
     "Units are assumed as follows: Tenure in months, WarehouseToHome in kilometers, CashbackAmount in Indian Rupees (INR)."
   ],
   "leakage_notes": [
     "The churn window is undefined, so features labeled as 'last month' such as Complain, CouponUsed, OrderCount, CashbackAmount, and PreferedOrderCat may leak information about churn.",
-    "Different spellings of similar categories with significantly different churn rates are kept separate, which may cause leakage.",
+    "Different spellings of similar categories with different churn rates (e.g., 'Mobile Phone' vs 'Phone', 'COD' vs 'Cash on Delivery') are kept separate and may cause leakage.",
     "Duplicate rows leak information between train and test sets unless each group of duplicate copies is kept entirely on one side of the data split."
   ]
 }

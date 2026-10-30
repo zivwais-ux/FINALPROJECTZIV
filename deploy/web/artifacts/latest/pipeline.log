@@ -1,10 +1,11 @@
-2026-10-27 20:45:10 INFO Crew 1 (Data Analyst) starting on /home/user/FINALPROJECTZIV/data/raw/E Commerce Dataset.xlsx
-2026-10-27 20:45:58 INFO Crew 1 finished
-2026-10-27 20:45:58 INFO gate crew1_artifacts    PASS  all 8 Crew 1 artifacts present
-2026-10-27 20:45:58 INFO gate contract_vs_data   PASS  clean_data.csv matches dataset_contract.json
-2026-10-27 20:45:58 INFO gate locked_contract    PASS  dataset_contract.json matches the locked contract
-2026-10-27 20:45:58 INFO gate required_features  PASS  all 18 required features available
-2026-10-27 20:45:58 INFO Crew 2 (Data Scientist) starting on /home/user/FINALPROJECTZIV/artifacts/latest/crew1
-2026-10-27 20:46:45 INFO Crew 2 finished
-2026-10-27 20:46:45 INFO gate model_quality      PASS  hist_gradient_boosting passes: pr_auc 0.8636 (min 0.80), recall 0.6667 (min 0.60)
-2026-10-27 20:46:45 INFO PASSED: model approved (model_approved.json written) (report: /home/user/FINALPROJECTZIV/artifacts/latest/validation_report.md)
+2026-10-30 17:35:20 INFO Crew 1 (Data Analyst) starting on /home/user/FINALPROJECTZIV/data/raw/E Commerce Dataset.xlsx
+2026-10-30 17:36:00 INFO Crew 1 finished
+2026-10-30 17:36:00 INFO gate crew1_artifacts    PASS  all 8 Crew 1 artifacts present
+2026-10-30 17:36:00 INFO gate contract_vs_data   PASS  clean_data.csv matches dataset_contract.json
+2026-10-30 17:36:00 INFO gate locked_contract    PASS  dataset_contract.json matches the locked contract
+2026-10-30 17:36:00 INFO gate required_features  PASS  all 18 required features available
+2026-10-30 17:36:00 INFO Crew 2 (Data Scientist) starting on /home/user/FINALPROJECTZIV/artifacts/latest/crew1
+2026-10-30 17:36:44 INFO Crew 2 finished
+2026-10-30 17:36:44 INFO gate model_quality      PASS  hist_gradient_boosting passes: pr_auc 0.8636 (min 0.80), recall 0.6667 (min 0.60)
+2026-10-30 17:36:44 INFO PASSED: model approved (model_approved.json written) (report: /home/user/FINALPROJECTZIV/artifacts/latest/validation_report.md)
+2026-10-30 17:36:44 INFO run history skipped: SUPABASE_URL or SUPABASE_SECRET_KEY not set

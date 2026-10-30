@@ -3,7 +3,8 @@
 ## Source
 - Raw data file: /home/user/FINALPROJECTZIV/data/raw/E Commerce Dataset.xlsx
 - Sheet used: "E Comm"
-- Dataset dimensions: 5630 rows, 20 columns
+- Total rows: 5630
+- Total columns: 20
 
 ## Steps
 - Read the raw data from the specified Excel sheet "E Comm".
@@ -12,14 +13,15 @@
 - Compared the CSV content cell by cell against the original raw data.
 
 ## Decisions
-- Missing values were preserved exactly as in the raw data; no imputation or synthetic values were introduced.
-- Category spellings were kept exactly as in the raw data; no merging or renaming of categories was performed.
-- Outliers were retained as-is; no clipping or removal was done.
-- No changes were made to any data values to ensure the handoff file is a faithful copy of the raw data.
+- Missing values were preserved exactly as in the raw data (no imputation or synthetic values).
+- Category spellings were kept exactly as in the raw data (no merging or renaming).
+- Outliers were retained without any clipping or removal.
+- No changes were made to any data values during export.
 
 ## Verification
-- The exported CSV file is identical to the raw data cell by cell.
-- No differences were found between the raw data and the exported CSV.
+- The exported CSV file is identical to the raw data with no differences found.
+- Total missing values preserved: 1856
+- Comparison result: identical_to_raw
 - SHA256 checksum of clean_data.csv: e0c951d4a9a94a650ff514da4c0152b473b1ab026aeddf0662ced46e5f847019
 
 ## Output

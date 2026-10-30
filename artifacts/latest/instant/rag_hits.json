@@ -25,8 +25,8 @@
    "source": "artifacts/latest/crew1/insights.md",
    "section": "Budget Implications",
    "cite_as": "[insights.md > Budget Implications]",
-   "score": 0.4097,
-   "text": "Exploratory Data Analysis Insights for Harbor & Vale Retention Team > Budget Implications\n- Focus discount budget on customers using \"Phone\" as login device and those paying with \"COD\" payment mode, as these groups have the highest churn rates.\n- The \"Mobile\" and \"Mobile Phone\" order categories also show very high churn and could be targeted for retention incentives.\n- Single customers have a high churn rate (26.73%) and may benefit from targeted retention efforts.\n- Missing data groups with high churn rates (e.g., missing Tenure or WarehouseToHome) might indicate customers with incomplete profiles who are at risk; consider outreach or data enrichment.\n- Groups with similar category names but different churn rates (e.g., COD vs Cash on Delivery) should be treated separately in budget allocation due to their differing churn behaviors.\n\n---"
+   "score": 0.4165,
+   "text": "Exploratory Data Analysis Insights for Harbor & Vale Retention Team > Budget Implications\n- Focus discount budget on customers using \"Phone\" devices and those preferring \"COD\" and \"E wallet\" payment modes, as these groups have the highest churn rates.\n- Target customers ordering in the \"Mobile\" and \"Mobile Phone\" categories, which show churn rates above 27%.\n- Single customers represent a high churn risk group and may benefit from retention incentives.\n- Missing data in Tenure and WarehouseToHome is associated with higher churn; consider outreach or data quality improvement efforts here.\n- Since \"COD\" and \"Cash on Delivery\" have different churn rates, treat these as distinct segments for targeted offers.\n- Similarly, \"CC\" and \"Credit Card\" should be treated separately in retention strategies.\n- SatisfactionScore groups with score 5 have the highest churn rate; further investigation is needed before allocating budget based on satisfaction scores due to unknown score direction.\n\n---"
   }
  ],
  "new customers in their first months welcome call first contact discount": [
@@ -71,7 +71,7 @@
    "source": "knowledge/harbor_vale/discount_policy.md",
    "section": "Offers that need extra care",
    "cite_as": "[discount_policy.md > Offers that need extra care]",
-   "score": 0.483,
+   "score": 0.4831,
    "text": "Harbor & Vale Discount and Retention Budget Policy > Offers that need extra care\n- Free delivery vouchers are preferred for cash on delivery customers.\n- Do not offer discounts in the Grocery category: its churn is already low and margins are thin.\n- Offers to customers with a risk score below 0.40 are not funded from this budget."
   },
   {
@@ -191,7 +191,7 @@
    "source": "knowledge/harbor_vale/past_campaigns.md",
    "section": "Campaign \"Sorry We Missed\" (complaints)",
    "cite_as": "[past_campaigns.md > Campaign \"Sorry We Missed\" (complaints)]",
-   "score": 0.551,
+   "score": 0.5511,
    "text": "Harbor & Vale Retention Campaign Results, Last Two Quarters > Campaign \"Sorry We Missed\" (complaints)\n- Target: customers with a complaint in the last month.\n- Offer: coupon of INR 250 sent the same day as the complaint.\n- Result: no improvement over the holdout; churn was slightly higher among customers whose\n  complaint was still open when the coupon arrived.\n- Lesson: this campaign led to the \"resolve before you reward\" rule in the playbook."
   },
   {
@@ -251,7 +251,7 @@
    "source": "knowledge/harbor_vale/retention_playbook.md",
    "section": "Channels",
    "cite_as": "[retention_playbook.md > Channels]",
-   "score": 0.4919,
+   "score": 0.492,
    "text": "Harbor & Vale Retention Playbook > Channels\n- High risk (0.70 and above): phone call by a retention agent.\n- Medium risk (0.40 to 0.70): app push notification, then email after 2 days without response.\n- Never contact the same customer more than twice in 14 days."
   },
   {
@@ -262,11 +262,11 @@
    "text": "Harbor & Vale Retention Playbook > New customers (tenure 0 to 1 months)\nNew customers churn far more often than established ones. Every new customer flagged by the\nmodel gets a welcome call within 3 days of the flag, plus a first-order follow-up email asking\nwhether delivery and payment went smoothly. Do not offer a discount on the first contact:\nfirst fix the experience, then offer an incentive if the customer is still at risk a week later."
   },
   {
-   "source": "knowledge/harbor_vale/discount_policy.md",
-   "section": "Offers that need extra care",
-   "cite_as": "[discount_policy.md > Offers that need extra care]",
-   "score": 0.3998,
-   "text": "Harbor & Vale Discount and Retention Budget Policy > Offers that need extra care\n- Free delivery vouchers are preferred for cash on delivery customers.\n- Do not offer discounts in the Grocery category: its churn is already low and margins are thin.\n- Offers to customers with a risk score below 0.40 are not funded from this budget."
+   "source": "artifacts/latest/crew1/insights.md",
+   "section": "Budget Implications",
+   "cite_as": "[insights.md > Budget Implications]",
+   "score": 0.4038,
+   "text": "Exploratory Data Analysis Insights for Harbor & Vale Retention Team > Budget Implications\n- Focus discount budget on customers using \"Phone\" devices and those preferring \"COD\" and \"E wallet\" payment modes, as these groups have the highest churn rates.\n- Target customers ordering in the \"Mobile\" and \"Mobile Phone\" categories, which show churn rates above 27%.\n- Single customers represent a high churn risk group and may benefit from retention incentives.\n- Missing data in Tenure and WarehouseToHome is associated with higher churn; consider outreach or data quality improvement efforts here.\n- Since \"COD\" and \"Cash on Delivery\" have different churn rates, treat these as distinct segments for targeted offers.\n- Similarly, \"CC\" and \"Credit Card\" should be treated separately in retention strategies.\n- SatisfactionScore groups with score 5 have the highest churn rate; further investigation is needed before allocating budget based on satisfaction scores due to unknown score direction.\n\n---"
   }
  ]
 }

@@ -54,7 +54,7 @@ Read the rules in this order: a complaint is resolved before any offer, and a ne
 {% endfor %}
 
 <h2>Market now: news from the last 48 hours</h2>
-<p class="sub">A live web search on Google News for this customer's market{% if view.facts.PreferedOrderCat %} ({{ view.facts.PreferedOrderCat }} in India){% endif %}.
+<p class="sub">A live web search on Google News for this customer's market{% if view.facts.PreferedOrderCat %} ({{ view.facts.PreferedOrderCat }}, US news){% endif %}.
 Harbor &amp; Vale is fictional, so the search covers its real market. <span class="badge neutral">⌕ {{ view.news.query }}</span></p>
 <div class="card">
   {% if view.news.articles %}

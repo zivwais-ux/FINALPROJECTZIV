@@ -35,9 +35,11 @@ write_briefing_task:
       headline or a link.
     - Never suggest telling the customer their churn score.
     - Use only facts from the two tools. Do not claim causes of churn.
-    - At most 450 words: short bullets, no closing paragraph.
+    - At most 420 words: short bullets, no closing paragraph. Recommended
+      action has at most five bullets; Market now lists at most three
+      articles, one line each.
   expected_output: >
-    A markdown briefing of at most 450 words with the sections Customer
+    A markdown briefing of at most 420 words with the sections Customer
     snapshot, Churn risk, Recommended action, Offer, Do not, Market now (last
     48 hours), and Sources (each cite_as value used).
   agent: retention_briefing_writer

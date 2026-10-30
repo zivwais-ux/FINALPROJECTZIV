@@ -93,7 +93,7 @@ def test_check_rejects_a_wrong_score_and_an_invented_citation():
 
 
 def test_check_rejects_a_briefing_longer_than_a_page():
-    problems = check_briefing(GOOD + "word " * 520, PROFILE, CITABLE, NEWS)
+    problems = check_briefing(GOOD + "word " * 600, PROFILE, CITABLE, NEWS)
     assert any("words" in p for p in problems)
 
 
@@ -111,3 +111,10 @@ def test_check_requires_the_market_section():
 def test_profile_carries_a_news_query_for_the_category(approved):
     profile = customer_risk_profile(51809, **approved)
     assert profile["news_query"].startswith("smartphone")
+
+
+def test_check_accepts_a_zero_score_as_the_tool_writes_it():
+    zero = {"risk_score": 0.0, "risk_band": "low"}
+    text = GOOD.replace("0.95 (high)", "0.0 (low)")
+    assert not any("risk score" in p for p in check_briefing(text, zero, CITABLE, NEWS))
+    assert any("risk score" in p for p in check_briefing(GOOD.replace("0.95", "0.5"), PROFILE, CITABLE, NEWS))

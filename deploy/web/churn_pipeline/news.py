@@ -1,11 +1,12 @@
 """Web search for the latest market news, through Google News RSS (no API key).
 
 The course brief asks the agent to search the web for news from the last 48
-hours. Harbor & Vale is fictional, so the search covers its real market:
-online retail in India, narrowed by the customer's preferred category.
+hours. Harbor & Vale is fictional, so the search covers a real market:
+online retail in the United States, narrowed by the customer's preferred
+category.
 
 Google News serves search results as RSS without a key; `when:2d` limits them
-to the last two days, and hl/gl/ceid pick English-language news for India.
+to the last two days, and hl/gl/ceid pick English-language news for the US.
 Articles older than 48 hours are dropped again here, in case the feed is
 looser than the operator. Standard library and no crewai, so the web app can
 use it too (the agent's tool wrapper lives in tools/briefing_tools.py).
@@ -30,23 +31,31 @@ MAX_ARTICLES = 5
 TIMEOUT_SECONDS = 8
 MAX_BYTES = 1_000_000
 CACHE_SECONDS = 15 * 60
-LOCALE = {"hl": "en-IN", "gl": "IN", "ceid": "IN:en"}
+LOCALE = {"hl": "en-US", "gl": "US", "ceid": "US:en"}
 
 # Market news query per preferred category, in Google search syntax.
 CATEGORY_QUERIES = {
-    "Mobile": "smartphone (sale OR discount OR offer) India",
-    "Mobile Phone": "smartphone (sale OR discount OR offer) India",
-    "Laptop & Accessory": "(laptop OR electronics) (sale OR discount OR offer) India",
-    "Fashion": "fashion (ecommerce OR \"online shopping\" OR sale) India",
-    "Grocery": "(\"quick commerce\" OR grocery delivery) India",
+    "Mobile": "smartphone (sale OR discount OR deal)",
+    "Mobile Phone": "smartphone (sale OR discount OR deal)",
+    "Laptop & Accessory": "(laptop OR electronics) (sale OR discount OR deal)",
+    "Fashion": "fashion (ecommerce OR \"online shopping\" OR sale)",
+    "Grocery": "(\"online grocery\" OR \"grocery delivery\")",
 }
-DEFAULT_QUERY = "(ecommerce OR \"online shopping\") (discount OR sale OR offer) India"
+DEFAULT_QUERY = "(ecommerce OR \"online shopping\") (discount OR sale OR deal)"
 
 _cache: dict[str, tuple[float, dict[str, Any]]] = {}
+# Every article link any search returned in this process. Google issues a new
+# link token for the same article on each request, so a briefing's guardrail
+# checks links against all of them, not just one search's.
+SEEN_URLS: set[str] = set()
+
+
+# The US edition of Google News still lists some Indian outlets; leave them out.
+EXCLUDE = "-India -Rs"
 
 
 def news_query(category: str | None) -> str:
-    return CATEGORY_QUERIES.get(category or "", DEFAULT_QUERY)
+    return f"{CATEGORY_QUERIES.get(category or '', DEFAULT_QUERY)} {EXCLUDE}"
 
 
 def parse_feed(xml_text: str, now: datetime, max_articles: int = MAX_ARTICLES) -> list[dict[str, str]]:
@@ -87,6 +96,7 @@ def search_recent_news(query: str, max_articles: int = MAX_ARTICLES) -> dict[str
         with urllib.request.urlopen(req, timeout=TIMEOUT_SECONDS) as response:
             body = response.read(MAX_BYTES).decode("utf-8", errors="replace")
         result["articles"] = parse_feed(body, datetime.now(timezone.utc), max_articles)
+        SEEN_URLS.update(a["url"] for a in result["articles"])
     except (urllib.error.URLError, TimeoutError, ET.ParseError, ValueError, OSError) as e:
         result["error"] = f"news search unavailable: {e}"
     if result["error"] is None:

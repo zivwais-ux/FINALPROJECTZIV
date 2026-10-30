@@ -1,7 +1,7 @@
 # Validation report
 
 - Verdict: **PASSED**
-- Time (UTC): 2026-10-27 20:46:45
+- Time (UTC): 2026-10-30 17:36:44
 - Next step: model approved (model_approved.json written)
 
 | Gate | Result | Summary |

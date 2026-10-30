@@ -7,7 +7,7 @@
 - Random state: 42
 - Train rows: 4504
 - Test rows: 1126
-- Test share: 0.2
+- Test share: 0.2 (20%)
 - Train churn rate: 16.85%
 - Test churn rate: 16.79%
 - Duplicate groups on both sides: 0 (no leakage)
@@ -30,16 +30,14 @@
 - Loyal customers correctly identified (True Negatives): 923
 
 ## Quality Thresholds
-- Test PR-AUC threshold: 0.8
-- Test Recall threshold: 0.6
+- Thresholds: PR-AUC ≥ 0.8, Recall ≥ 0.6
+- Selected model test PR-AUC: 0.8636 (meets threshold)
+- Selected model test Recall: 0.6667 (meets threshold)
 - Baseline PR-AUC (test churn rate): 0.1679
+- The model's PR-AUC is substantially higher than the baseline, indicating strong predictive performance.
 
-### Does the selected model meet quality thresholds?
-- Test PR-AUC: 0.8636 (meets threshold, much higher than baseline)
-- Test Recall: 0.6667 (meets threshold)
-
-## Feature Importance (by permutation importance, describing what the model relies on)
-The model relies most on these features to predict churn:
+## Feature Importance (by permutation importance, described as model reliance)
+The model relies most on these features for its predictions:
 1. Tenure (largest impact on PR-AUC when permuted)
 2. Complain
 3. NumberOfAddress
@@ -51,4 +49,4 @@ The model relies most on these features to predict churn:
 9. PreferredLoginDevice = Computer
 10. MaritalStatus = Single
 
-These features are critical for the model's predictive performance but are not necessarily causes of churn.
+These features are critical for the model's ability to distinguish churners from non-churners, though this does not imply causation.

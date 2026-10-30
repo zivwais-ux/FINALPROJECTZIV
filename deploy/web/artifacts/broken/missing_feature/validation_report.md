@@ -1,7 +1,7 @@
 # Validation report
 
 - Verdict: **FAILED**
-- Time (UTC): 2026-10-30 14:43:34
+- Time (UTC): 2026-10-30 17:37:14
 - Next step: Crew 2 did not run: fix the data or Crew 1, or update the locked contract on purpose, then run again
 
 | Gate | Result | Summary |
