@@ -117,6 +117,11 @@ class ChurnPipelineFlow(Flow[PipelineState]):
 
 
 def _setup_logging(log_path: Path) -> None:
+    # Replace earlier handlers, so several runs in one process (break_it.py)
+    # each get their own log file.
+    for h in list(log.handlers):
+        log.removeHandler(h)
+        h.close()
     log_path.parent.mkdir(parents=True, exist_ok=True)
     handlers = [logging.FileHandler(log_path, mode="w", encoding="utf-8"), logging.StreamHandler()]
     fmt = logging.Formatter("%(asctime)s %(levelname)s %(message)s", "%Y-%m-%d %H:%M:%S")

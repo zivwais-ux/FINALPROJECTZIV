@@ -12,3 +12,9 @@ venv/
 # Flow run outputs (only artifacts/latest is committed)
 output/
 artifacts/runs/
+
+# break_it.py: the broken copies of the data are regenerated on every run;
+# only the reports, the logs and the contract Crew 1 built on broken raw data are kept.
+artifacts/broken/*/crew1/*
+artifacts/broken/*/raw/
+!artifacts/broken/raw_unit_change/crew1/dataset_contract.json

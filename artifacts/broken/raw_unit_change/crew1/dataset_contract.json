@@ -1,0 +1,389 @@
+{
+  "contract_version": "1.0.0",
+  "dataset": {
+    "name": "ecommerce_churn",
+    "file": "clean_data.csv",
+    "sha256": "0229971d31dd465dfc7a253408c5ef95cd703f78e46eca8a24fb24941b9b9d23",
+    "row_count": 5630,
+    "duplicate_rows_ignoring_id": 556,
+    "rows_in_duplicate_groups": 3472
+  },
+  "target": {
+    "name": "Churn",
+    "positive_class": 1,
+    "expected_rate": 0.1684
+  },
+  "tolerances": {
+    "mean_rel": 0.01,
+    "target_rate_rel": 0.01,
+    "unit_change_factor": 10.0
+  },
+  "columns": [
+    {
+      "name": "CustomerID",
+      "role": "id",
+      "dtype": "int",
+      "description": "Unique identifier for each customer.",
+      "unit": null,
+      "unit_source": null,
+      "expected_null_count": 0,
+      "unique": true,
+      "range": {
+        "min": 50001.0,
+        "max": 55630.0
+      },
+      "expected_mean": null,
+      "expected_std": null,
+      "allowed_values": null
+    },
+    {
+      "name": "Churn",
+      "role": "target",
+      "dtype": "binary",
+      "description": "Binary target flag indicating whether the customer churned (1) or not (0).",
+      "unit": "flag",
+      "unit_source": "data_dict",
+      "expected_null_count": 0,
+      "unique": false,
+      "range": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "expected_mean": 0.1684,
+      "expected_std": 0.3742,
+      "allowed_values": null
+    },
+    {
+      "name": "Tenure",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Duration of the customer's relationship with the company, measured in months.",
+      "unit": "months",
+      "unit_source": "assumed",
+      "expected_null_count": 264,
+      "unique": false,
+      "range": {
+        "min": 0.0,
+        "max": 61.0
+      },
+      "expected_mean": 10.1899,
+      "expected_std": 8.5572,
+      "allowed_values": null
+    },
+    {
+      "name": "PreferredLoginDevice",
+      "role": "feature",
+      "dtype": "category",
+      "description": "The device type the customer prefers to use for logging in, with categories Computer, Mobile Phone, and Phone.",
+      "unit": null,
+      "unit_source": null,
+      "expected_null_count": 0,
+      "unique": false,
+      "range": null,
+      "expected_mean": null,
+      "expected_std": null,
+      "allowed_values": [
+        "Computer",
+        "Mobile Phone",
+        "Phone"
+      ]
+    },
+    {
+      "name": "CityTier",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Tier classification of the customer's city, ranging from 1 to 3.",
+      "unit": "tier",
+      "unit_source": "data_dict",
+      "expected_null_count": 0,
+      "unique": false,
+      "range": {
+        "min": 1.0,
+        "max": 3.0
+      },
+      "expected_mean": 1.6547,
+      "expected_std": 0.9154,
+      "allowed_values": null
+    },
+    {
+      "name": "WarehouseToHome",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Distance in kilometers from the warehouse to the customer's home.",
+      "unit": "km",
+      "unit_source": "assumed",
+      "expected_null_count": 251,
+      "unique": false,
+      "range": {
+        "min": 5.0,
+        "max": 127.0
+      },
+      "expected_mean": 15.6399,
+      "expected_std": 8.5315,
+      "allowed_values": null
+    },
+    {
+      "name": "PreferredPaymentMode",
+      "role": "feature",
+      "dtype": "category",
+      "description": "Customer's preferred payment method, including options like CC, COD, Cash on Delivery, Credit Card, Debit Card, E wallet, and UPI.",
+      "unit": null,
+      "unit_source": null,
+      "expected_null_count": 0,
+      "unique": false,
+      "range": null,
+      "expected_mean": null,
+      "expected_std": null,
+      "allowed_values": [
+        "CC",
+        "COD",
+        "Cash on Delivery",
+        "Credit Card",
+        "Debit Card",
+        "E wallet",
+        "UPI"
+      ]
+    },
+    {
+      "name": "Gender",
+      "role": "feature",
+      "dtype": "category",
+      "description": "Gender of the customer, either Female or Male.",
+      "unit": null,
+      "unit_source": null,
+      "expected_null_count": 0,
+      "unique": false,
+      "range": null,
+      "expected_mean": null,
+      "expected_std": null,
+      "allowed_values": [
+        "Female",
+        "Male"
+      ]
+    },
+    {
+      "name": "HourSpendOnApp",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Number of hours the customer spends on the app daily.",
+      "unit": "hours",
+      "unit_source": "data_dict",
+      "expected_null_count": 255,
+      "unique": false,
+      "range": {
+        "min": 0.0,
+        "max": 5.0
+      },
+      "expected_mean": 2.9315,
+      "expected_std": 0.7219,
+      "allowed_values": null
+    },
+    {
+      "name": "NumberOfDeviceRegistered",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Count of devices registered by the customer.",
+      "unit": "count",
+      "unit_source": "data_dict",
+      "expected_null_count": 0,
+      "unique": false,
+      "range": {
+        "min": 1.0,
+        "max": 6.0
+      },
+      "expected_mean": 3.689,
+      "expected_std": 1.024,
+      "allowed_values": null
+    },
+    {
+      "name": "PreferedOrderCat",
+      "role": "feature",
+      "dtype": "category",
+      "description": "Customer's preferred order category, such as Fashion, Grocery, Laptop & Accessory, Mobile, Mobile Phone, or Others.",
+      "unit": null,
+      "unit_source": null,
+      "expected_null_count": 0,
+      "unique": false,
+      "range": null,
+      "expected_mean": null,
+      "expected_std": null,
+      "allowed_values": [
+        "Fashion",
+        "Grocery",
+        "Laptop & Accessory",
+        "Mobile",
+        "Mobile Phone",
+        "Others"
+      ]
+    },
+    {
+      "name": "SatisfactionScore",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Customer's satisfaction score rated from 1 to 5.",
+      "unit": "score",
+      "unit_source": "data_dict",
+      "expected_null_count": 0,
+      "unique": false,
+      "range": {
+        "min": 1.0,
+        "max": 5.0
+      },
+      "expected_mean": 3.0668,
+      "expected_std": 1.3802,
+      "allowed_values": null
+    },
+    {
+      "name": "MaritalStatus",
+      "role": "feature",
+      "dtype": "category",
+      "description": "Marital status of the customer, categorized as Divorced, Married, or Single.",
+      "unit": null,
+      "unit_source": null,
+      "expected_null_count": 0,
+      "unique": false,
+      "range": null,
+      "expected_mean": null,
+      "expected_std": null,
+      "allowed_values": [
+        "Divorced",
+        "Married",
+        "Single"
+      ]
+    },
+    {
+      "name": "NumberOfAddress",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Number of addresses associated with the customer.",
+      "unit": "count",
+      "unit_source": "data_dict",
+      "expected_null_count": 0,
+      "unique": false,
+      "range": {
+        "min": 1.0,
+        "max": 22.0
+      },
+      "expected_mean": 4.214,
+      "expected_std": 2.5836,
+      "allowed_values": null
+    },
+    {
+      "name": "Complain",
+      "role": "feature",
+      "dtype": "binary",
+      "description": "Binary flag indicating if the customer made a complaint in the last month.",
+      "unit": "flag (last month)",
+      "unit_source": "data_dict",
+      "expected_null_count": 0,
+      "unique": false,
+      "range": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "expected_mean": 0.2849,
+      "expected_std": 0.4514,
+      "allowed_values": null
+    },
+    {
+      "name": "OrderAmountHikeFromlastYear",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Percentage increase in order amount compared to the previous year.",
+      "unit": "percent",
+      "unit_source": "data_dict",
+      "expected_null_count": 265,
+      "unique": false,
+      "range": {
+        "min": 11.0,
+        "max": 26.0
+      },
+      "expected_mean": 15.7079,
+      "expected_std": 3.6755,
+      "allowed_values": null
+    },
+    {
+      "name": "CouponUsed",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Count of coupons used by the customer in the last month.",
+      "unit": "count (last month)",
+      "unit_source": "data_dict",
+      "expected_null_count": 256,
+      "unique": false,
+      "range": {
+        "min": 0.0,
+        "max": 16.0
+      },
+      "expected_mean": 1.751,
+      "expected_std": 1.8946,
+      "allowed_values": null
+    },
+    {
+      "name": "OrderCount",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Number of orders placed by the customer in the last month.",
+      "unit": "count (last month)",
+      "unit_source": "data_dict",
+      "expected_null_count": 258,
+      "unique": false,
+      "range": {
+        "min": 1.0,
+        "max": 16.0
+      },
+      "expected_mean": 3.008,
+      "expected_std": 2.9397,
+      "allowed_values": null
+    },
+    {
+      "name": "DaySinceLastOrder",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Number of days since the customer's last order.",
+      "unit": "days",
+      "unit_source": "data_dict",
+      "expected_null_count": 307,
+      "unique": false,
+      "range": {
+        "min": 0.0,
+        "max": 46.0
+      },
+      "expected_mean": 4.5435,
+      "expected_std": 3.6544,
+      "allowed_values": null
+    },
+    {
+      "name": "CashbackAmount",
+      "role": "feature",
+      "dtype": "int",
+      "description": "Average cashback amount received by the customer in the last month, measured in INR.",
+      "unit": "INR (last month average)",
+      "unit_source": "assumed",
+      "expected_null_count": 0,
+      "unique": false,
+      "range": {
+        "min": 0.0,
+        "max": 32499.0
+      },
+      "expected_mean": 17722.303,
+      "expected_std": 4920.7036,
+      "allowed_values": null
+    }
+  ],
+  "forbidden_features": [
+    "CustomerID"
+  ],
+  "assumptions": [
+    "No imputation was performed on missing values; missing data is preserved as-is.",
+    "No merging or renaming of categorical values was done; categories are kept exactly as in the raw data.",
+    "Outliers are retained without any clipping or removal.",
+    "Duplicate rows are kept; duplicates occur as rows repeated under a new CustomerID, either exactly or with one value changed, with counts detailed in the tool output.",
+    "Units are assumed as follows: Tenure in months, WarehouseToHome in kilometers, CashbackAmount in Indian Rupees (INR)."
+  ],
+  "leakage_notes": [
+    "The churn window is undefined, so features labeled as 'last month' such as Complain, CouponUsed, OrderCount, CashbackAmount, and PreferedOrderCat may leak information about churn.",
+    "Different spellings of similar categories (e.g., 'Mobile Phone' vs 'Phone', 'COD' vs 'Cash on Delivery', 'Mobile' vs 'Mobile Phone') are kept separate due to differing churn rates, which may cause leakage.",
+    "Duplicate rows leak information between train and test sets unless each group of copies remains entirely on one side of the data split."
+  ]
+}

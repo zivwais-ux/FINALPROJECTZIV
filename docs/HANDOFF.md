@@ -72,14 +72,14 @@
 - **שלב 5 ✅ נסגר (ה-Flow המלא):** שערי מעבר, router, שער איכות, `validation_report.md`, `pipeline.log`,
   ו-`--from-gate`. הפרטים ב-`docs/flow.md`. החוזה הנעול נמצא ב-`contracts/dataset_contract.lock.json`. **45 טסטים עוברים.**
 
-## הצעד הבא בדיוק: שלב 6, `scripts/break_it.py`
-מה הוחלט:
-- חמשת התרחישים רצים עם `--from-gate`, ושוברים את `artifacts/latest/crew1/clean_data.csv` אחרי Crew 1.
-- תרחיש אחד נוסף רץ בהרצה מלאה: שינוי יחידות בקובץ הגולמי. שם רק החוזה הנעול תופס את השבירה.
-- לכל תרחיש יש טסט. לשאול את המשתמש לפני שמתחילים.
+- **שלב 6 ✅ נסגר (תרחישי שבירה):** `scripts/break_it.py`, עם 5 תרחישי מעבר ו-`raw_unit_change` בהרצה מלאה.
+  כל התרחישים נתפסו, ו-Crew 2 לא רץ באף אחד מהם. הפרטים ב-`docs/break_it.md`. **52 טסטים עוברים.**
+- **git:** ענף `main` מכיל את כל העבודה. צריך לבחור אותו כ-default branch ב-GitHub (Settings, General).
+
+## הצעד הבא בדיוק: שלב 7, אפליקציית Flask
+לשאול את המשתמש לפני שמתחילים.
 
 ## השלבים שאחרי (לעבור צעד צעד, ולשאול לפני כל אחד)
-- **שלב 6:** סקריפט `scripts/break_it.py`, עם תרחישים: unit_change, rename_column, out_of_range, bad_category ו-missing_feature, וטסט לכל תרחיש.
 - **שלב 7:** אפליקציית Flask, עם הדפים `/`, `/analyst`, `/scientist`, `/runs` ו-`/checker`.
 - **שלב 8:** פריסה ל-Vercel ול-Supabase, ו-README סופי.
 

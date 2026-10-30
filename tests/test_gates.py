@@ -13,33 +13,11 @@ from churn_pipeline.gates import (
     gate_required_features,
     run_handoff_gates,
 )
-from churn_pipeline.tools.analyst_tools import (
-    build_contract,
-    export_clean_data,
-    finalize_contract,
-    profile_raw_data,
-    run_eda,
-)
+from churn_pipeline.tools.analyst_tools import build_contract, finalize_contract
 from churn_pipeline.tools.scientist_tools import build_features, train_and_evaluate
 
 ROOT = Path(__file__).resolve().parents[1]
-RAW = ROOT / "data" / "raw" / "E Commerce Dataset.xlsx"
 LOCK = ROOT / "contracts" / "dataset_contract.lock.json"
-
-
-@pytest.fixture(scope="module")
-def crew1_template(tmp_path_factory) -> Path:
-    """All eight Crew 1 artifacts: tool outputs plus stand-ins for the agents' markdown."""
-    d = tmp_path_factory.mktemp("crew1")
-    profile_raw_data(RAW, d)
-    export_clean_data(RAW, d)
-    run_eda(d)
-    numbers = build_contract(d)
-    finalize_contract(d, {c["name"]: f"Description of {c['name']}" for c in numbers["columns"]},
-                      ["No imputation"], ["Churn window undefined"])
-    for name in ("quality_summary.md", "preparation_log.md", "insights.md"):
-        (d / name).write_text("agent text\n")
-    return d
 
 
 @pytest.fixture
