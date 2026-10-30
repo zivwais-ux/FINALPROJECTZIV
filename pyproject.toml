@@ -18,6 +18,7 @@ kickoff = "churn_pipeline.main:kickoff"
 run_crew = "churn_pipeline.main:kickoff"
 plot = "churn_pipeline.main:plot"
 run_with_trigger = "churn_pipeline.main:run_with_trigger"
+brief = "churn_pipeline.briefing:main"
 
 [build-system]
 requires = ["hatchling"]

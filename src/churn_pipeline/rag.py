@@ -14,6 +14,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import threading
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Sequence
@@ -117,27 +118,38 @@ class DocIndex:
         if cache:
             cache.parent.mkdir(parents=True, exist_ok=True)
             keep = {c.sha256: cached[c.sha256] for c in chunks}
-            cache.write_text(json.dumps({"model": model, "vectors": keep}), encoding="utf-8")
+            # Write then rename, so a reader never sees a half-written file.
+            tmp = cache.with_suffix(f".{os.getpid()}.tmp")
+            tmp.write_text(json.dumps({"model": model, "vectors": keep}), encoding="utf-8")
+            tmp.replace(cache)
         vectors = np.array([cached[c.sha256] for c in chunks], dtype=float)
         return cls(chunks, vectors, embedder)
+
+    def citations(self) -> set[str]:
+        """Every "file name > section" an agent may cite."""
+        return {f"{Path(c.source).name} > {c.section}" for c in self.chunks}
 
     def search(self, query: str, k: int = TOP_K) -> list[dict]:
         q = _unit(np.asarray(self.embedder([query]), dtype=float))[0]
         scores = self.vectors @ q
         best = np.argsort(scores)[::-1][:k]
         return [{"source": self.chunks[i].source, "section": self.chunks[i].section,
+                 "cite_as": f"[{Path(self.chunks[i].source).name} > {self.chunks[i].section}]",
                  "score": round(float(scores[i]), 4), "text": self.chunks[i].text}
                 for i in best]
 
 
 _index: DocIndex | None = None
+_index_lock = threading.Lock()
 
 
 def default_index() -> DocIndex:
-    """The project corpus, built once per process."""
+    """The project corpus, built once per process. Agents may call the search
+    tool in parallel, so the first build is guarded by a lock."""
     global _index
-    if _index is None:
-        _index = DocIndex.build(DEFAULT_SOURCES, openai_embedder(), CACHE_PATH)
+    with _index_lock:
+        if _index is None:
+            _index = DocIndex.build(DEFAULT_SOURCES, openai_embedder(), CACHE_PATH)
     return _index
 
 

@@ -169,6 +169,13 @@ def _test_metrics(y: pd.Series, proba: np.ndarray) -> dict[str, Any]:
     }
 
 
+def split_indices(data: pd.DataFrame, spec: dict[str, Any]) -> tuple[np.ndarray, np.ndarray]:
+    """Train and test row positions of features.csv: stratified on the target, one fold of
+    five as the test set, each duplicate group on one side. Deterministic."""
+    cv = StratifiedGroupKFold(n_splits=CV_FOLDS, shuffle=True, random_state=RANDOM_STATE)
+    return next(cv.split(data[spec["feature_columns"]], data[spec["target"]], data[spec["group_column"]]))
+
+
 def train_and_evaluate(output_dir: str | Path) -> dict[str, Any]:
     """Train both models on features.csv, pick one by cross-validated PR-AUC, evaluate on test.
 
@@ -182,7 +189,7 @@ def train_and_evaluate(output_dir: str | Path) -> dict[str, Any]:
     data = pd.read_csv(output_dir / "features.csv")
     X, y, groups = data[spec["feature_columns"]], data[spec["target"]], data[spec["group_column"]]
     cv = StratifiedGroupKFold(n_splits=CV_FOLDS, shuffle=True, random_state=RANDOM_STATE)
-    train_idx, test_idx = next(cv.split(X, y, groups))
+    train_idx, test_idx = split_indices(data, spec)
     X_train, X_test = X.iloc[train_idx], X.iloc[test_idx]
     y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
     shared_groups = len(set(groups.iloc[train_idx]) & set(groups.iloc[test_idx]))

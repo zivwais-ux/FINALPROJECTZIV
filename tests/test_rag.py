@@ -62,7 +62,8 @@ def test_split_markdown_gives_one_chunk_per_section():
 def test_search_ranks_the_matching_section_first(query, source, section):
     hit = DocIndex.build(KNOWLEDGE, WordEmbedder()).search(query)[0]
     assert hit["source"].endswith(source) and hit["section"] == section
-    assert set(hit) == {"source", "section", "score", "text"}
+    assert set(hit) == {"source", "section", "cite_as", "score", "text"}
+    assert hit["cite_as"] == f"[{source} > {section}]"
 
 
 def test_cache_embeds_only_new_or_changed_sections(tmp_path):
