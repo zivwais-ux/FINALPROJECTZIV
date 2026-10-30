@@ -69,26 +69,45 @@ def test_no_briefing_without_an_approved_model(approved, tmp_path):
 
 PROFILE = {"risk_score": 0.95, "risk_band": "high"}
 CITABLE = {"retention_playbook.md > Customers who complained", "discount_policy.md > Approval levels"}
+NEWS = {"https://news.example.com/sale"}
 GOOD = """## Churn risk
 - Risk score: 0.95 (high)
 ## Recommended action
 - Resolve the complaint first [retention_playbook.md > Customers who complained]
+## Market now (last 48 hours)
+- [Phone sale starts](https://news.example.com/sale), Example News, 2026-10-30
 ## Sources
 - [discount_policy.md > Approval levels]
 """
 
 
 def test_check_accepts_a_good_briefing():
-    assert check_briefing(GOOD, PROFILE, CITABLE) == []
+    assert check_briefing(GOOD, PROFILE, CITABLE, NEWS) == []
 
 
 def test_check_rejects_a_wrong_score_and_an_invented_citation():
     bad = GOOD.replace("0.95", "0.90").replace("Approval levels]", "Approval rules]")
-    problems = check_briefing(bad, PROFILE, CITABLE)
+    problems = check_briefing(bad, PROFILE, CITABLE, NEWS)
     assert any("0.95" in p for p in problems)
     assert any("discount_policy.md > Approval rules" in p for p in problems)
 
 
 def test_check_rejects_a_briefing_longer_than_a_page():
-    problems = check_briefing(GOOD + "word " * 460, PROFILE, CITABLE)
+    problems = check_briefing(GOOD + "word " * 520, PROFILE, CITABLE, NEWS)
     assert any("words" in p for p in problems)
+
+
+def test_check_rejects_an_invented_news_link():
+    invented = GOOD.replace("https://news.example.com/sale", "https://made-up.example.com/story")
+    problems = check_briefing(invented, PROFILE, CITABLE, NEWS)
+    assert any("did not come from search_recent_news" in p for p in problems)
+
+
+def test_check_requires_the_market_section():
+    problems = check_briefing(GOOD.replace("## Market now (last 48 hours)", "## Other"), PROFILE, CITABLE, NEWS)
+    assert any("Market now" in p for p in problems)
+
+
+def test_profile_carries_a_news_query_for_the_category(approved):
+    profile = customer_risk_profile(51809, **approved)
+    assert profile["news_query"].startswith("smartphone")

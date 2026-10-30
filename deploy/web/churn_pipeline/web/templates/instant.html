@@ -3,8 +3,8 @@
 {% block content %}
 <div class="eyebrow">Type a customer · get a briefing</div>
 <h1>Retention briefing</h1>
-<p class="lead">Type any CustomerID to get a one-page briefing at once: the approved churn model's score, and the rules from Harbor &amp; Vale's internal documents
-that the RAG retrieves for this customer's situation, each with its source.</p>
+<p class="lead">Type any CustomerID to get a one-page briefing at once: the approved churn model's score, the rules from Harbor &amp; Vale's internal documents
+that the RAG retrieves for this customer's situation, each with its source, and live market news from the last 48 hours.</p>
 
 <form method="get" action="{{ url_for('instant_briefing') }}" class="card" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
   <label for="cid" style="font-weight:600">CustomerID</label>
@@ -53,16 +53,33 @@ Read the rules in this order: a complaint is resolved before any offer, and a ne
 </div>
 {% endfor %}
 
+<h2>Market now: news from the last 48 hours</h2>
+<p class="sub">A live web search on Google News for this customer's market{% if view.facts.PreferedOrderCat %} ({{ view.facts.PreferedOrderCat }} in India){% endif %}.
+Harbor &amp; Vale is fictional, so the search covers its real market. <span class="badge neutral">⌕ {{ view.news.query }}</span></p>
+<div class="card">
+  {% if view.news.articles %}
+  <ul class="gates">
+    {% for a in view.news.articles %}
+    <li><span class="dot pass" style="background:var(--brand-soft);color:var(--brand)">↗</span>
+      <div><a href="{{ a.url }}" target="_blank" rel="noopener noreferrer"><strong>{{ a.title }}</strong></a>
+        <div class="summary">{{ a.source }} · {{ a.published }}</div></div></li>
+    {% endfor %}
+  </ul>
+  {% elif view.news.error %}<p class="small" style="margin:0">The news search is not available right now ({{ view.news.error }}). The rest of the briefing does not depend on it.</p>
+  {% else %}<p class="small" style="margin:0">No news from the last 48 hours matched this market.</p>{% endif %}
+</div>
+
 <div class="callout info"><span class="ico">ℹ</span><div>
   This briefing is <strong>assembled in code</strong> from the model's precomputed scores and the RAG results, so it is instant and needs no API key.
   {% if view.id in written %}An <a href="{{ url_for('briefings', customer_id=view.id) }}">agent-written briefing for customer {{ view.id }}</a> is also available.
   {% else %}Agent-written briefings, where an LLM turns the same facts into a one-page brief, exist for {% for w in written %}<a href="{{ url_for('briefings', customer_id=w) }}">{{ w }}</a>{% if not loop.last %}, {% endif %}{% endfor %} and are made with <code>uv run brief &lt;CustomerID&gt;</code>.{% endif %}
 </div></div>
 {% elif not error %}
-<div class="grid g3">
+<div class="grid g4">
   <div class="card flat"><div class="eyebrow">1 · Score</div><p class="small" style="margin:0">The approved model scored all customers; nothing is shown unless the latest run passed every gate.</p></div>
   <div class="card flat"><div class="eyebrow">2 · Situations</div><p class="small" style="margin:0">Code picks what applies: the risk band, a complaint, a new customer, cash on delivery, the category, an offer.</p></div>
   <div class="card flat"><div class="eyebrow">3 · Retrieve</div><p class="small" style="margin:0">For each situation, the RAG's top sections from the playbook, the discount policy, past campaigns and competitor offers.</p></div>
+  <div class="card flat"><div class="eyebrow">4 · Search the web</div><p class="small" style="margin:0">Live market news from the last 48 hours for the customer's category, from Google News.</p></div>
 </div>
 {% endif %}
 {% endblock %}

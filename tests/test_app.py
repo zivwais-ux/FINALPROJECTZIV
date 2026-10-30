@@ -12,10 +12,17 @@ from churn_pipeline.web.app import create_app, parse_report
 ROOT = Path(__file__).resolve().parents[1]
 
 
+NEWS = {"query": "q", "window": "last 48 hours", "source": "Google News", "error": None,
+        "articles": [{"title": "Festive phone sale begins", "url": "https://news.google.com/x",
+                      "source": "Example Times", "published": "2026-10-30 10:00 UTC"}]}
+
+
 @pytest.fixture(scope="module")
 def client():
-    # The committed artifacts of the latest run and the break-it scenarios.
-    return create_app(ROOT / "artifacts", ROOT / "contracts" / "dataset_contract.lock.json").test_client()
+    # The committed artifacts of the latest run and the break-it scenarios; no network.
+    app = create_app(ROOT / "artifacts", ROOT / "contracts" / "dataset_contract.lock.json")
+    app.config["NEWS_SEARCH"] = lambda query: {**NEWS, "query": query}
+    return app.test_client()
 
 
 @pytest.mark.parametrize("path, text", [
@@ -60,6 +67,7 @@ def test_architecture_lists_every_agent_with_its_tool(client):
 def test_overview_maps_the_course_requirements(client):
     html = client.get("/").get_data(as_text=True)
     assert "RAG over the company" in html and "Web search for the latest news" in html
+    assert "Not built" not in html
 
 
 def test_briefings_show_each_customers_score(client):
@@ -143,3 +151,16 @@ def test_code_page_shows_the_gates_and_the_validator(client):
     html = client.get("/code").get_data(as_text=True)
     assert "def run_handoff_gates" in html and "def validate_against_contract" in html
     assert "possible unit change" in html
+
+
+def test_instant_briefing_shows_market_news(client):
+    html = client.get("/briefing?id=51809").get_data(as_text=True)
+    assert "news from the last 48 hours" in html and "Festive phone sale begins" in html
+    assert "smartphone" in html  # the query follows the customer's category
+
+
+def test_instant_briefing_still_works_without_news():
+    app = create_app(ROOT / "artifacts", ROOT / "contracts" / "dataset_contract.lock.json")
+    app.config["NEWS_SEARCH"] = lambda query: {**NEWS, "articles": [], "error": "news search unavailable: blocked"}
+    html = app.test_client().get("/briefing?id=51809").get_data(as_text=True)
+    assert "not available right now" in html and "0.95" in html

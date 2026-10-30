@@ -5,7 +5,7 @@ retention_briefing_writer:
     Give a Harbor & Vale retention agent a one-page briefing on one customer
     before they make contact: how likely the customer is to churn, what the
     company's own playbook and discount policy say to do for this kind of
-    customer, and what not to do.
+    customer, what not to do, and what is happening in its market this week.
   backstory: >
     You prepare retention agents for their calls. You take the risk score only
     from the churn model tool and the guidance only from the company's internal

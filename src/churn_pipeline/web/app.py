@@ -21,6 +21,7 @@ from markupsafe import Markup
 
 from churn_pipeline.contract.models import load_contract
 from churn_pipeline.contract.validator import validate_against_contract
+from churn_pipeline.news import news_query, search_recent_news
 from churn_pipeline.run_history import fetch_runs
 from churn_pipeline.scenarios import SCENARIOS
 
@@ -39,8 +40,9 @@ REQUIREMENTS = [
      "where": "Type any CustomerID for an instant briefing: the approved model's score plus the playbook rules the RAG "
               "retrieves; agent-written briefings for selected customers",
      "page": "instant_briefing"},
-    {"need": "Web search for the latest news", "status": "skipped",
-     "where": "Left out by decision; the briefing uses internal documents only", "page": None},
+    {"need": "Web search for the latest news (last 48 hours)", "status": "done",
+     "where": "Google News, no API key: market news for the customer's category in every briefing, live on the site",
+     "page": "instant_briefing"},
     {"need": "Bonus: a predictive ML model that scores probability", "status": "done",
      "where": "HistGradientBoosting vs RandomForest, test PR-AUC 0.864, approved by a quality gate", "page": "scientist"},
     {"need": "System design: the RAG pipeline and the tool-calling flow", "status": "done",
@@ -139,6 +141,8 @@ def create_app(artifacts_dir: str | Path | None = None, lock_path: str | Path | 
 
     app = Flask(__name__)
     app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_MB * 1024 * 1024
+    # Replaceable in tests, which run without the network.
+    app.config["NEWS_SEARCH"] = search_recent_news
 
     cache: dict[str, Any] = {}
 
@@ -225,6 +229,8 @@ def create_app(artifacts_dir: str | Path | None = None, lock_path: str | Path | 
                          "never to act on a score from a run that did not pass.")
             else:
                 view = instant_briefing_view(int(raw), data, hits)
+                if view is not None:
+                    view["news"] = app.config["NEWS_SEARCH"](news_query(view["facts"].get("PreferedOrderCat")))
                 if view is None:
                     first, last = min(map(int, data["customers"])), max(map(int, data["customers"]))
                     error = f"Customer {raw} is not in the data. CustomerIDs run from {first} to {last}."

@@ -6,10 +6,15 @@ from crewai import LLM, Agent, Crew, Process, Task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from crewai.project import CrewBase, agent, before_kickoff, crew, task
 
+from churn_pipeline.news import search_recent_news
 from churn_pipeline.rag import default_index, search_internal_docs_tool
-from churn_pipeline.tools.briefing_tools import customer_risk_profile, customer_risk_profile_tool
+from churn_pipeline.tools.briefing_tools import (
+    customer_risk_profile,
+    customer_risk_profile_tool,
+    search_recent_news_tool,
+)
 
-MAX_WORDS = 450  # about one printed page; the prompt asks for 400 to leave room
+MAX_WORDS = 520  # about one printed page; the prompt asks for 450 to leave room
 
 
 def _llm() -> LLM:
@@ -18,11 +23,12 @@ def _llm() -> LLM:
     return LLM(model=os.getenv("MODEL", "gpt-4.1-mini"), temperature=0)
 
 
-def check_briefing(text: str, profile: dict, citable: set[str]) -> list[str]:
+def check_briefing(text: str, profile: dict, citable: set[str], news_urls: set[str] | None = None) -> list[str]:
     """Problems that make a briefing unusable; empty means it may be published.
 
     citable holds every "file > section" in the internal documents, so a
-    citation to a section that does not exist is caught.
+    citation to a section that does not exist is caught. news_urls holds the
+    links the news search returned, so an invented link is caught too.
     """
     problems = []
     words = len(re.findall(r"\S+", text))
@@ -39,7 +45,11 @@ def check_briefing(text: str, profile: dict, citable: set[str]) -> list[str]:
     if unknown:
         problems.append(f"these citations are not sections of the documents: {unknown}; "
                         "copy cite_as from the search results")
-    for section in ("Churn risk", "Recommended action", "Sources"):
+    invented = sorted(set(re.findall(r"https?://[^\s)\]>]+", text)) - (news_urls or set()))
+    if invented:
+        problems.append(f"these links did not come from search_recent_news: {invented[:3]}; "
+                        "link only articles the search returned")
+    for section in ("Churn risk", "Recommended action", "Market now", "Sources"):
         if section.lower() not in text.lower():
             problems.append(f"add the section {section}")
     return problems
@@ -60,7 +70,7 @@ class BriefingCrew:
         return Agent(
             config=self.agents_config["retention_briefing_writer"],  # type: ignore[index]
             llm=_llm(),
-            tools=[customer_risk_profile_tool, search_internal_docs_tool],
+            tools=[customer_risk_profile_tool, search_internal_docs_tool, search_recent_news_tool],
             max_iter=8,
             verbose=True,
         )
@@ -69,11 +79,15 @@ class BriefingCrew:
     def require_customer(self, inputs: dict) -> dict:
         """Score the customer in code first: no approved model or unknown customer, no briefing."""
         self._profile = customer_risk_profile(int(inputs["customer_id"]))
+        # Searched here first so the guardrail knows which links are real; the
+        # agent's own call gets the same cached result.
+        self._news = search_recent_news(self._profile["news_query"])
         Path(inputs["output_dir"]).mkdir(parents=True, exist_ok=True)
         return inputs
 
     def _guardrail(self, output):
-        problems = check_briefing(output.raw, self._profile, default_index().citations())
+        problems = check_briefing(output.raw, self._profile, default_index().citations(),
+                                  {a["url"] for a in self._news["articles"]})
         return (False, "; ".join(problems)) if problems else (True, output)
 
     @task

@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 BUNDLE = ROOT / "deploy" / "web"
 SRC = ROOT / "src" / "churn_pipeline"
 
-CODE = ["__init__.py", "scenarios.py", "run_history.py", "contract", "web"]
+CODE = ["__init__.py", "scenarios.py", "run_history.py", "news.py", "contract", "web"]
 CREWS = [("analyst_crew", "Crew 1 · Data Analyst"), ("scientist_crew", "Crew 2 · Data Scientist"),
          ("briefing_crew", "Crew 3 · Retention Briefing")]
 AGENTS_JSON = ROOT / "artifacts" / "latest" / "agents.json"
@@ -43,8 +43,10 @@ SOURCE_FILES = [
      "Chunking by section, embeddings with a cache, cosine search with citations."),
     ("Briefing situations", "src/churn_pipeline/tools/briefing_tools.py",
      "Code decides which situations apply and what the RAG searches for."),
+    ("Web search", "src/churn_pipeline/news.py",
+     "Market news from the last 48 hours through Google News RSS, without an API key."),
     ("Briefing guardrail", "src/churn_pipeline/crews/briefing_crew/briefing_crew.py",
-     "A crew that refuses to start without an approved model, and checks every citation."),
+     "A crew that refuses to start without an approved model, and checks every citation and link."),
     ("An agent's prompts", "src/churn_pipeline/crews/analyst_crew/config/tasks.yaml",
      "The Data Analyst crew's task prompts."),
 ]

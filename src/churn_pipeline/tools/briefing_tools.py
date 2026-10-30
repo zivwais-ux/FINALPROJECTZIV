@@ -182,7 +182,7 @@ def customer_risk_profile_tool(customer_id: int) -> str:
 
 @tool("search_recent_news")
 def search_recent_news_tool(query: str) -> str:
-    """Search the web for news from the last 48 hours (GDELT, English-language sources in India).
+    """Search the web for news from the last 48 hours (Google News, English-language news in India).
     Pass the news_query from customer_risk_profile exactly as given. Returns JSON with up to five
-    articles (title, url, domain, published) newest first, or an error when the search failed."""
+    articles (title, url, source, published) newest first, or an error when the search failed."""
     return json.dumps(search_recent_news(query), ensure_ascii=False)

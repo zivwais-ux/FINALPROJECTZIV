@@ -3,10 +3,11 @@
 {% block content %}
 <div class="eyebrow">System design</div>
 <h1>Architecture</h1>
-<p class="lead">How data, agents, tools and gates connect. {{ agent_count }} agents across three crews; each agent calls its own Python tool, and every gate is plain code.</p>
+<p class="lead">How data, agents, tools and gates connect. {{ agent_count }} agents across three crews; each agent calls its own Python tools, and every gate is plain code.
+The briefing agent combines the model, RAG over internal documents and a web search for news from the last 48 hours.</p>
 
 <div class="card">
-<svg viewBox="0 0 1040 380" width="100%" role="img" aria-label="Pipeline architecture diagram" style="font-family: var(--font); max-width: 100%">
+<svg viewBox="0 0 1040 455" width="100%" role="img" aria-label="Pipeline architecture diagram" style="font-family: var(--font); max-width: 100%">
   <defs>
     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--faint)"/></marker>
   </defs>
@@ -40,7 +41,9 @@
   <!-- Row 2: RAG + briefing -->
   <rect class="bx dt" x="10" y="285" width="160" height="70" rx="10"/><text class="t1" x="90" y="313" text-anchor="middle">Internal documents</text><text class="t2" x="90" y="331" text-anchor="middle">playbook · policy · campaigns</text>
   <rect class="bx" x="205" y="285" width="150" height="70" rx="10"/><text class="t1" x="280" y="313" text-anchor="middle">RAG index</text><text class="t2" x="280" y="331" text-anchor="middle">sections → embeddings</text>
-  <rect class="bx ag" x="545" y="285" width="190" height="70" rx="10"/><text class="t1" x="640" y="313" text-anchor="middle">Briefing agent</text><text class="t2" x="640" y="331" text-anchor="middle">risk tool + search tool</text>
+  <rect class="bx ag" x="545" y="285" width="190" height="70" rx="10"/><text class="t1" x="640" y="313" text-anchor="middle">Briefing agent</text><text class="t2" x="640" y="331" text-anchor="middle">risk · docs · news tools</text>
+  <rect class="bx dt" x="545" y="395" width="190" height="50" rx="10"/><text class="t1" x="640" y="417" text-anchor="middle">Google News</text><text class="t2" x="640" y="434" text-anchor="middle">web search · last 48 hours</text>
+  <path class="ln" d="M640 395V357"/><text class="t2" x="652" y="380">search_recent_news</text>
   <rect class="bx ap" x="800" y="285" width="230" height="70" rx="10"/><text class="t1" x="915" y="313" text-anchor="middle">One-page briefing</text><text class="t2" x="915" y="331" text-anchor="middle">score + cited recommendations</text>
   <path class="ln" d="M170 320H203"/><path class="ln" d="M355 320H543"/><text class="t2" x="450" y="312" text-anchor="middle">search_internal_docs</text>
   <path class="ln" d="M962 110V250H640V283"/><text class="t2" x="800" y="244" text-anchor="middle">customer_risk_profile</text>
