@@ -1,43 +1,30 @@
-# Retention Briefing for Customer 50032
+# Retention briefing: customer 50032
+
+Customer 50032 is a new customer with zero tenure, medium churn risk, and a preference for laptops and accessories. They have made one order and have a cashback balance, with a medium risk score requiring prioritized retention contact.
 
 ## Customer snapshot
-- Tenure: 0.0 months
-- Complain: 0
-- Preferred Payment Mode: Credit Card
-- Preferred Order Category: Laptop & Accessory
-- Satisfaction Score: 3
-- Days Since Last Order: 0.0
-- Order Count: 1.0
-- Cashback Amount: 161.32
+- Tenure 0.0 · Complain 0 · PreferredPaymentMode Credit Card · PreferedOrderCat Laptop & Accessory · SatisfactionScore 3 · DaySinceLastOrder 0.0 · OrderCount 1.0 · CashbackAmount 161.32
 
 ## Churn risk
-- Risk score: 0.42 (medium risk band)
-- Score note: The model never saw this customer during training (scored_out_of_sample: true)
+- Risk score: 0.42 (medium risk band: 0.40 to 0.70). The model never saw this customer during training.
 
-## Recommended action
-- Contact order: Medium risk customers are contacted after high risk and complaint customers [retention_playbook.md > Who we contact first].
-- Contact channel: Use app push notification first, then email after 2 days if no response. Do not contact more than twice in 14 days [retention_playbook.md > Channels].
-- For new customers (tenure 0 to 1 months), make a welcome call within 3 days of the flag and follow up with an email about delivery and payment experience. Do not offer a discount on the first contact; focus on fixing the experience first [retention_playbook.md > New customers (tenure 0 to 1 months)].
-
-## Offer
-- No discount on the first contact for new customers [retention_playbook.md > New customers (tenure 0 to 1 months)].
-- Discount limits: Maximum discount per customer per month is INR 500 or 15% of the next order, whichever is lower. Cashback offers capped at INR 300 per month. Only one retention offer per 30 days allowed [discount_policy.md > Limits per customer].
-- Approval levels: Up to INR 300 discount can be decided by the retention agent; INR 301 to 500 requires team lead approval [discount_policy.md > Approval levels].
-- Monthly retention budget allocates 30% for medium-risk customers [discount_policy.md > Monthly retention budget].
+## Plan (decided in code from the playbook and the discount policy)
+- **Contact:** Yes, priority 3 (risk 0.40 to 0.70). Customers with a risk score between 0.40 and 0.70 are contacted after high risk and recent complainants, per the retention playbook. [retention_playbook.md > Who we contact first]
+- **Channel:** App push notification, then email after 2 days without response. Medium risk customers are contacted first by app push notification, then by email after 2 days without response. [retention_playbook.md > Channels]
+- **Frequency:** At most twice in 14 days. The playbook limits contact frequency to at most twice in 14 days to avoid over-contacting customers. [retention_playbook.md > Channels]
+- **New customer:** Welcome call within 3 days plus a follow-up email; no discount on this first contact. New customers flagged by the model receive a welcome call within 3 days plus a follow-up email without a discount on first contact. [retention_playbook.md > New customers (tenure 0 to 1 months)]
+- **Offer:** Not on the first contact; only if still at risk a week later. Discounts are not offered on the first contact for new customers; only if still at risk a week later. [retention_playbook.md > New customers (tenure 0 to 1 months)]
+- **Offer type:** Discount or wallet cashback within the limits. Offers can be discounts or wallet cashback within the policy limits. [discount_policy.md > Limits per customer]
+- **Limits:** Up to INR 500 or 15% of the next order, whichever is lower; cashback up to INR 300; one offer per 30 days. Discounts are limited to INR 500 or 15% of the next order, cashback up to INR 300, and one offer per 30 days. [discount_policy.md > Limits per customer]
+- **Approval:** Agent up to INR 300; team lead for INR 301 to 500; never above INR 500. Agents can approve offers up to INR 300; higher amounts require team lead approval, never exceeding INR 500. [discount_policy.md > Approval levels]
 
 ## Do not
-- Do not offer a discount on the first contact with new customers; focus on experience improvement first [retention_playbook.md > New customers (tenure 0 to 1 months)].
-- Do not contact the customer more than twice within 14 days [retention_playbook.md > Channels].
+- Do not tell the customer their churn score [retention_playbook.md > What we never do]
 
 ## Market now (last 48 hours)
-- [HP Ryzen 9 8945HX and RTX 5070 gaming laptop with OLED display drops by 18% with Amazon offer](https://news.google.com/rss/articles/CBMiwAFBVV95cUxPa1ZYXy1QRFlKVUNCX3VoN01tTXlsazVoVjd5NTYxZGp6bGtjMU5SeDhIeTBodk54azIweDZ2VUFNNDJtY1U0aTRhZ2hIWjRyeGFPbVgwOERMNkRNVUpUbm5zVjJsTnhsaS1vaWg2LUNxNTFnaXlSanpPQllEeUJkSnlFVUN2Z2hiZ3VIMlQ5NWpnNjJ0RDJMNVVUczIwV2tyUy15amtXcmpCdWJRYjI5TTFWV0ttbEx2RVVpZGU3Qmg?oc=5) - PC Guide, 2026-10-30. Competitor discount on laptops may increase churn risk in this category.
-- [These 2 laptop deals start at $417.99 for Lenovo and Microsoft models](https://news.google.com/rss/articles/CBMiogFBVV95cUxPaEo2Vl9zUlBvSmJ4WFJEcE9EUlYyTk1ZSmtSek1vZDdOczdGRW9BS1VEWDZmMk5qRllHT1ZMVzdOUG04SHptOGlFZkhLc2ptNHpYNk5ULXRoWXFGUEhRUWhpaEZROVhmaWdkRFlJOElILU5BekZzaEpHeWZmMmpxX3ZWUlI1MHNZaEpIS192cE0zcHB5aGM4TU5uVXN6V0xSNEE?oc=5) - Technobezz, 2026-10-30. New laptop deals may attract customers away if not matched.
-- [King Yuan Electronics advances $1.3B Fort Worth chip testing facility](https://news.google.com/rss/articles/CBMimgFBVV95cUxQamhsQ0w0ZXc5NEUzY3NmZ295NU1qeU1VRVhRVnlCMkNmQW5xeFBhMm1pMm9QTjdTTUxuTzhjVGdxMnFxMkVTSGtkcGZIMWQwcGVfX0sxeDh1WEN3M1ZoZjBpdUtFSTBHYjJYUUVIcll2Zm1yYlN3dGpkTk53R3ppSzYwUkdLWWkwSlJuYkhoZ0dfNzhNOGJnVHFn?oc=5) - The Real Deal, 2026-10-30. Industry investment signals ongoing innovation but no immediate impact on retention.
+- [Everything You Need To Know About Black Friday 2026: The Biggest Sales, the Best Deals, and More](https://news.google.com/rss/articles/CBMinAFBVV95cUxQNlhENTR0ckIxeDdRSzJGVUU1S2ZjWXo5RWVCV1FwRENuZjJYNm9HYm9BdGZlYVA5Z2dYUzFRc253MHFYS0M0MTVQYm5nTVNXTmd2a1M2UGRzTjBaT3c0akh2UTljb2p2dnptVHU2Wld0dFduY05qT1FzUXU5WGMwWjR0VnJySmowT2VVM3lsOVFSWGhpd24zTi1CRnI?oc=5), PCMag, 2026-10-31 05:46 UTC. Upcoming Black Friday sales may increase customer interest in electronics, aiding retention efforts.
+- [Amazon's dropped the price of our favourite laptop for graphic designers by $160 in early Black Friday deal](https://news.google.com/rss/articles/CBMi2wFBVV95cUxQOUdLaW03QWx4WUJkMDNubDdmSHNUem5VTmtFUUwyMFloZWR2cmhJVWtUNUx3ME9YYmY4a05BNXBCTHBEM0VNUDJEQ3lQcmk0dFJwU3NKRkJoLXZBOUNhdVRwT2NTZTY4V203Z3ZobEI4Z0h4LWs5Y180aHZxTVlCcW8xcURWR09rLWx4TDBBb202SjM0MTNReWdKNmNCdmFZU1RKb1AyZDlJSjJqWkw1RElCY2JBMTQwV3F2U2dhSlA1eUF0ZHlLOXgtbGJQNW94NktKSUJPeXMxOFU?oc=5), Creative Bloq, 2026-10-31 05:00 UTC. Early Black Friday laptop discounts may influence this customer's purchase decisions and retention.
+- [Deal | HP OmniBook 3 with Wildcat Lake processor drops below $500](https://news.google.com/rss/articles/CBMipAFBVV95cUxOOTJYNVY5NHUtS2NjMDNaVWIyeHRjaHFlZ2dkc0I1aDBaNmFsOWlsTURmWWFDVVMwSXR6TnRxOUFMVUloWUhDVXlTd0QyUmlqeXNvOWdtdG8tdFM5Mk9Oa2FFS2piRWNLYWY1RXo0eUtSV0RlTVdPTjBBem5XaHlZd3dVcEo3VVBCbkw5S0F3eGJmSGVJc0kwTnlUak9zeEg3b2Q5SQ?oc=5), Notebookcheck, 2026-10-31 03:26 UTC. Price drops on laptops like the HP OmniBook may increase competitive pressure but also customer interest.
 
 ## Sources
-- [retention_playbook.md > Who we contact first]
-- [retention_playbook.md > Channels]
-- [retention_playbook.md > New customers (tenure 0 to 1 months)]
-- [discount_policy.md > Limits per customer]
-- [discount_policy.md > Approval levels]
-- [discount_policy.md > Monthly retention budget]
+[discount_policy.md > Approval levels] · [discount_policy.md > Limits per customer] · [retention_playbook.md > Channels] · [retention_playbook.md > New customers (tenure 0 to 1 months)] · [retention_playbook.md > What we never do] · [retention_playbook.md > Who we contact first]

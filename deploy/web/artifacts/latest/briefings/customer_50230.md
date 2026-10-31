@@ -1,52 +1,30 @@
-# Retention Briefing for Customer 50230
+# Retention briefing: customer 50230
+
+Customer 50230 is a medium-risk, new customer with a recent complaint and prefers laptops with cash on delivery payment. The key retention focus is resolving the complaint before offering any discount or coupon.
 
 ## Customer snapshot
-- Tenure: 3.0 months
-- Complaint flag: 1 (complained in last month)
-- Preferred payment mode: COD (Cash on Delivery)
-- Preferred order category: Laptop & Accessory
-- Satisfaction score: 3
-- Days since last order: 2.0
-- Order count: 2.0
-- Cashback amount: 147.36
+- Tenure 3.0 · Complain 1 · PreferredPaymentMode COD · PreferedOrderCat Laptop & Accessory · SatisfactionScore 3 · DaySinceLastOrder 2.0 · OrderCount 2.0 · CashbackAmount 147.36
 
 ## Churn risk
-- Risk score: 0.51 (medium risk band)
-- Score note: The model never saw this customer during training (scored_out_of_sample: true)
+- Risk score: 0.51 (medium risk band: 0.40 to 0.70). The model never saw this customer during training.
 
-## Recommended action
-- Contact priority: Customers who filed a complaint in the last month are contacted before medium risk customers regardless of score [retention_playbook.md > Who we contact first].
-- Contact channel: For medium risk customers, use app push notification first, then email after 2 days without response. Do not exceed two contacts in 14 days [retention_playbook.md > Channels].
-- Complaint resolution: Resolve the customer's complaint first before offering any coupon or reward. Sending coupons before complaint resolution may increase churn [retention_playbook.md > Customers who complained].
-- Complaint handling: Support agents must close the complaint before retention team offers coupons [retention_playbook.md > Customers who complained].
-- Payment mode considerations: Since the customer pays COD, cashback offers are ineffective. Use free-delivery vouchers or a small discount printed on the next invoice instead. Encourage but do not require switching to UPI or card payment [retention_playbook.md > Cash on delivery (COD) customers].
-
-## Offer
-- Maximum discount per customer per month is INR 500 or 15% of the next order, whichever is lower [discount_policy.md > Limits per customer].
-- Cashback offers capped at INR 300 per month and paid to wallet, not applicable for COD customers [discount_policy.md > Limits per customer].
-- Free delivery vouchers are preferred for COD customers [discount_policy.md > Offers that need extra care].
-- Approval levels: Up to INR 300 discount can be decided by the retention agent; INR 301 to 500 requires team lead approval [discount_policy.md > Approval levels].
-- No discount offers in Grocery category (not applicable here) [discount_policy.md > Offers that need extra care].
-- Only one retention offer per 30 days allowed [discount_policy.md > Limits per customer].
+## Plan (decided in code from the playbook and the discount policy)
+- **Contact:** Yes, priority 2 (complained in the last month, whatever the score). Customers who complained in the last month are contacted regardless of risk score, as they are a high priority. [retention_playbook.md > Who we contact first]
+- **Channel:** App push notification, then email after 2 days without response. Medium risk customers are contacted first by app push notification, then by email after 2 days without response. [retention_playbook.md > Channels]
+- **Frequency:** At most twice in 14 days. Customers are contacted at most twice in 14 days to avoid over-contacting. [retention_playbook.md > Channels]
+- **Complaint:** Close the complaint before any coupon or offer. Complaints must be resolved before any coupon or offer is given to avoid increasing churn. [retention_playbook.md > Customers who complained]
+- **Offer:** Only after the complaint is closed. Offers are only made after the complaint is closed, following the 'resolve before you reward' rule. [retention_playbook.md > Customers who complained]
+- **Offer type:** Free-delivery voucher or a small invoice discount; no wallet cashback. Cash on delivery customers receive free-delivery vouchers or small invoice discounts, not wallet cashback. [retention_playbook.md > Cash on delivery (COD) customers]
+- **Limits:** Up to INR 500 or 15% of the next order, whichever is lower; cashback up to INR 300; one offer per 30 days. Discounts are limited to INR 500 or 15% of the next order, cashback up to INR 300, and one offer per 30 days. [discount_policy.md > Limits per customer]
+- **Approval:** Agent up to INR 300; team lead for INR 301 to 500; never above INR 500. Retention agents can approve offers up to INR 300; higher amounts require team lead approval. [discount_policy.md > Approval levels]
 
 ## Do not
-- Do not offer coupons or discounts before the complaint is resolved [retention_playbook.md > Customers who complained].
-- Do not use cashback offers for COD customers [retention_playbook.md > Cash on delivery (COD) customers].
-- Do not contact the customer more than twice within 14 days [retention_playbook.md > Channels].
+- Do not tell the customer their churn score [retention_playbook.md > What we never do]
 
 ## Market now (last 48 hours)
-- [HP Ryzen 9 8945HX and RTX 5070 gaming laptop with OLED display drops by 18% with Amazon offer](https://news.google.com/rss/articles/CBMiwAFBVV95cUxPa1ZYXy1QRFlKVUNCX3VoN01tTXlsazVoVjd5NTYxZGp6bGtjMU5SeDhIeTBodk54azIweDZ2VUFNNDJtY1U0aTRhZ2hIWjRyeGFPbVgwOERMNkRNVUpUbm5zVjJsTnhsaS1vaWg2LUNxNTFnaXlSanpPQllEeUJkSnlFVUN2Z2hiZ3VIMlQ5NWpnNjJ0RDJMNVVUczIwV2tyUy15amtXcmpCdWJRYjI5TTFWV0ttbEx2RVVpZGU3Qmg?oc=5) (PC Guide, 2026-10-30)  
-  May increase customer interest in laptops and accessories category.
-- [Upgrade for Less: Save Over $350 Off This Powerful Lenovo Laptop Today](https://news.google.com/rss/articles/CBMilgFBVV95cUxOS2tlX3FVUTh2b1Z2QWdxV1RhcWVjU0xrbDdxTkY4TVhOcTRzd20yNHoxOENqWjN0cEUzUEd2RWxPRHZfRjIwSFYzMVdYUGZIM3hfMTVCc2dleWIycUNHXzFiQXRUMTh1MzJSWGNMUXFLV0FWaXJKX0FQSXNTRWhzdVVWY1RlZm9CUzdJalFTajF0cU1lbHc?oc=5) (PCMag, 2026-10-30)  
-  Competitive pricing on laptops could influence retention positively if matched.
-- [These 2 laptop deals start at $417.99 for Lenovo and Microsoft models](https://news.google.com/rss/articles/CBMiogFBVV95cUxPaEo2Vl9zUlBvSmJ4WFJEcE9EUlYyTk1ZSmtSek1vZDdOczdGRW9BS1VEWDZmMk5qRllHT1ZMVzdOUG04SHptOGlFZkhLc2ptNHpYNk5ULXRoWXFGUEhRUWhpaEZROVhmaWdkRFlJOElILU5BekZzaEpHeWZmMmpxX3ZWUlI1MHNZaEpIS192cE0zcHB5aGM4TU5uVXN6V0xSNEE?oc=5) (Technobezz, 2026-10-30)  
-  More laptop deals in the market may increase churn risk if Harbor & Vale does not remain competitive.
+- [Everything You Need To Know About Black Friday 2026: The Biggest Sales, the Best Deals, and More](https://news.google.com/rss/articles/CBMinAFBVV95cUxQNlhENTR0ckIxeDdRSzJGVUU1S2ZjWXo5RWVCV1FwRENuZjJYNm9HYm9BdGZlYVA5Z2dYUzFRc253MHFYS0M0MTVQYm5nTVNXTmd2a1M2UGRzTjBaT3c0akh2UTljb2p2dnptVHU2Wld0dFduY05qT1FzUXU5WGMwWjR0VnJySmowT2VVM3lsOVFSWGhpd24zTi1CRnI?oc=5), PCMag, 2026-10-31 05:46 UTC. Upcoming Black Friday sales may increase customer interest in laptops, aiding retention efforts.
+- [Amazon's dropped the price of our favourite laptop for graphic designers by $160 in early Black Friday deal](https://news.google.com/rss/articles/CBMi2wFBVV95cUxQOUdLaW03QWx4WUJkMDNubDdmSHNUem5VTmtFUUwyMFloZWR2cmhJVWtUNUx3ME9YYmY4a05BNXBCTHBEM0VNUDJEQ3lQcmk0dFJwU3NKRkJoLXZBOUNhdVRwT2NTZTY4V203Z3ZobEI4Z0h4LWs5Y180aHZxTVlCcW8xcURWR09rLWx4TDBBb202SjM0MTNReWdKNmNCdmFZU1RKb1AyZDlJSjJqWkw1RElCY2JBMTQwV3F2U2dhSlA1eUF0ZHlLOXgtbGJQNW94NktKSUJPeXMxOFU?oc=5), Creative Bloq, 2026-10-31 05:00 UTC. Early Black Friday laptop discounts may encourage this customer's continued purchases.
+- [Deal | HP OmniBook 3 with Wildcat Lake processor drops below $500](https://news.google.com/rss/articles/CBMipAFBVV95cUxOOTJYNVY5NHUtS2NjMDNaVWIyeHRjaHFlZ2dkc0I1aDBaNmFsOWlsTURmWWFDVVMwSXR6TnRxOUFMVUloWUhDVXlTd0QyUmlqeXNvOWdtdG8tdFM5Mk9Oa2FFS2piRWNLYWY1RXo0eUtSV0RlTVdPTjBBem5XaHlZd3dVcEo3VVBCbkw5S0F3eGJmSGVJc0kwTnlUak9zeEg3b2Q5SQ?oc=5), Notebookcheck, 2026-10-31 03:26 UTC. Price drops on laptops may increase this customer's likelihood to stay and order again.
 
 ## Sources
-- [retention_playbook.md > Who we contact first]
-- [retention_playbook.md > Channels]
-- [retention_playbook.md > Customers who complained]
-- [retention_playbook.md > Cash on delivery (COD) customers]
-- [discount_policy.md > Limits per customer]
-- [discount_policy.md > Approval levels]
-- [discount_policy.md > Offers that need extra care]
+[discount_policy.md > Approval levels] · [discount_policy.md > Limits per customer] · [retention_playbook.md > Cash on delivery (COD) customers] · [retention_playbook.md > Channels] · [retention_playbook.md > Customers who complained] · [retention_playbook.md > What we never do] · [retention_playbook.md > Who we contact first]

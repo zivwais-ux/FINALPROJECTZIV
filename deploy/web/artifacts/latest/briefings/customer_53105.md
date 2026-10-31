@@ -1,52 +1,31 @@
-# Retention Briefing for Customer 53105
+# Retention briefing: customer 53105
+
+Customer 53105 is a new customer with a tenure of 1 month, who has complained recently and prefers the Mobile Phone category, paying cash on delivery. The retention agent should prioritize resolving the complaint before offering any incentives and use app push notifications as the primary contact channel.
 
 ## Customer snapshot
-- Tenure: 1.0 months
-- Complaint filed: Yes (in last month)
-- Preferred payment mode: COD (Cash on Delivery)
-- Preferred order category: Mobile Phone
-- Satisfaction score: 4
-- Days since last order: 5.0
-- Order count: 2.0
-- Cashback amount: INR 157.02
+- Tenure 1.0 · Complain 1 · PreferredPaymentMode COD · PreferedOrderCat Mobile Phone · SatisfactionScore 4 · DaySinceLastOrder 5.0 · OrderCount 2.0 · CashbackAmount 157.02
 
 ## Churn risk
-- Risk score: 0.69 (medium risk band)
-- Score note: The model never saw this customer during training (scored_out_of_sample: true)
+- Risk score: 0.69 (medium risk band: 0.40 to 0.70). The model never saw this customer during training.
 
-## Recommended action
-- Contact priority: Customers with a complaint in the last month are contacted before medium risk customers [retention_playbook.md > Who we contact first].
-- Contact channel: For medium risk customers, use app push notification first, then email after 2 days without response. Do not call as risk is below 0.70 [retention_playbook.md > Channels].
-- For new customers (tenure 0 to 1 months), make a welcome call within 3 days of the flag and follow up with an email about delivery and payment experience. Do not offer a discount on the first contact; focus on fixing experience first [retention_playbook.md > New customers (tenure 0 to 1 months)].
-- Resolve the customer's complaint before offering any coupon or reward, as coupons sent while complaints are open can increase churn [retention_playbook.md > Customers who complained].
-- Encourage COD customers to switch payment modes but do not require it; use free-delivery vouchers or small discounts printed on the next invoice instead of cashback [retention_playbook.md > Cash on delivery (COD) customers].
-
-## Offer
-- No discount on first contact due to new customer status [retention_playbook.md > New customers (tenure 0 to 1 months)].
-- After complaint resolution, consider a free-delivery voucher as preferred for COD customers [retention_playbook.md > Cash on delivery (COD) customers], within discount limits.
-- Discount limits: Maximum INR 500 or 15% of next order, whichever is lower; cashback capped at INR 300 per month and paid to wallet (not applicable here) [discount_policy.md > Limits per customer].
-- Approval needed: Up to INR 300 retention agent approval; INR 301-500 team lead approval [discount_policy.md > Approval levels].
+## Plan (decided in code from the playbook and the discount policy)
+- **Contact:** Yes, priority 2 (complained in the last month, whatever the score). Customers who complained in the last month are contacted regardless of their risk score, as they are a high priority. [retention_playbook.md > Who we contact first]
+- **Channel:** App push notification, then email after 2 days without response. Medium risk customers are contacted first by app push notification, then by email if no response after 2 days. [retention_playbook.md > Channels]
+- **Frequency:** At most twice in 14 days. Customers should not be contacted more than twice in 14 days to avoid over-contacting. [retention_playbook.md > Channels]
+- **Complaint:** Close the complaint before any coupon or offer. Complaints must be resolved before any coupon or offer is given to avoid increasing churn. [retention_playbook.md > Customers who complained]
+- **New customer:** Welcome call within 3 days plus a follow-up email; no discount on this first contact. New customers receive a welcome call within 3 days and a follow-up email, with no discount on first contact. [retention_playbook.md > New customers (tenure 0 to 1 months)]
+- **Offer:** Only after the complaint is closed. Offers are only made after the complaint is closed to ensure effectiveness. [retention_playbook.md > Customers who complained]
+- **Offer type:** Free-delivery voucher or a small invoice discount; no wallet cashback. Cash on delivery customers receive free-delivery vouchers or small invoice discounts, not wallet cashback. [retention_playbook.md > Cash on delivery (COD) customers]
+- **Limits:** Up to INR 500 or 15% of the next order, whichever is lower; cashback up to INR 300; one offer per 30 days. Discounts are limited to INR 500 or 15% of the next order, with cashback capped at INR 300 and one offer per 30 days. [discount_policy.md > Limits per customer]
+- **Approval:** Agent up to INR 300; team lead for INR 301 to 500; never above INR 500. Agents can approve offers up to INR 300; higher amounts require team lead approval, never exceeding INR 500. [discount_policy.md > Approval levels]
 
 ## Do not
-- Do not offer a discount on the first contact with this new customer [retention_playbook.md > New customers (tenure 0 to 1 months)].
-- Do not send coupons before complaint resolution [retention_playbook.md > Customers who complained].
-- Do not use cashback offers for COD customers [retention_playbook.md > Cash on delivery (COD) customers].
-- Do not contact the customer more than twice in 14 days [retention_playbook.md > Channels].
+- Do not tell the customer their churn score [retention_playbook.md > What we never do]
 
 ## Market now (last 48 hours)
-- [Google Pixel 11 Pro Unlocked Smartphone sees price cut to $799](https://news.google.com/rss/articles/CBMimAFBVV95cUxOZXF6V0lWM2NtRWhzWWx5ZExvY05STnhjcTI0NUVCWmlXWVdub0NldTRwY1JpQUw2NnZyTUZkV1hJYXNlQjNwRkZnVEpub3FjOGdhNm5uWUZRNDRjV3VLQml4M3laRW5PVFBfajJlSnYwVjBBQzFTSHJSR3BjT3dldU9SUWtXeExCZk9NWXVpaUMxZUp5LXJnOQ?oc=5) - Technobezz, 2026-10-30. Price cuts on smartphones may increase competitive pressure on mobile phone buyers like this customer.
-- [DoorDash to Buy Instacart in $17bn Grocery Deal](https://news.google.com/rss/articles/CBMifEFVX3lxTFBCWDdMRTZoS2ZxRWRSSGhoa19YVlJtSmFKMXptd2M3dDdHdGpEQ1ViVi1XY2dEQTZWaWVWTkVBRWJDNExnWGZ2NU1EcmtyZU8ycE9lOVlpZTl2b0c5V1R0WGNIS1lzTUtkeWtCTWxiWEQtdlRvd1RpWXBIX2E?oc=5) - Grocery Trade News, 2026-10-30. Not directly relevant to mobile phone category but indicates market consolidation.
-- [Google Pixel 11 Pro Fold Unlocked Smartphone now $1649, down from $1899](https://news.google.com/rss/articles/CBMiogFBVV95cUxOUUo4cklseXYyZDdxX1h4M2tkQ1FiQVhlUXdfcWlTcEhGT3g1UVAyeUxTVllCeGZ4V2hvc1Z6X1hSV1RkUkR1eWxZYV96ZDNkNnR0TDNiaWRIaXBOSXFkb013dEQteEd5WFRqcC10eVJfNDJ6aHNaZ0gwaVg4bkZhZEFzay1iNGdiSW0yOG1VZmFrN0FnVGUwSDRCcWxlWDNPR1E?oc=5) - Technobezz, 2026-10-30. Further smartphone discounts may influence this customer's purchase decisions.
+- [All the phones T-Mobile is giving away for free: Shop iPhone 17, Samsung Galaxy Z Fold 8, and Google Pixel 11](https://news.google.com/rss/articles/CBMilwFBVV95cUxOM3R4UVpTQ3VETVVrR1JRODkwaW9SMFFORGJpU2ZieC1udFJuakxXTVVpRHZ1TGI5eV9YelVrM0NVZVkwLWtpSmFtY2ExXzhGLTJpS1lzU3pQTmdIMGsxUlR5RGl6Z2VsdDVocGtzWG5yUG10VG5uVzVIbWJJSm9hWmFXRVZBUTMxUWNhTXpVSGFkLXB1dXhV?oc=5), Mashable, 2026-10-30 22:00 UTC. Competitors are offering free phones and discounts, increasing retention risk for mobile phone buyers like this customer.
+- [Apple announces iPhone 18 Pro and iPhone 18 Pro Max with major camera upgrades](https://news.google.com/rss/articles/CBMifkFVX3lxTE1YVmViNGNPMllaa0J5cFpzRGkxcHUyMjFJZTRXbENGaXdwUDk5azJnMFQyNHRhOU00ejdwek91ZnR1T0FHUDhiNnNSUWlGNEJ4ZUNNOWdrQS1wTlU5aUV0VmpXeTBVcXlxVktUbG54OTl6MVJ3S3hfTXluQk9YUQ?oc=5), Mashable, 2026-10-30 22:00 UTC. New iPhone 18 Pro launch may influence customer preferences and retention in the mobile phone category.
+- [Why Google’s Pixel 11 Pro Holds Firm Beside Galaxy S26 Ultra and iPhone 18 Pro](https://news.google.com/rss/articles/CBMijgFBVV95cUxNQm1XNm1xVTMxdElkMy01eFg4Mk9fc2VkdjE0Y2JpSld0LV9Zb1VfZE8zeG1NVnhEeDdRRnVENGh3Z3dTLWIwUzVJTlN4RjFLUERHckJzSmxTWTlIYjl6ZDlyVDM0OEFBT1pXS09XX0t3MnIzMXpTeEJidDF0VHBCNkQ3d1pTR1E3NlBNTVdn?oc=5), TechEBlog -, 2026-10-30 22:52 UTC. Strong competition from flagship smartphones may increase churn risk for mobile phone buyers.
 
 ## Sources
-- [retention_playbook.md > Who we contact first]
-- [retention_playbook.md > Channels]
-- [retention_playbook.md > New customers (tenure 0 to 1 months)]
-- [retention_playbook.md > Customers who complained]
-- [retention_playbook.md > Cash on delivery (COD) customers]
-- [discount_policy.md > Limits per customer]
-- [discount_policy.md > Approval levels]
-- [discount_policy.md > Offers that need extra care]
-- [past_campaigns.md > Campaign "Welcome Back" (new customers)]
-- [past_campaigns.md > Campaign "Sorry We Missed" (complaints)]
-- [competitor_offers.md > CartNest]
+[discount_policy.md > Approval levels] · [discount_policy.md > Limits per customer] · [retention_playbook.md > Cash on delivery (COD) customers] · [retention_playbook.md > Channels] · [retention_playbook.md > Customers who complained] · [retention_playbook.md > New customers (tenure 0 to 1 months)] · [retention_playbook.md > What we never do] · [retention_playbook.md > Who we contact first]

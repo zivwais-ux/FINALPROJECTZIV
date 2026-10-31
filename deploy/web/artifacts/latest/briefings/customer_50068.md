@@ -1,47 +1,31 @@
-# Retention Briefing for Customer 50068
+# Retention briefing: customer 50068
+
+This customer is new with zero months tenure, has recently complained, and prefers laptops and accessories. They have a high churn risk score of 0.97, making timely and careful retention efforts critical.
 
 ## Customer snapshot
-- Tenure: 0.0 months
-- Complaint flag: 1 (complained in last month)
-- Preferred Payment Mode: Debit Card
-- Preferred Order Category: Laptop & Accessory
-- Satisfaction Score: 3
-- Days Since Last Order: 1.0
-- Order Count: 1.0
-- Cashback Amount: 159.16 INR
+- Tenure 0.0 · Complain 1 · PreferredPaymentMode Debit Card · PreferedOrderCat Laptop & Accessory · SatisfactionScore 3 · DaySinceLastOrder 1.0 · OrderCount 1.0 · CashbackAmount 159.16
 
 ## Churn risk
-- Risk score: 0.97 (high risk band)
-- Note: The model never saw this customer during training (scored_out_of_sample = true).
+- Risk score: 0.97 (high risk band: 0.70 or higher). The model never saw this customer during training.
 
-## Recommended action
-- Contact priority: This customer is high risk (score ≥ 0.70) and has complained recently, so they should be contacted immediately by phone call from a retention agent [retention_playbook.md > Who we contact first], [retention_playbook.md > Channels].
-- First contact for new customers (tenure 0 to 1 months) is a welcome call within 3 days of flagging, plus a follow-up email on order experience. Do not offer a discount on this first contact; focus on resolving any issues first [retention_playbook.md > New customers (tenure 0 to 1 months)].
-- Since the customer has complained in the last month, the complaint must be resolved by support before any retention coupon or offer is made. Sending a coupon before resolution can increase churn [retention_playbook.md > Customers who complained], [past_campaigns.md > Campaign "Sorry We Missed" (complaints)].
-
-## Offer
-- No discount or coupon should be offered at this first contact due to the new customer status and unresolved complaint [retention_playbook.md > New customers (tenure 0 to 1 months)], [retention_playbook.md > Customers who complained].
-- Discount limits per customer: max INR 500 or 15% of next order, whichever is lower; cashback capped at INR 300 per month; one retention offer per 30 days [discount_policy.md > Limits per customer].
-- Approval levels: retention agent can approve up to INR 300; above that requires team lead approval [discount_policy.md > Approval levels].
+## Plan (decided in code from the playbook and the discount policy)
+- **Contact:** Yes, priority 1 (risk 0.70 or higher). Customers with a risk score of 0.70 or higher are contacted first, prioritizing newest customers like this one. [retention_playbook.md > Who we contact first]
+- **Channel:** Phone call by a retention agent. High risk customers are contacted by phone call from a retention agent for personalized outreach. [retention_playbook.md > Channels]
+- **Frequency:** At most twice in 14 days. No customer should be contacted more than twice in 14 days to avoid over-contacting. [retention_playbook.md > Channels]
+- **Complaint:** Close the complaint before any coupon or offer. Complaints must be resolved before offering coupons, as unresolved complaints increase churn risk. [retention_playbook.md > Customers who complained]
+- **New customer:** Welcome call within 3 days plus a follow-up email; no discount on this first contact. New customers receive a welcome call within 3 days and a follow-up email, with no discount on first contact. [retention_playbook.md > New customers (tenure 0 to 1 months)]
+- **Offer:** Only after the complaint is closed. Offers are only made after complaints are closed to avoid ineffective retention efforts. [retention_playbook.md > Customers who complained]
+- **Offer type:** Discount or wallet cashback within the limits. Discounts or wallet cashback are allowed within policy limits to incentivize retention. [discount_policy.md > Limits per customer]
+- **Limits:** Up to INR 500 or 15% of the next order, whichever is lower; cashback up to INR 300; one offer per 30 days. Discounts capped at INR 500 or 15% of next order; cashback capped at INR 300; one offer per 30 days. [discount_policy.md > Limits per customer]
+- **Approval:** Agent up to INR 300; team lead for INR 301 to 500; never above INR 500. Agents can approve offers up to INR 300; higher amounts require team lead approval, never exceeding INR 500. [discount_policy.md > Approval levels]
 
 ## Do not
-- Do not offer any discount or coupon before complaint resolution [retention_playbook.md > Customers who complained].
-- Do not send more than two contacts within 14 days [retention_playbook.md > Channels].
-- Do not offer a discount on the first contact for new customers [retention_playbook.md > New customers (tenure 0 to 1 months)].
+- Do not tell the customer their churn score [retention_playbook.md > What we never do]
 
 ## Market now (last 48 hours)
-- [Upgrade for Less: Save Over $350 Off This Powerful Lenovo Laptop Today](https://news.google.com/rss/articles/CBMilgFBVV95cUxOS2tlX3FVUTh2b1Z2QWdxV1RhcWVjU0xrbDdxTkY4TVhOcTRzd20yNHoxOENqWjN0cEUzUEd2RWxPRHZfRjIwSFYzMVdYUGZIM3hfMTVCc2dleWIycUNHXzFiQXRUMTh1MzJSWGNMUXFLV0FWaXJKX0FQSXNTRWhzdVVWY1RlZm9CUzdJalFTajF0cU1lbHc?oc=5) - PCMag, 2026-10-30  
-  *May increase customer expectations for laptop deals, raising the bar for retention offers.*
-- [These 2 laptop deals start at $417.99 for Lenovo and Microsoft models](https://news.google.com/rss/articles/CBMiogFBVV95cUxPaEo2Vl9zUlBvSmJ4WFJEcE9EUlYyTk1ZSmtSek1vZDdOczdGRW9BS1VEWDZmMk5qRllHT1ZMVzdOUG04SHptOGlFZkhLc2ptNHpYNk5ULXRoWXFGUEhRUWhpaEZROVhmaWdkRFlJOElILU5BekZzaEpHeWZmMmpxX3ZWUlI1MHNZaEpIS192cE0zcHB5aGM4TU5uVXN6V0xSNEE?oc=5) - Technobezz, 2026-10-30  
-  *Competitor laptop discounts may tempt customers in this category.*
-- [Tata Sons pumps $115M into Tata Electronics as iPhone, chip arms scale](https://news.google.com/rss/articles/CBMipAFBVV95cUxNclJ5am1FWVYzNUhNd3otYXJiZ2lTZ1lZWkVvSm1KNE9HTm9nYUduaFR2R2VxR01yVU40cnp5bWtvbC1pV2JfTWZSajE0cGNiVTA2dHFyMjJZUFJRQWx4M0xrVDk0UExOWWZlUm5RcVROZmFYNkVqbFNycGJxLUFLMnpUazdQeFVUc3JhdXRMZzBlLThCU3RyYUVuTHdHbl9YZ1pXQg?oc=5) - Dealroom, 2026-10-30  
-  *Investment in electronics sector may signal increased competition or innovation.*
+- [Everything You Need To Know About Black Friday 2026: The Biggest Sales, the Best Deals, and More](https://news.google.com/rss/articles/CBMinAFBVV95cUxQNlhENTR0ckIxeDdRSzJGVUU1S2ZjWXo5RWVCV1FwRENuZjJYNm9HYm9BdGZlYVA5Z2dYUzFRc253MHFYS0M0MTVQYm5nTVNXTmd2a1M2UGRzTjBaT3c0akh2UTljb2p2dnptVHU2Wld0dFduY05qT1FzUXU5WGMwWjR0VnJySmowT2VVM3lsOVFSWGhpd24zTi1CRnI?oc=5), PCMag, 2026-10-31 05:46 UTC. Upcoming Black Friday sales hype may increase customer expectations and retention urgency.
+- [Amazon's dropped the price of our favourite laptop for graphic designers by $160 in early Black Friday deal](https://news.google.com/rss/articles/CBMi2wFBVV95cUxQOUdLaW03QWx4WUJkMDNubDdmSHNUem5VTmtFUUwyMFloZWR2cmhJVWtUNUx3ME9YYmY4a05BNXBCTHBEM0VNUDJEQ3lQcmk0dFJwU3NKRkJoLXZBOUNhdVRwT2NTZTY4V203Z3ZobEI4Z0h4LWs5Y180aHZxTVlCcW8xcURWR09rLWx4TDBBb202SjM0MTNReWdKNmNCdmFZU1RKb1AyZDlJSjJqWkw1RElCY2JBMTQwV3F2U2dhSlA1eUF0ZHlLOXgtbGJQNW94NktKSUJPeXMxOFU?oc=5), Creative Bloq, 2026-10-31 05:00 UTC. Early Black Friday laptop discounts may increase this customer's price sensitivity and retention challenge.
+- [Deal | HP OmniBook 3 with Wildcat Lake processor drops below $500](https://news.google.com/rss/articles/CBMipAFBVV95cUxOOTJYNVY5NHUtS2NjMDNaVWIyeHRjaHFlZ2dkc0I1aDBaNmFsOWlsTURmWWFDVVMwSXR6TnRxOUFMVUloWUhDVXlTd0QyUmlqeXNvOWdtdG8tdFM5Mk9Oa2FFS2piRWNLYWY1RXo0eUtSV0RlTVdPTjBBem5XaHlZd3dVcEo3VVBCbkw5S0F3eGJmSGVJc0kwTnlUak9zeEg3b2Q5SQ?oc=5), Notebookcheck, 2026-10-31 03:26 UTC. Price drops on laptops like the HP OmniBook could sway this customer's buying decisions and retention.
 
 ## Sources
-- [retention_playbook.md > Who we contact first]  
-- [retention_playbook.md > Channels]  
-- [retention_playbook.md > New customers (tenure 0 to 1 months)]  
-- [retention_playbook.md > Customers who complained]  
-- [past_campaigns.md > Campaign "Sorry We Missed" (complaints)]  
-- [discount_policy.md > Limits per customer]  
-- [discount_policy.md > Approval levels]
+[discount_policy.md > Approval levels] · [discount_policy.md > Limits per customer] · [retention_playbook.md > Channels] · [retention_playbook.md > Customers who complained] · [retention_playbook.md > New customers (tenure 0 to 1 months)] · [retention_playbook.md > What we never do] · [retention_playbook.md > Who we contact first]

@@ -1,54 +1,24 @@
-# Retention Briefing for Customer 50109
+# Retention briefing: customer 50109
+
+Customer 50109 has a low churn risk with a tenure of 23 months, prefers credit card payment, and has a low satisfaction score. They have made only one order recently and have no complaints.
 
 ## Customer snapshot
-- Tenure: 23.0 months
-- Complaint flag: 0 (no complaint)
-- Preferred Payment Mode: Credit Card
-- Preferred Order Category: Others
-- Satisfaction Score: 2
-- Days Since Last Order: 6.0
-- Order Count: 1.0
-- Cashback Amount: 295.17
+- Tenure 23.0 · Complain 0 · PreferredPaymentMode Credit Card · PreferedOrderCat Others · SatisfactionScore 2 · DaySinceLastOrder 6.0 · OrderCount 1.0 · CashbackAmount 295.17
 
 ## Churn risk
-- Risk score: 0.0 (low risk band)
-- Score note: The model never saw this customer during training (scored_out_of_sample: true)
+- Risk score: 0.00 (low risk band: below 0.40). The model never saw this customer during training.
 
-## Recommended action
-- This customer is low risk (score below 0.40), so no individual outreach is recommended.
-- Customers with low risk remain in the regular newsletter mailing list.
-- Contact priority is given to higher risk customers or those with recent complaints.
-- Channels for low risk customers do not include phone calls or push notifications.
-- Do not contact this customer more than twice in 14 days if outreach is initiated for any reason.
-  
-  [retention_playbook.md > Who we contact first]  
-  [retention_playbook.md > Channels]
-
-## Offer
-- No offer applies to low risk customers on first contact.
-- Discount budget focuses on higher risk groups and specific payment modes, which do not include this customer.
-- Any offer would require approval from the discount policy but is not applicable here.
-
-  [retention_playbook.md > New customers (tenure 0 to 1 months)]  
-  [insights.md > Budget Implications]
+## Plan (decided in code from the playbook and the discount policy)
+- **Contact:** No individual outreach; the customer stays in the regular newsletter. Customers below 0.40 risk without complaints receive no individual outreach and remain in the regular newsletter. [retention_playbook.md > Who we contact first]
+- **Offer:** None: offers to customers below 0.40 are not funded. Offers are not funded for customers with risk scores below 0.40 according to the discount policy. [discount_policy.md > Offers that need extra care]
 
 ## Do not
-- Do not initiate a retention call or push notification for this low risk customer.
-- Do not offer a discount or incentive at this stage.
-- Do not treat this customer as high or medium risk.
+- Do not tell the customer their churn score [retention_playbook.md > What we never do]
 
 ## Market now (last 48 hours)
-- [Google's 'best smartwatch yet' just scored a historic discount, weeks before Black Friday](https://news.google.com/rss/articles/CBMiigFBVV95cUxNb0Z2S3dzOGI2NEV2TkRPRkRSSVBqNFFqVHkzcDlKSjk3YjhmbW9sbW1sdDZzNWZ1TkJ3MWttaExUQXhGdVhPb1NjdExTOVF3aUZHUzZaVGFOZEw0NzEySnBTaVNOT3J1QV9ETHFkU2hKMkNQYkp3QUEta29xa1BmMTQ0dDVvU2xZQlE?oc=5) - Android Police, 2026-10-30  
-  May indicate increased consumer interest in electronics deals, potentially affecting customer shopping behavior.
-
-- [Klarna expands Lands’ End deal to Europe](https://news.google.com/rss/articles/CBMiowFBVV95cUxOdm5ZcDUxOVJ2YnFUTUR1NXNkS090emFzMUhHanJqZ0IxUEZDdVFldnpyWFRRWFQxclM3RjdNUjlSRDF5V05KMG14aE5vOGFsc3dlQmpFVnRxQkF2OG1IeHBwOGR1SU9WcjFBb3N6UUZYMm45TmE4ejExQmNnQ3pSZlc5MjhNX19ubERfcll6NVV4Y2VsQ25VLUlDdmRUenBnSGk4?oc=5) - The Paypers, 2026-10-30  
-  Expansion of payment options and deals in Europe could increase competitive pressure in ecommerce.
-
-- [The Google Pixel 11 Pro is now cheaper than it’s ever been at Amazon](https://news.google.com/rss/articles/CBMimgFBVV95cUxNdlA0M3hlOTZQNVIzWDA5eTdyMy1yNWdFVi1Qckp3Rk9EbzdHVXNqMFJObG5GblVHcGtYTWh4Y0RwQUVZaW9GTUF2c3BNb3JKaUF2OUw5bkd5d3hVYWZySlRyMUJkb3B4X0xDSzk1LWRIcHUwNTViSTdMLURBcGt2em8xOVRYVGZ4aDhjNkZlaHNzNTN3SU04T29B?oc=5) - Android Police, 2026-10-30  
-  Price drops on popular electronics may influence customer spending priorities.
+- [Luvme Hair Kicks Off Black Friday 2026 With Up to $120 Off](https://news.google.com/rss/articles/CBMiyAFBVV95cUxPc2o3MllDRXJmRVlHczVnV1ZENEJJdURmSVpBN3FvZ0VWT2x3c1hWOHR2ZzBSU3k1VFFmTHkyUC1ybnJHOTBfNTJvcXlLM1BYSkdWQ1lZTGlMZGFGNXFTMUZZQzV5Q2NSTWx5Yjg3ZWRMWTFydTZTclNNUnVCMjJJWTBnSGpERDJUS3p3MVRyS2syWmhCYkNLWmpSRThyNWhBd2FSUVFTTEhqbml3cF9Hb2V4RkxvY3FPV29XdmtXQ3JVQ19nUWQzaw?oc=5), GlobeNewswire, 2026-10-31 06:52 UTC. Black Friday discounts may increase customer interest in ecommerce deals, potentially improving retention.
+- [Webinar: Is Your Ecommerce Business Ready for 2027?](https://news.google.com/rss/articles/CBMihwFBVV95cUxNWUwwN2h2ZDNzYlN1R2RTTHlRaDVPV1V0c3NtSDQwbXhjZmNZclZyaGVfai0tbHJ6RkxwMzZCWllQYnVMN0lGMHI3ZXJFSWNQWlhYSDYzTFNaNUlFd204RUgxNUM5dmJFMDZzU3hKOEF4UUFQc2R1d3pybVBEck9QOG95QlRfNXc?oc=5), Tamebay, 2026-10-30 19:49 UTC. Webinar on ecommerce readiness for 2027 may offer insights to improve customer engagement strategies.
+- [Google's 'best smartwatch yet' just scored a historic discount, weeks before Black Friday](https://news.google.com/rss/articles/CBMiigFBVV95cUxNb0Z2S3dzOGI2NEV2TkRPRkRSSVBqNFFqVHkzcDlKSjk3YjhmbW9sbW1sdDZzNWZ1TkJ3MWttaExUQXhGdVhPb1NjdExTOVF3aUZHUzZaVGFOZEw0NzEySnBTaVNOT3J1QV9ETHFkU2hKMkNQYkp3QUEta29xa1BmMTQ0dDVvU2xZQlE?oc=5), Android Police, 2026-10-30 17:05 UTC. Historic discounts on smartwatches may shift customer spending patterns in ecommerce.
 
 ## Sources
-- [retention_playbook.md > Who we contact first]  
-- [retention_playbook.md > Channels]  
-- [retention_playbook.md > New customers (tenure 0 to 1 months)]  
-- [insights.md > Budget Implications]
+[discount_policy.md > Offers that need extra care] · [retention_playbook.md > What we never do] · [retention_playbook.md > Who we contact first]

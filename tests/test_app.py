@@ -164,3 +164,11 @@ def test_instant_briefing_still_works_without_news():
     app.config["NEWS_SEARCH"] = lambda query: {**NEWS, "articles": [], "error": "news search unavailable: blocked"}
     html = app.test_client().get("/briefing?id=51809").get_data(as_text=True)
     assert "not available right now" in html and "0.95" in html
+
+
+def test_instant_briefing_shows_the_coded_plan(client):
+    html = client.get("/briefing?id=50013").get_data(as_text=True)
+    assert "The plan" in html
+    assert "Yes, priority 2 (complained in the last month, whatever the score)" in html
+    assert "Follow-up by the support team to close the complaint" in html
+    assert "No individual outreach" not in html

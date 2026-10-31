@@ -10,7 +10,8 @@ Retention outreach is ranked by the churn model's risk score. Contact customers 
 1. Customers with a risk score of 0.70 or higher, newest first.
 2. Customers who filed a complaint in the last month, whatever their score.
 3. Customers with a risk score between 0.40 and 0.70.
-Customers below 0.40 receive no individual outreach; they stay in the regular newsletter.
+Customers below 0.40 who did not complain receive no individual outreach; they stay in the regular
+newsletter. A customer below 0.40 who complained is still contacted (rule 2), by the support team.
 
 ## New customers (tenure 0 to 1 months)
 New customers churn far more often than established ones. Every new customer flagged by the
@@ -32,6 +33,8 @@ require, a switch to UPI or a card.
 ## Channels
 - High risk (0.70 and above): phone call by a retention agent.
 - Medium risk (0.40 to 0.70): app push notification, then email after 2 days without response.
+- Low risk (below 0.40) with a complaint in the last month: a follow-up by the support team to close
+  the complaint. No retention offer: the budget does not fund customers below 0.40.
 - Never contact the same customer more than twice in 14 days.
 
 ## What we never do

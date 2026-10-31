@@ -16,6 +16,7 @@ exception: a briefing without news is still a briefing.
 """
 from __future__ import annotations
 
+import re
 import time
 import urllib.error
 import urllib.parse
@@ -44,14 +45,20 @@ CATEGORY_QUERIES = {
 DEFAULT_QUERY = "(ecommerce OR \"online shopping\") (discount OR sale OR deal)"
 
 _cache: dict[str, tuple[float, dict[str, Any]]] = {}
-# Every article link any search returned in this process. Google issues a new
-# link token for the same article on each request, so a briefing's guardrail
-# checks links against all of them, not just one search's.
-SEEN_URLS: set[str] = set()
+# Every article any search returned in this process, by link. Google issues a
+# new link token for the same article on each request, so a briefing is checked
+# against all of them, and takes each article's title, source and date from here.
+SEEN_ARTICLES: dict[str, dict[str, str]] = {}
 
 
 # The US edition of Google News still lists some Indian outlets; leave them out.
 EXCLUDE = "-India -Rs"
+# It also lists stories from other markets. A title that names another country
+# or prices in another currency is dropped, so the briefing reads US news only.
+NON_US = re.compile(
+    r"\b(India|Indian|Rs\.?|Philippines|Php|Pakistan|PKR|Nigeria|Kenya|KSh|Bangladesh|Malaysia|RM ?\d|"
+    r"Singapore|S\$|Indonesia|Rp|UK|Britain|Australia|A\$|AU\$|Canada|C\$|Europe|EU|Dubai|UAE|AED|"
+    r"South Africa|ZAR)\b|[₹£€₱₦]")
 
 
 def news_query(category: str | None) -> str:
@@ -59,7 +66,7 @@ def news_query(category: str | None) -> str:
 
 
 def parse_feed(xml_text: str, now: datetime, max_articles: int = MAX_ARTICLES) -> list[dict[str, str]]:
-    """Articles from a Google News RSS document, newest first, within the 48-hour window."""
+    """US articles from a Google News RSS document, newest first, within the 48-hour window."""
     articles = []
     for item in ET.fromstring(xml_text).iter("item"):
         try:
@@ -76,6 +83,8 @@ def parse_feed(xml_text: str, now: datetime, max_articles: int = MAX_ARTICLES) -
         # Google appends " - Outlet" to every title; the outlet is shown separately.
         if outlet and title.endswith(f" - {outlet}"):
             title = title[: -len(f" - {outlet}")]
+        if NON_US.search(title):
+            continue
         articles.append({"title": title, "url": item.findtext("link", "").strip(), "source": outlet,
                          "published": published.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
                          "_at": published})
@@ -96,7 +105,7 @@ def search_recent_news(query: str, max_articles: int = MAX_ARTICLES) -> dict[str
         with urllib.request.urlopen(req, timeout=TIMEOUT_SECONDS) as response:
             body = response.read(MAX_BYTES).decode("utf-8", errors="replace")
         result["articles"] = parse_feed(body, datetime.now(timezone.utc), max_articles)
-        SEEN_URLS.update(a["url"] for a in result["articles"])
+        SEEN_ARTICLES.update({a["url"]: a for a in result["articles"]})
     except (urllib.error.URLError, TimeoutError, ET.ParseError, ValueError, OSError) as e:
         result["error"] = f"news search unavailable: {e}"
     if result["error"] is None:

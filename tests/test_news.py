@@ -70,7 +70,17 @@ def test_unreachable_news_returns_an_error_not_an_exception(monkeypatch):
 def test_every_returned_link_is_remembered_for_the_guardrail(monkeypatch):
     monkeypatch.setattr(news.urllib.request, "urlopen", lambda req, timeout: FakeResponse(FEED.encode()))
     monkeypatch.setattr(news, "_cache", {})
-    monkeypatch.setattr(news, "SEEN_URLS", set())
+    monkeypatch.setattr(news, "SEEN_ARTICLES", {})
     monkeypatch.setattr(news, "parse_feed", lambda body, now, n: [{"url": "https://news.google.com/x"}])
     news.search_recent_news("q")
-    assert news.SEEN_URLS == {"https://news.google.com/x"}
+    assert set(news.SEEN_ARTICLES) == {"https://news.google.com/x"}
+
+
+def test_stories_from_other_markets_are_dropped():
+    feed = FEED.replace("Big phone sale this week", "vivo V80 pre-orders open in the Philippines with Php 2,000 off")
+    titles = [a["title"] for a in news.parse_feed(feed, NOW)]
+    assert titles == ["Newest discount war"]
+    for title in ("Phone deal at Rs 9,999", "Price cut to ₹50,000", "UK retailers cut prices", "Now £199"):
+        assert news.NON_US.search(title)
+    for title in ("Google Pixel 11 Pro sees price cut to $799", "DoorDash to buy Instacart"):
+        assert not news.NON_US.search(title)

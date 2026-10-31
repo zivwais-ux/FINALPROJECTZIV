@@ -1,45 +1,31 @@
 write_briefing_task:
   description: >
-    Prepare a retention briefing for customer {customer_id}.
+    Prepare the notes for a retention briefing on customer {customer_id}.
+
+    The decisions are already made: customer_risk_profile returns them as
+    plan.decisions (contact, channel, offer and so on), applied in code from
+    the retention playbook and the discount policy. The briefing will state
+    them exactly as decided. Your job is to explain them.
 
     1. Call customer_risk_profile with customer_id {customer_id}.
     2. For every entry in the profile's situations, call search_internal_docs
-       once with that entry's query, exactly as given. Do not search for
-       anything else.
+       once with that entry's query, exactly as given.
     3. Call search_recent_news once with the profile's news_query, exactly as
-       given, for market news from the last 48 hours.
-    4. Write the briefing from what the documents say about those situations.
-       Where two rules apply, follow the order the documents give (for
-       example, a complaint is resolved before any offer is made, and a new
-       customer gets no discount on the first contact). Apply a rule only to
-       the situations the profile lists: a search can return sections about
-       other situations (for example a new-customer rule for a low-risk
-       customer), and those do not apply.
+       given.
+    4. Return:
+       - summary: two sentences (at most 40 words) on who this customer is and what matters most
+         for the retention agent, using only facts from the profile.
+       - decisions: for every decision in plan.decisions, its id copied
+         exactly and one short sentence (at most 20 words) on why it applies to this
+         customer, based on what the documents say. Do not restate the
+         decision, do not change it and do not add a decision.
+       - market: up to three articles from the news search, each with its url
+         copied exactly and one sentence on what it may mean for this
+         customer's retention (at most 20 words). Leave it empty if the search returned nothing.
 
-    Rules:
-    - Quote the risk score exactly as the tool returned it, with its band.
-    - If scored_out_of_sample is false, say the score comes from a customer the
-      model was trained on.
-    - List the key facts with their values only. Do not label a value as low,
-      high, good, bad or urban: the scales are not documented.
-    - Every recommendation ends with its source, copied from the search
-      result's cite_as field, for example [discount_policy.md > Approval levels].
-      Cite only sections the search returned.
-    - Offers must stay within the discount policy; say who must approve them.
-      If the documents say no offer applies, say there is no offer.
-    - In Market now, list up to three articles the news search returned, each
-      as [title](url) with its source and date, and one sentence on what it
-      may mean for this customer's retention (for example a competitor's sale
-      in their category). If the search returned no articles or an error, write
-      "No market news from the last 48 hours was available." Never invent a
-      headline or a link.
-    - Never suggest telling the customer their churn score.
-    - Use only facts from the two tools. Do not claim causes of churn.
-    - At most 420 words: short bullets, no closing paragraph. Recommended
-      action has at most five bullets; Market now lists at most three
-      articles, one line each.
+    Use only facts from the tools. Do not claim causes of churn and never
+    suggest telling the customer their churn score.
   expected_output: >
-    A markdown briefing of at most 420 words with the sections Customer
-    snapshot, Churn risk, Recommended action, Offer, Do not, Market now (last
-    48 hours), and Sources (each cite_as value used).
+    BriefingNotes: a two-sentence summary, one explanation per plan decision
+    (by id), and up to three market news items (url and relevance).
   agent: retention_briefing_writer

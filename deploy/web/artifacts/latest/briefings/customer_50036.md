@@ -1,47 +1,24 @@
-# Retention Briefing for Customer 50036
+# Retention briefing: customer 50036
+
+This customer is new with a tenure of 0 months, prefers the Mobile category, and has a low churn risk score of 0.02. They have made 2 orders recently and have a satisfaction score of 2, indicating early engagement but no immediate risk requiring outreach.
 
 ## Customer snapshot
-- Tenure: 0.0 months
-- Complaint flag: 0 (no complaint)
-- Preferred Payment Mode: CC (Credit Card)
-- Preferred Order Category: Mobile
-- Satisfaction Score: 2
-- Days Since Last Order: 2.0
-- Order Count: 2.0
-- Cashback Amount: 123.23
+- Tenure 0.0 · Complain 0 · PreferredPaymentMode CC · PreferedOrderCat Mobile · SatisfactionScore 2 · DaySinceLastOrder 2.0 · OrderCount 2.0 · CashbackAmount 123.23
 
 ## Churn risk
-- Risk score: 0.02 (low risk band)
-- Score note: The model never saw this customer during training (scored_out_of_sample: true)
+- Risk score: 0.02 (low risk band: below 0.40). The model never saw this customer during training.
 
-## Recommended action
-- Do not contact this customer individually as their risk score is below 0.40; they remain in the regular newsletter [retention_playbook.md > Who we contact first].
-- Since the customer is new (tenure 0 months), a welcome call should be made within 3 days of the flag, plus a first-order follow-up email to check if delivery and payment went smoothly [retention_playbook.md > New customers (tenure 0 to 1 months)].
-- Do not offer a discount on this first contact; focus on fixing the experience first [retention_playbook.md > New customers (tenure 0 to 1 months)].
-- Use phone call for high-risk customers only; this customer is low risk, so no phone call is required [retention_playbook.md > Channels].
-- Monitor competitor offers for mobile category buyers to anticipate competitive threats [competitor_offers.md > CartNest].
-
-## Offer
-- No discount or incentive offer applies at this first contact due to new customer status [retention_playbook.md > New customers (tenure 0 to 1 months)].
-- If future risk increases, consider extended warranty offers on next phone accessory orders as per past campaign success [past_campaigns.md > Campaign "Mobile Upgrade" (mobile phone buyers)].
-- Any future discount offers must comply with discount policy and require approval from the appropriate level [discount_policy.md > Approval levels] (not retrieved here, so no specific offer now).
+## Plan (decided in code from the playbook and the discount policy)
+- **Contact:** No individual outreach; the customer stays in the regular newsletter. Customers with a risk score below 0.40 who did not complain receive no individual outreach; they stay in the regular newsletter. [retention_playbook.md > Who we contact first]
+- **Offer:** None: offers to customers below 0.40 are not funded. Offers are not funded for customers with a risk score below 0.40, per the discount policy. [discount_policy.md > Offers that need extra care]
 
 ## Do not
-- Do not contact more than twice in 14 days [retention_playbook.md > Channels].
-- Do not offer discounts on the first contact for new customers [retention_playbook.md > New customers (tenure 0 to 1 months)].
-- Do not ignore competitor offers in the mobile category as CartNest offers 10% off first phone orders for new customers, posing a high threat [competitor_offers.md > CartNest].
+- Do not tell the customer their churn score [retention_playbook.md > What we never do]
 
 ## Market now (last 48 hours)
-- [Will Galaxy S27 Ultra and Pixel 12 mark the end of the flagship era of smartphones?](https://news.google.com/rss/articles/CBMigwFBVV95cUxPaTJaSlYxdXRWcGFud0RnLUtEUkRRWDBBM0N6ZHB6THVMLVNMb1V0MHdpUlVyclV4ODZtSlpYOTYyaTNNLWFOWnRaNVRNMHZCUVB1UnMwazBtS3NkZEJ4SXpTc19RZ2NhRUFYc2pCMG1reGhhZllZMmtuanFQalUzS0Rmcw?oc=5) (9to5Google, 2026-10-30)  
-  May influence customer interest in upgrading phones, relevant to mobile category retention.
-- [Reddit to force mandatory login as Google traffic drops](https://news.google.com/rss/articles/CBMic0FVX3lxTE4zZ25BdUx4UTVrOWFzaTdoVjFWX3U5VVJ3UDdLYXpCRzdYU3YtcFNUc2ItTHRKLVhTQXRlOGVzNjBvVm9ZVjBrd3oxUzUxeXZjOTA0d2d0Q0ptaU1BUkQ5TV9pb1p3S1d1STdyQ3RaTzdTdnc?oc=5) (Mashable, 2026-10-30)  
-  Changes in digital traffic patterns could affect online shopping behavior.
-- [Honor X9e S unveiled with an 8,560 mAh battery and IP69K protection](https://news.google.com/rss/articles/CBMiT0FVX3lxTE8zbXJiZDlLeUgxY2FxUGJkVlJQRVdmMjJhYjdKYzNkdXpLNUlXMXR0UTdJWTF5ZFNZRGtfZGZDZHQtdGRvNThqM2lwTy1tSzQ?oc=5) (mobidevices.com, 2026-10-30)  
-  New product launches may increase customer interest in mobile devices.
+- [Samsung Galaxy Z series foldables are breaking pre-order records in the US and Korea](https://news.google.com/rss/articles/CBMijgFBVV95cUxPTGRzVU5HUkpWQlpMLW41Y210Mlk1TXJlbEstTFh2TDZnSWhjejlZcTk5YjF5TERBdUt5dDAxUWZUVmtLaVp6STg5LU4xRGdLWGxuTVBvQ1h1ZEpCZ08tTFZqMEFobHNNNWoyaTIzdE9GQWlwLUpvbGtnRldMRnB4S2didmt6eW93MnRxOXVB?oc=5), Mashable, 2026-10-30 22:00 UTC. Record-breaking pre-orders for Samsung Galaxy Z foldables indicate strong market interest in premium mobile devices.
+- [All the phones T-Mobile is giving away for free: Shop iPhone 17, Samsung Galaxy Z Fold 8, and Google Pixel 11](https://news.google.com/rss/articles/CBMilwFBVV95cUxOM3R4UVpTQ3VETVVrR1JRODkwaW9SMFFORGJpU2ZieC1udFJuakxXTVVpRHZ1TGI5eV9YelVrM0NVZVkwLWtpSmFtY2ExXzhGLTJpS1lzU3pQTmdIMGsxUlR5RGl6Z2VsdDVocGtzWG5yUG10VG5uVzVIbWJJSm9hWmFXRVZBUTMxUWNhTXpVSGFkLXB1dXhV?oc=5), Mashable, 2026-10-30 22:00 UTC. Free phone giveaways by T-Mobile may increase customer expectations for deals in the Mobile category.
+- [Oppo Find X10 review: The competition, our verdict, pros and cons](https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5RMWZhb1lXTXRuUHdEbVMyZFZKcUxNZ183bGtleU43RkxSZk1MWmsxN05TWVF2VU52LVJONlN4bi1kQmRhWkx2TmU4dXVtQ05vQ25nbXZDLWlVSGNHLWs5Z0xCeW5jTEU?oc=5), GSMArena.com, 2026-10-31 02:24 UTC. New smartphone reviews highlight competitive features that may influence customer preferences in the Mobile category.
 
 ## Sources
-- [retention_playbook.md > Who we contact first]
-- [retention_playbook.md > Channels]
-- [retention_playbook.md > New customers (tenure 0 to 1 months)]
-- [competitor_offers.md > CartNest]
-- [past_campaigns.md > Campaign "Mobile Upgrade" (mobile phone buyers)]
+[discount_policy.md > Offers that need extra care] · [retention_playbook.md > What we never do] · [retention_playbook.md > Who we contact first]

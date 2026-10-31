@@ -1,46 +1,30 @@
-# Retention Briefing for Customer 51556
+# Retention briefing: customer 51556
+
+This customer is new with zero months tenure, prefers the fashion category, and has a high churn risk score of 0.86. The retention agent should prioritize a welcome call within 3 days and a follow-up email, focusing on experience without offering a discount initially.
 
 ## Customer snapshot
-- Tenure: 0.0 months
-- Complain: 0
-- PreferredPaymentMode: Credit Card
-- PreferedOrderCat: Fashion
-- SatisfactionScore: 1
-- DaySinceLastOrder: 8.0
-- OrderCount: 9.0
-- CashbackAmount: 204.0
+- Tenure 0.0 · Complain 0 · PreferredPaymentMode Credit Card · PreferedOrderCat Fashion · SatisfactionScore 1 · DaySinceLastOrder 8.0 · OrderCount 9.0 · CashbackAmount 204.0
 
 ## Churn risk
-- Risk score: 0.86 (high risk band, high >= 0.7)
-- Score note: The model never saw this customer during training (scored_out_of_sample: true)
+- Risk score: 0.86 (high risk band: 0.70 or higher). The model never saw this customer during training.
 
-## Recommended action
-- Contact this customer first as they have a high churn risk score above 0.70 and are a new customer (tenure 0 months) [retention_playbook.md > Who we contact first].
-- Use a phone call by a retention agent as the contact channel for high-risk customers [retention_playbook.md > Channels].
-- Since the customer is new (tenure 0 to 1 months), make a welcome call within 3 days of the flag and follow up with an email about delivery and payment experience. Do not offer a discount on this first contact; focus on fixing the experience first [retention_playbook.md > New customers (tenure 0 to 1 months)].
-
-## Offer
-- No discount offer on the first contact due to new customer status [retention_playbook.md > New customers (tenure 0 to 1 months)].
-- If the customer remains at risk after a week, consider an incentive within discount policy limits.
-- Discount limits: maximum INR 500 or 15% of next order, whichever is lower; cashback capped at INR 300 per month; only one retention offer per 30 days [discount_policy.md > Limits per customer].
-- Approval levels: up to INR 300 retention agent approval; INR 301-500 team lead approval; above INR 500 escalate to Head of Customer Experience [discount_policy.md > Approval levels].
+## Plan (decided in code from the playbook and the discount policy)
+- **Contact:** Yes, priority 1 (risk 0.70 or higher). Customers with a risk score of 0.70 or higher are contacted first, prioritizing newest customers like this one. [retention_playbook.md > Who we contact first]
+- **Channel:** Phone call by a retention agent. High risk customers are contacted by phone call from a retention agent for personalized outreach. [retention_playbook.md > Channels]
+- **Frequency:** At most twice in 14 days. No customer should be contacted more than twice in 14 days to avoid over-contacting. [retention_playbook.md > Channels]
+- **New customer:** Welcome call within 3 days plus a follow-up email; no discount on this first contact. New customers flagged by the model get a welcome call within 3 days plus a follow-up email, with no discount on first contact. [retention_playbook.md > New customers (tenure 0 to 1 months)]
+- **Offer:** Not on the first contact; only if still at risk a week later. Discounts are withheld on first contact for new customers; offered only if risk persists a week later. [retention_playbook.md > New customers (tenure 0 to 1 months)]
+- **Offer type:** Discount or wallet cashback within the limits. Offers can be discounts or wallet cashback, adhering to company retention budget policies. [discount_policy.md > Limits per customer]
+- **Limits:** Up to INR 500 or 15% of the next order, whichever is lower; cashback up to INR 300; one offer per 30 days. Discounts capped at INR 500 or 15% of next order; cashback capped at INR 300; one offer per 30 days. [discount_policy.md > Limits per customer]
+- **Approval:** Agent up to INR 300; team lead for INR 301 to 500; never above INR 500. Retention agents approve offers up to INR 300; higher amounts require team lead approval. [discount_policy.md > Approval levels]
 
 ## Do not
-- Do not offer a discount on the first contact with a new customer [retention_playbook.md > New customers (tenure 0 to 1 months)].
-- Do not contact the same customer more than twice in 14 days [retention_playbook.md > Channels].
-- Do not offer discounts outside the policy limits or without proper approval [discount_policy.md > Limits per customer].
+- Do not tell the customer their churn score [retention_playbook.md > What we never do]
 
 ## Market now (last 48 hours)
-- [Forget Black Friday: This Lab-Grown Diamond Brand Just Launched Half-Price Tennis Bracelets And Huggie Hoops](https://news.google.com/rss/articles/CBMid0FVX3lxTE5FSnVDZl9fV05hV0NYakNTYzV6eHhIMjFHbHFOUFo2Mjc1NkJnTjlfWmJuVVhobUExZ3pCeHdNTE5lMm42cktBbzFpbzZaeHRYRkJHb2hjM29UdzlrWWVCS2JoZk52VUo3WlFwbzdrNDduRWZBVk5R?oc=5) - ELLE, 2026-10-30  
-  Increased promotional activity in fashion accessories may raise customer expectations for discounts.
-- [Nashville’s Oldest Family-Owned Clothing Store, Levy’s, to Begin Closing Sale](https://news.google.com/rss/articles/CBMipgFBVV95cUxNQ0NVaUFHel9oSTM2T3hhNmFXWDV3NGdXSURhdk82RnRQOHBnYjdYSXhya00xZmFCLWdsYlUyZjhReFNQOEdQY25XNUlBZTcwcHJMYW1XcWNwcTg0QUlBaUZNc3kyS3h4SVNaU3RTa3lESTh2MGNON1NOQlo5dWJzWl83d3F1YkF5OGp5ZWdWTFcwNHVGQlJreTlxbC04QjhWZndrSTNB?oc=5) - Rutherford Source, 2026-10-30  
-  A closing sale in a local fashion store could shift some customers online, possibly increasing competition.
-- [Detroit Auto Show revs up for 2027 with Ferraris and fashion](https://news.google.com/rss/articles/CBMijwFBVV95cUxNTWRRUnVReG1fbjdGdzBOMkswYTZhVHBxT0RXdVZNWTVuZmp3ZXptWUZjcEVPU202YXRHcG9Kbkc1Qi1TZVVtY3hudklta0ZTUXlkN2JDNEVhNkFwSEk4WmZfOWFwZFhKblBYaGFubTdvelpYZUpoQWlsZ2tSTUFPeDhkUHU0U2ZJQW9WNlFPOA?oc=5) - WXYZ Channel 7, 2026-10-30  
-  Fashion presence at a major auto show may boost brand visibility and consumer interest in fashion categories.
+- [Charli XCX and Chris Horan Turn Stylist Vinted Sale Into Tour Wardrobe](https://news.google.com/rss/articles/CBMiU0FVX3lxTE9vUTBTVE5MTkw0S09xbm1nMTB6WDROeUJ3Rm5KUEVwNlJIeVhRUEI0YjktUmVObGNUQldubHotNmdHWWhjN2c5VEtXLXhFX2E4bHlF?oc=5), شبكة تواصل الإخبارية, 2026-10-31 07:40 UTC. Fashion sales events like Vinted's tour wardrobe sale may increase customer interest in fashion category retention.
+- [Sephora Sale 2026: Our Editors Picks](https://news.google.com/rss/articles/CBMif0FVX3lxTFB5WVZ2TG51LTk4SDNFNl9FaFE5c2dWaWR1ZzZISUZfTFZIdGhRc0JDOXRTTlZESlpQcER0dGhXWmRXOWhJYlpaRmJmTFFEWWFXWUNxSC1kNTZrTTdUZVlzbnI5aXV1NDR1WjFkSHBkalI3LWpmTXZNSlVNQU9kSUE?oc=5), FASHION Magazine, 2026-10-31 07:18 UTC. Sephora's fashion sale highlights ongoing promotional activity in fashion ecommerce, relevant for retention timing.
+- [Mango advances its digital business style by migrating to the cloud, increasing efficiencies and sales](https://news.google.com/rss/articles/CBMiaEFVX3lxTE4waTNtOEJrRV9adjlSbExnakh3dll1Yk0xY2dnODRrR2pmd044LXdObmg3OEFhb2FmYkpiQmpfdU42NXRnRk1udGpLU0V2UEZWLUduYWM3Ri12bXVEZWd2aXpKdDdrNTA2?oc=5), NTT Data, 2026-10-31 01:50 UTC. Mango's digital business growth may indicate increased competition and customer expectations in fashion ecommerce.
 
 ## Sources
-- [retention_playbook.md > Who we contact first]
-- [retention_playbook.md > Channels]
-- [retention_playbook.md > New customers (tenure 0 to 1 months)]
-- [discount_policy.md > Limits per customer]
-- [discount_policy.md > Approval levels]
+[discount_policy.md > Approval levels] · [discount_policy.md > Limits per customer] · [retention_playbook.md > Channels] · [retention_playbook.md > New customers (tenure 0 to 1 months)] · [retention_playbook.md > What we never do] · [retention_playbook.md > Who we contact first]

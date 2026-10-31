@@ -1,54 +1,27 @@
-# Retention Briefing for Customer 50013
+# Retention briefing: customer 50013
+
+Customer 50013 is a new customer with zero months tenure who recently complained and prefers the Mobile category, paying by cash on delivery. The main retention focus is to resolve their complaint through support without offering discounts due to their low churn risk score.
 
 ## Customer snapshot
-- Tenure: 0.0 months
-- Complaint flag: 1 (complained in last month)
-- Preferred Payment Mode: COD (Cash on Delivery)
-- Preferred Order Category: Mobile
-- Satisfaction Score: 3
-- Days Since Last Order: 2.0
-- Order Count: 2.0
-- Cashback Amount: 134.41 INR
+- Tenure 0.0 · Complain 1 · PreferredPaymentMode COD · PreferedOrderCat Mobile · SatisfactionScore 3 · DaySinceLastOrder 2.0 · OrderCount 2.0 · CashbackAmount 134.41
 
 ## Churn risk
-- Risk score: 0.29 (low risk band)
-- Score note: The model never saw this customer during training (scored_out_of_sample: true)
+- Risk score: 0.29 (low risk band: below 0.40). The model never saw this customer during training.
 
-## Recommended action
-- Do not contact this customer for retention outreach as their risk score is below 0.40; they remain in the regular newsletter [retention_playbook.md > Who we contact first].
-- Since the customer complained in the last month, ensure the complaint is resolved before offering any coupon or reward [retention_playbook.md > Customers who complained].
-- As a new customer (tenure 0 months), do a welcome call within 3 days and a first-order follow-up email to check delivery and payment experience; do not offer a discount on this first contact [retention_playbook.md > New customers (tenure 0 to 1 months)].
-- For COD customers, use free-delivery vouchers or a small discount printed on the next invoice; encourage but never require switching to UPI or card payment [retention_playbook.md > Cash on delivery (COD) customers].
-- Competitor CartNest offers 10% off first phone orders for new customers, posing a high threat to mobile category buyers like this customer [competitor_offers.md > CartNest].
-
-## Offer
-- No immediate discount offer on first contact due to new customer status and open complaint.
-- After complaint resolution, consider free delivery voucher or small invoice discount within policy limits.
-- Maximum discount per customer per month: INR 500 or 15% of next order, whichever is lower.
-- Cashback offers capped at INR 300 per month and paid to wallet, not applicable for COD customers.
-- Retention offers require approval if exceeding standard limits [discount_policy.md > Limits per customer].
+## Plan (decided in code from the playbook and the discount policy)
+- **Contact:** Yes, priority 2 (complained in the last month, whatever the score). Customers who complained in the last month are contacted regardless of their low churn risk score, prioritizing complaint resolution. [retention_playbook.md > Who we contact first]
+- **Channel:** Follow-up by the support team to close the complaint. Low risk customers with recent complaints receive follow-up by the support team to close the complaint, with no retention offer. [retention_playbook.md > Channels]
+- **Frequency:** At most twice in 14 days. The playbook limits contact frequency to at most twice in 14 days to avoid customer fatigue. [retention_playbook.md > Channels]
+- **Complaint:** Close the complaint before any coupon or offer. The policy mandates closing complaints before offering coupons, as unresolved complaints with coupons increase churn. [retention_playbook.md > Customers who complained]
+- **Offer:** None: offers to customers below 0.40 are not funded. Offers are not funded for customers with a risk score below 0.40, so no discount is provided to this low-risk customer. [discount_policy.md > Offers that need extra care]
 
 ## Do not
-- Do not send coupons or rewards before complaint resolution to avoid increasing churn [retention_playbook.md > Customers who complained].
-- Do not offer wallet cashback to COD customers as they pay at delivery and cannot use wallet funds [retention_playbook.md > Cash on delivery (COD) customers].
-- Do not contact more than twice in 14 days [retention_playbook.md > Channels].
-- Do not offer discounts in Grocery category (not applicable here but general rule) [discount_policy.md > Offers that need extra care].
+- Do not tell the customer their churn score [retention_playbook.md > What we never do]
 
 ## Market now (last 48 hours)
-- [Google Pixel 11 Pro Unlocked Smartphone sees price cut to $799](https://news.google.com/rss/articles/CBMimAFBVV95cUxOZXF6V0lWM2NtRWhzWWx5ZExvY05STnhjcTI0NUVCWmlXWVdub0NldTRwY1JpQUw2NnZyTUZkV1hJYXNlQjNwRkZnVEpub3FjOGdhNm5uWUZRNDRjV3VLQml4M3laRW5PVFBfajJlSnYwVjBBQzFTSHJSR3BjT3dldU9SUWtXeExCZk9NWXVpaUMxZUp5LXJnOQ?oc=5) - Technobezz, 2026-10-30  
-  Price cuts on smartphones may increase customer expectations for discounts in the Mobile category.
-- [DoorDash to Buy Instacart in $17bn Grocery Deal](https://news.google.com/rss/articles/CBMifEFVX3lxTFBCWDdMRTZoS2ZxRWRSSGhoa19YVlJtSmFKMXptd2M3dDdHdGpEQ1ViVi1XY2dEQTZWaWVWTkVBRWJDNExnWGZ2NU1EcmtyZU8ycE9lOVlpZTl2b0c5V1R0WGNIS1lzTUtkeWtCTWxiWEQtdlRvd1RpWXBIX2E?oc=5) - Grocery Trade News, 2026-10-30  
-  Consolidation in grocery delivery unlikely to affect this customer's mobile category preference.
-- [Google Pixel 11 Pro Fold Unlocked Smartphone now $1649, down from $1899](https://news.google.com/rss/articles/CBMiogFBVV95cUxOUUo4cklseXYyZDdxX1h4M2tkQ1FiQVhlUXdfcWlTcEhGT3g1UVAyeUxTVllCeGZ4V2hvc1Z6X1hSV1RkUkR1eWxZYV96ZDNkNnR0TDNiaWRIaXBOSXFkb013dEQteEd5WFRqcC10eVJfNDJ6aHNaZ0gwaVg4bkZhZEFzay1iNGdiSW0yOG1VZmFrN0FnVGUwSDRCcWxlWDNPR1E?oc=5) - Technobezz, 2026-10-30  
-  Further smartphone price reductions may increase competitive pressure in the Mobile category.
+- [Oppo Find X10 review: The competition, our verdict, pros and cons](https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5RMWZhb1lXTXRuUHdEbVMyZFZKcUxNZ183bGtleU43RkxSZk1MWmsxN05TWVF2VU52LVJONlN4bi1kQmRhWkx2TmU4dXVtQ05vQ25nbXZDLWlVSGNHLWs5Z0xCeW5jTEU?oc=5), GSMArena.com, 2026-10-31 02:24 UTC. New smartphone reviews highlight competitive features that may influence this customer's interest in mobile products.
+- [Why Google’s Pixel 11 Pro Holds Firm Beside Galaxy S26 Ultra and iPhone 18 Pro](https://news.google.com/rss/articles/CBMijgFBVV95cUxNQm1XNm1xVTMxdElkMy01eFg4Mk9fc2VkdjE0Y2JpSld0LV9Zb1VfZE8zeG1NVnhEeDdRRnVENGh3Z3dTLWIwUzVJTlN4RjFLUERHckJzSmxTWTlIYjl6ZDlyVDM0OEFBT1pXS09XX0t3MnIzMXpTeEJidDF0VHBCNkQ3d1pTR1E3NlBNTVdn?oc=5), TechEBlog -, 2026-10-30 22:52 UTC. Google Pixel 11 Pro's strong market position may affect customer retention in the mobile category.
+- [Samsung Galaxy Z series foldables are breaking pre-order records in the US and Korea](https://news.google.com/rss/articles/CBMijgFBVV95cUxPTGRzVU5HUkpWQlpMLW41Y210Mlk1TXJlbEstTFh2TDZnSWhjejlZcTk5YjF5TERBdUt5dDAxUWZUVmtLaVp6STg5LU4xRGdLWGxuTVBvQ1h1ZEpCZ08tTFZqMEFobHNNNWoyaTIzdE9GQWlwLUpvbGtnRldMRnB4S2didmt6eW93MnRxOXVB?oc=5), Mashable, 2026-10-30 22:00 UTC. Record pre-orders for Samsung Galaxy Z foldables indicate strong consumer interest in premium mobile devices.
 
 ## Sources
-- [retention_playbook.md > Who we contact first]
-- [retention_playbook.md > Channels]
-- [retention_playbook.md > New customers (tenure 0 to 1 months)]
-- [retention_playbook.md > Customers who complained]
-- [retention_playbook.md > Cash on delivery (COD) customers]
-- [discount_policy.md > Limits per customer]
-- [discount_policy.md > Offers that need extra care]
-- [competitor_offers.md > CartNest]
-- [past_campaigns.md > Campaign "Sorry We Missed" (complaints)]
+[discount_policy.md > Offers that need extra care] · [retention_playbook.md > Channels] · [retention_playbook.md > Customers who complained] · [retention_playbook.md > What we never do] · [retention_playbook.md > Who we contact first]

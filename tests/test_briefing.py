@@ -4,7 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from churn_pipeline.crews.briefing_crew.briefing_crew import check_briefing
+from churn_pipeline.crews.briefing_crew.briefing_crew import check_notes, render_briefing
+from churn_pipeline.crews.briefing_crew.outputs import BriefingNotes, DecisionNote, MarketItem
+from churn_pipeline.retention_plan import retention_plan
 from churn_pipeline.tools.briefing_tools import (
     customer_risk_profile,
     require_approved_model,
@@ -67,54 +69,96 @@ def test_no_briefing_without_an_approved_model(approved, tmp_path):
         require_approved_model(approved["crew2_dir"], failed)
 
 
-PROFILE = {"risk_score": 0.95, "risk_band": "high"}
-CITABLE = {"retention_playbook.md > Customers who complained", "discount_policy.md > Approval levels"}
-NEWS = {"https://news.example.com/sale"}
-GOOD = """## Churn risk
-- Risk score: 0.95 (high)
-## Recommended action
-- Resolve the complaint first [retention_playbook.md > Customers who complained]
-## Market now (last 48 hours)
-- [Phone sale starts](https://news.example.com/sale), Example News, 2026-10-30
-## Sources
-- [discount_policy.md > Approval levels]
-"""
-
-
-def test_check_accepts_a_good_briefing():
-    assert check_briefing(GOOD, PROFILE, CITABLE, NEWS) == []
-
-
-def test_check_rejects_a_wrong_score_and_an_invented_citation():
-    bad = GOOD.replace("0.95", "0.90").replace("Approval levels]", "Approval rules]")
-    problems = check_briefing(bad, PROFILE, CITABLE, NEWS)
-    assert any("0.95" in p for p in problems)
-    assert any("discount_policy.md > Approval rules" in p for p in problems)
-
-
-def test_check_rejects_a_briefing_longer_than_a_page():
-    problems = check_briefing(GOOD + "word " * 600, PROFILE, CITABLE, NEWS)
-    assert any("words" in p for p in problems)
-
-
-def test_check_rejects_an_invented_news_link():
-    invented = GOOD.replace("https://news.example.com/sale", "https://made-up.example.com/story")
-    problems = check_briefing(invented, PROFILE, CITABLE, NEWS)
-    assert any("did not come from search_recent_news" in p for p in problems)
-
-
-def test_check_requires_the_market_section():
-    problems = check_briefing(GOOD.replace("## Market now (last 48 hours)", "## Other"), PROFILE, CITABLE, NEWS)
-    assert any("Market now" in p for p in problems)
-
-
 def test_profile_carries_a_news_query_for_the_category(approved):
     profile = customer_risk_profile(51809, **approved)
     assert profile["news_query"].startswith("smartphone")
 
 
-def test_check_accepts_a_zero_score_as_the_tool_writes_it():
-    zero = {"risk_score": 0.0, "risk_band": "low"}
-    text = GOOD.replace("0.95 (high)", "0.0 (low)")
-    assert not any("risk score" in p for p in check_briefing(text, zero, CITABLE, NEWS))
-    assert any("risk score" in p for p in check_briefing(GOOD.replace("0.95", "0.5"), PROFILE, CITABLE, NEWS))
+def _profile(band="low", score=0.29, **facts):
+    facts = {"Tenure": 0.0, "Complain": 1, "PreferredPaymentMode": "COD", "PreferedOrderCat": "Mobile", **facts}
+    return {"customer_id": 50013, "risk_score": score, "risk_band": band,
+            "risk_band_rule": "high >= 0.7, medium >= 0.4, otherwise low (retention playbook)",
+            "score_note": "the model never saw this customer during training",
+            "key_facts": facts, "plan": retention_plan(band, facts)}
+
+
+ARTICLE = {"title": "Phone sale starts", "url": "https://news.google.com/a", "source": "Example News",
+           "published": "2026-10-30 10:00 UTC"}
+
+
+def _notes(profile, **override):
+    notes = {"summary": "A new customer who complained last month and pays cash on delivery.",
+             "decisions": [DecisionNote(id=d["id"], why="The playbook says so for this case.")
+                           for d in profile["plan"]["decisions"]],
+             "market": [MarketItem(url=ARTICLE["url"], relevance="Competitors are cutting phone prices.")]}
+    return BriefingNotes(**{**notes, **override})
+
+
+def test_good_notes_render_the_plan_word_for_word():
+    profile = _profile()
+    notes = _notes(profile)
+    assert check_notes(notes, profile, {ARTICLE["url"]: ARTICLE}) == []
+    text = render_briefing(profile, notes, {ARTICLE["url"]: ARTICLE})
+    for d in profile["plan"]["decisions"]:
+        assert f"- **{d['label']}:** {d['value']}." in text
+    assert "Risk score: 0.29 (low risk band: below 0.40)" in text
+    assert "[Phone sale starts](https://news.google.com/a), Example News" in text
+    # The 50013 case: a low-risk customer who complained is contacted.
+    assert "**Contact:** Yes, priority 2" in text and "no individual outreach" not in text.lower()
+
+
+def test_notes_must_explain_every_decision_and_nothing_else():
+    profile = _profile()
+    notes = _notes(profile)
+    notes.decisions = notes.decisions[1:] + [DecisionNote(id="discount_now", why="x")]
+    problems = check_notes(notes, profile, {ARTICLE["url"]: ARTICLE})
+    assert any("missing ids: ['contact']" in p for p in problems)
+    assert any("'discount_now'" in p for p in problems)
+
+
+def test_an_explanation_that_walks_back_the_contact_decision_is_rejected():
+    profile = _profile()
+    notes = _notes(profile)
+    notes.decisions[0].why = "Low risk, so no individual outreach; keep them in the regular newsletter."
+    assert any("contradicts the plan" in p for p in check_notes(notes, profile, {ARTICLE["url"]: ARTICLE}))
+
+
+def test_an_invented_news_link_is_rejected():
+    profile = _profile()
+    notes = _notes(profile, market=[MarketItem(url="https://made-up.example/x", relevance="r")])
+    assert any("did not come from search_recent_news" in p for p in check_notes(notes, profile, {}))
+
+
+def test_no_news_renders_a_plain_statement():
+    profile = _profile()
+    text = render_briefing(profile, _notes(profile, market=[]), {})
+    assert "No market news from the last 48 hours was available." in text
+
+
+def test_a_briefing_longer_than_a_page_is_rejected():
+    profile = _profile()
+    notes = _notes(profile, summary="word " * 650)
+    problems = check_notes(notes, profile, {ARTICLE["url"]: ARTICLE})
+    assert any("longer than 650 words" in p for p in problems)
+    assert any("summary is longer than" in p for p in problems)
+
+
+def test_profile_carries_the_plan(approved):
+    profile = customer_risk_profile(51809, **approved)
+    assert profile["plan"]["decisions"][0]["id"] == "contact"
+    assert profile["plan"] == retention_plan(profile["risk_band"], profile["key_facts"])
+
+
+def test_the_frequency_rule_is_not_mistaken_for_a_contradiction():
+    profile = _profile()
+    notes = _notes(profile)
+    for n in notes.decisions:
+        if n.id == "frequency":
+            n.why = "The customer should not be contacted more than twice in 14 days; do not contact the customer more often."
+    assert check_notes(notes, profile, {ARTICLE["url"]: ARTICLE}) == []
+
+
+def test_a_summary_that_walks_back_the_contact_decision_is_rejected():
+    profile = _profile()
+    notes = _notes(profile, summary="Low risk, so this customer stays in the regular newsletter.")
+    assert any("summary contradicts" in p for p in check_notes(notes, profile, {ARTICLE["url"]: ARTICLE}))

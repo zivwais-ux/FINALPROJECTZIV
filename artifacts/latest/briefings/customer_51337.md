@@ -1,46 +1,30 @@
-# Retention Briefing for Customer 51337
+# Retention briefing: customer 51337
+
+Customer 51337 has a medium churn risk and recently filed a complaint. They prefer fashion purchases paid via e-wallet and have a tenure of 13 months with moderate satisfaction.
 
 ## Customer snapshot
-- Tenure: 13.0 months
-- Complaint flag: 1 (complained in last month)
-- Preferred Payment Mode: E wallet
-- Preferred Order Category: Fashion
-- Satisfaction Score: 5
-- Days Since Last Order: 0.0
-- Order Count: 2.0
-- Cashback Amount: 208.54
+- Tenure 13.0 · Complain 1 · PreferredPaymentMode E wallet · PreferedOrderCat Fashion · SatisfactionScore 5 · DaySinceLastOrder 0.0 · OrderCount 2.0 · CashbackAmount 208.54
 
 ## Churn risk
-- Risk score: 0.68 (medium risk band)
-- Score is out of sample: the model never saw this customer during training
+- Risk score: 0.68 (medium risk band: 0.40 to 0.70). The model never saw this customer during training.
 
-## Recommended action
-- Contact priority: Contact customers who filed a complaint in the last month before medium risk customers regardless of score [retention_playbook.md > Who we contact first].
-- Contact channel: For medium risk customers, use app push notification first, then email after 2 days without response. Do not contact more than twice in 14 days [retention_playbook.md > Channels].
-- Complaint resolution: Resolve the customer's complaint first before offering any coupon or reward. Sending a coupon while the complaint is open may increase churn [retention_playbook.md > Customers who complained].
-- Retention budget: Medium risk customers share 30% of the monthly retention budget [discount_policy.md > Monthly retention budget].
-
-## Offer
-- Discount limits: Maximum discount per customer per month is INR 500 or 15% of the next order, whichever is lower.
-- Cashback offers capped at INR 300 per customer per month, paid to wallet.
-- One retention offer per 30 days maximum [discount_policy.md > Limits per customer].
-- Approval levels: Up to INR 300 discount can be decided by the retention agent; INR 301 to 500 requires team lead approval [discount_policy.md > Approval levels].
-- Since the customer has a complaint open, no offer should be made until complaint resolution [retention_playbook.md > Customers who complained].
+## Plan (decided in code from the playbook and the discount policy)
+- **Contact:** Yes, priority 2 (complained in the last month, whatever the score). Customers who complained in the last month are contacted regardless of risk score, prioritizing their retention. [retention_playbook.md > Who we contact first]
+- **Channel:** App push notification, then email after 2 days without response. Medium risk customers are contacted first by app push notification, then by email if no response. [retention_playbook.md > Channels]
+- **Frequency:** At most twice in 14 days. Customers are contacted at most twice in 14 days to avoid over-contacting. [retention_playbook.md > Channels]
+- **Complaint:** Close the complaint before any coupon or offer. Complaints must be resolved before any coupon or offer is given to avoid increasing churn. [retention_playbook.md > Customers who complained]
+- **Offer:** Only after the complaint is closed. Offers are only made after the complaint is closed to ensure effectiveness. [retention_playbook.md > Customers who complained]
+- **Offer type:** Discount or wallet cashback within the limits. Discounts or wallet cashback are allowed within specified limits for retention offers. [discount_policy.md > Limits per customer]
+- **Limits:** Up to INR 500 or 15% of the next order, whichever is lower; cashback up to INR 300; one offer per 30 days. Offers are limited to INR 500 or 15% of next order, cashback up to INR 300, and one offer per 30 days. [discount_policy.md > Limits per customer]
+- **Approval:** Agent up to INR 300; team lead for INR 301 to 500; never above INR 500. Retention agents can approve offers up to INR 300; higher amounts require team lead approval. [discount_policy.md > Approval levels]
 
 ## Do not
-- Do not send coupons or discounts before complaint resolution [retention_playbook.md > Customers who complained].
-- Do not exceed one retention offer per 30 days [discount_policy.md > Limits per customer].
-- Do not contact the customer more than twice in 14 days [retention_playbook.md > Channels].
+- Do not tell the customer their churn score [retention_playbook.md > What we never do]
 
 ## Market now (last 48 hours)
-- [Forget Black Friday: This Lab-Grown Diamond Brand Just Launched Half-Price Tennis Bracelets And Huggie Hoops](https://news.google.com/rss/articles/CBMid0FVX3lxTE5FSnVDZl9fV05hV0NYakNTYzV6eHhIMjFHbHFOUFo2Mjc1NkJnTjlfWmJuVVhobUExZ3pCeHdNTE5lMm42cktBbzFpbzZaeHRYRkJHb2hjM29UdzlrWWVCS2JoZk52VUo3WlFwbzdrNDduRWZBVk5R?oc=5) (ELLE, 2026-10-30) - Indicates competitive pricing in fashion accessories which may influence customer expectations.
-- [Detroit Auto Show revs up for 2027 with Ferraris and fashion](https://news.google.com/rss/articles/CBMijwFBVV95cUxNTWRRUnVReG1fbjdGdzBOMkswYTZhVHBxT0RXdVZNWTVuZmp3ZXptWUZjcEVPU202YXRHcG9Kbkc1Qi1TZVVtY3hudklta0ZTUXlkN2JDNEVhNkFwSEk4WmZfOWFwZFhKblBYaGFubTdvelpYZUpoQWlsZ2tSTUFPeDhkUHU0U2ZJQW9WNlFPOA?oc=5) (WXYZ Channel 7, 2026-10-30) - Highlights ongoing fashion events that may increase customer interest in fashion category.
-- [Ashby law firm to host charity fashion sale with high street bargains](https://news.google.com/rss/articles/CBMi0AFBVV95cUxQVVBucll1c256Nnp1TVJBdzVweVR0WGFWMWFmbndwYkFsUnJIQzNRXzV0TjBJUU52SEpWWVFSRGo5anpEalEzOG8yVXJfXzRTbTdEQTJDMklXQ01EemxMaHVrNlZrWV9Rakp3dTBsWmFrdHJxLWZIM0U4ejNKbmNQcW5jQ0VDMDRVemc1ZTRMZC1sb3l4N2xwbUxOQkVzZ0RKRzJYSGM4cDQyUEhldnRKTFRaU0RhS1pCNzRYcmwyZXhLVlNwLXhBa2swcnNCTk1P?oc=5) (Ashby Nub News, 2026-10-30) - Local fashion sales events may affect customer shopping behavior.
+- [Sephora Sale 2026: Our Editors Picks](https://news.google.com/rss/articles/CBMif0FVX3lxTFB5WVZ2TG51LTk4SDNFNl9FaFE5c2dWaWR1ZzZISUZfTFZIdGhRc0JDOXRTTlZESlpQcER0dGhXWmRXOWhJYlpaRmJmTFFEWWFXWUNxSC1kNTZrTTdUZVlzbnI5aXV1NDR1WjFkSHBkalI3LWpmTXZNSlVNQU9kSUE?oc=5), FASHION Magazine, 2026-10-31 07:18 UTC. Current fashion sales promotions may increase customer engagement and retention opportunities.
+- [Shoppers snap up 10 thermal tops a minute as M&S cosy layers go on sale](https://news.google.com/rss/articles/CBMilgFBVV95cUxQTE5naDV1SV9ObTVQWnB6cDZsMG1uTXpBUnFBcnlXamoweWE5MVZhaU9SMFJyWVhWeFQtV0w2SWlHS0pvdXViODdaNHBEcEYyUDRkM3FBRDEtLWxjbm12XzdDWGpIejVDOTFWSUZyb09Ea3hiRnlOSWN0YXpwN193N1BTVjlFLTlHQlh6NUVuMVEzcTVsQmc?oc=5), malverngazette.co.uk, 2026-10-31 03:07 UTC. Increased demand for thermal tops suggests seasonal buying trends relevant to fashion customers.
+- [Armani CEO Giuseppe Marsocci Weighs Who Gets the First 15 Percent of the House](https://news.google.com/rss/articles/CBMiigFBVV95cUxOOEdCX0x6emRCMWxQT0pjNVVmTU1hNjQtRm5DaHl4UjhqTHRkM1VuUEJxVzBvOFhsV212YVpLS2x4QnA2TVpkblFJenV5ejE2RGJXaW5fSzM2SUxHTjhVNzVfSVhRY1pKLWdYdjBDcFI4bGdkZnB1cHpLZldYQ2NZSHNKTFowRGdlNXc?oc=5), Observer, 2026-10-31 00:30 UTC. Leadership insights on fashion industry priorities may influence market conditions affecting customer retention.
 
 ## Sources
-- [retention_playbook.md > Who we contact first]
-- [retention_playbook.md > Channels]
-- [retention_playbook.md > Customers who complained]
-- [discount_policy.md > Monthly retention budget]
-- [discount_policy.md > Limits per customer]
-- [discount_policy.md > Approval levels]
+[discount_policy.md > Approval levels] · [discount_policy.md > Limits per customer] · [retention_playbook.md > Channels] · [retention_playbook.md > Customers who complained] · [retention_playbook.md > What we never do] · [retention_playbook.md > Who we contact first]

@@ -1,49 +1,24 @@
-# Retention Briefing for Customer 50085
+# Retention briefing: customer 50085
+
+Customer 50085 has a low churn risk score of 0.02, with a tenure of 19 months and high satisfaction. They prefer fashion category orders and pay by credit card, with recent activity 3 days ago.
 
 ## Customer snapshot
-- Tenure: 19.0 months
-- Complaint flag: 0 (no complaint)
-- Preferred Payment Mode: Credit Card
-- Preferred Order Category: Fashion
-- Satisfaction Score: 5
-- Days Since Last Order: 3.0
-- Order Count: 1.0
-- Cashback Amount: 193.96
+- Tenure 19.0 · Complain 0 · PreferredPaymentMode Credit Card · PreferedOrderCat Fashion · SatisfactionScore 5 · DaySinceLastOrder 3.0 · OrderCount 1.0 · CashbackAmount 193.96
 
 ## Churn risk
-- Risk score: 0.02 (low risk band)
-- Score note: The model never saw this customer during training (scored_out_of_sample: true)
+- Risk score: 0.02 (low risk band: below 0.40). The model never saw this customer during training.
 
-## Recommended action
-- This customer is low risk (score below 0.40), so no individual outreach is recommended.
-- Customers with low risk scores remain in the regular newsletter mailing list.
-- Contact priority is given to higher risk customers or those with recent complaints.
-- No phone calls or push notifications are needed for this customer at this time.
-- Follow the standard newsletter engagement strategy for low-risk customers.
-
-Source: [retention_playbook.md > Who we contact first], [retention_playbook.md > Channels]
-
-## Offer
-- No discount or special offer applies to low-risk customers.
-- Discount policy does not authorize offers for customers with low churn risk.
-
-Source: No specific discount policy sections returned for this situation.
+## Plan (decided in code from the playbook and the discount policy)
+- **Contact:** No individual outreach; the customer stays in the regular newsletter. Customers below 0.40 without complaints receive no individual outreach and remain in the regular newsletter. [retention_playbook.md > Who we contact first]
+- **Offer:** None: offers to customers below 0.40 are not funded. Offers are not funded for customers with a risk score below 0.40 according to the discount policy. [discount_policy.md > Offers that need extra care]
 
 ## Do not
-- Do not contact this customer by phone or app push notification.
-- Do not offer a discount or incentive at this stage.
-- Do not prioritize this customer over medium or high-risk customers.
+- Do not tell the customer their churn score [retention_playbook.md > What we never do]
 
 ## Market now (last 48 hours)
-- [Forget Black Friday: This Lab-Grown Diamond Brand Just Launched Half-Price Tennis Bracelets And Huggie Hoops](https://news.google.com/rss/articles/CBMid0FVX3lxTE5FSnVDZl9fV05hV0NYakNTYzV6eHhIMjFHbHFOUFo2Mjc1NkJnTjlfWmJuVVhobUExZ3pCeHdNTE5lMm42cktBbzFpbzZaeHRYRkJHb2hjM29UdzlrWWVCS2JoZk52VUo3WlFwbzdrNDduRWZBVk5R?oc=5) - ELLE, 2026-10-30  
-  May indicate increased promotional activity in fashion accessories, potentially raising customer expectations for deals.
-
-- [Detroit Auto Show revs up for 2027 with Ferraris and fashion](https://news.google.com/rss/articles/CBMijwFBVV95cUxNTWRRUnVReG1fbjdGdzBOMkswYTZhVHBxT0RXdVZNWTVuZmp3ZXptWUZjcEVPU202YXRHcG9Kbkc1Qi1TZVVtY3hudklta0ZTUXlkN2JDNEVhNkFwSEk4WmZfOWFwZFhKblBYaGFubTdvelpYZUpoQWlsZ2tSTUFPeDhkUHU0U2ZJQW9WNlFPOA?oc=5) - WXYZ Channel 7, 2026-10-30  
-  Highlights ongoing interest in fashion trends, which could influence customer engagement in the fashion category.
-
-- [Ashby law firm to host charity fashion sale with high street bargains](https://news.google.com/rss/articles/CBMi0AFBVV95cUxQVVBucll1c256Nnp1TVJBdzVweVR0WGFWMWFmbndwYkFsUnJIQzNRXzV0TjBJUU52SEpWWVFSRGo5anpEalEzOG8yVXJfXzRTbTdEQTJDMklXQ01EemxMaHVrNlZrWV9Rakp3dTBsWmFrdHJxLWZIM0U4ejNKbmNQcW5jQ0VDMDRVemc1ZTRMZC1sb3l4N2xwbUxOQkVzZ0RKRzJYSGM4cDQyUEhldnRKTFRaU0RhS1pCNzRYcmwyZXhLVlNwLXhBa2swcnNCTk1P?oc=5) - Ashby Nub News, 2026-10-30  
-  Local fashion sales events may increase competition for customer attention in the fashion segment.
+- [Price drop on mattress 20k Aussies swear by](https://news.google.com/rss/articles/CBMi0AFBVV95cUxNV1FRRDBlNHhmUkQtU3V4RkUySjlqZkNMOW9EQ254VW1DQkFJY1o4cGN5WVYta2I5eWtaWGRjNHVjZVBBTzFJZU1wajBseWktanZYNl9vNzd6RXZ1Ti1qLVd3b0tfRU42eDgzQ2dSaW9zQXF1eThGTEItZGJkcUhJZXJ2eEN2aDlmdWtUYXYxRjVIVmkzMEFXNDktTER5dFJvU2YxSXdyLXlIS21NSG52YW9kOHUxQllmRjlFZUZNOVhaVmMydW5iVGZBLTZOd1Zh0gHWAUFVX3lxTFAwdGh4QnFYbmppSTR6aHRpX2FFcGFWSjVBWGpaVWFEN0xkRVppeFBXSDB0bEp5Q0pSSExuRmtNc3hKMXhsazcyaUtlaW94SndNQ3cxWjh5Yl9YSlNLYlBhTndfeTZBYmRBOUlTNzRYcF9NaDZSN1EteS1tdFNBUU9TWi1mbUJDZjdMVlItQzFibkVFVTZLcW11dUVsSUhjNU5CYkg2LVJaRFNEd3NRN1lEUEpXM2VhQjU0Tjd2VHZJU3oyT3VJMWl0eVBHNEZGYl9FNFlNWmc?oc=5), News.com.au, 2026-10-31 09:16 UTC. Price drops in related ecommerce sectors may increase customer interest in fashion sales.
+- [Charli XCX and Chris Horan Turn Stylist Vinted Sale Into Tour Wardrobe](https://news.google.com/rss/articles/CBMiU0FVX3lxTE9vUTBTVE5MTkw0S09xbm1nMTB6WDROeUJ3Rm5KUEVwNlJIeVhRUEI0YjktUmVObGNUQldubHotNmdHWWhjN2c5VEtXLXhFX2E4bHlF?oc=5), شبكة تواصل الإخبارية, 2026-10-31 07:40 UTC. Celebrity styling events could boost fashion ecommerce engagement relevant to this customer's preferences.
+- [Sephora Sale 2026: Our Editors Picks](https://news.google.com/rss/articles/CBMif0FVX3lxTFB5WVZ2TG51LTk4SDNFNl9FaFE5c2dWaWR1ZzZISUZfTFZIdGhRc0JDOXRTTlZESlpQcER0dGhXWmRXOWhJYlpaRmJmTFFEWWFXWUNxSC1kNTZrTTdUZVlzbnI5aXV1NDR1WjFkSHBkalI3LWpmTXZNSlVNQU9kSUE?oc=5), FASHION Magazine, 2026-10-31 07:18 UTC. Ongoing sales at major fashion retailers may encourage repeat purchases from this customer.
 
 ## Sources
-- [retention_playbook.md > Who we contact first]
-- [retention_playbook.md > Channels]
+[discount_policy.md > Offers that need extra care] · [retention_playbook.md > What we never do] · [retention_playbook.md > Who we contact first]

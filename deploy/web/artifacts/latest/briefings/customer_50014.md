@@ -1,46 +1,31 @@
-# Retention Briefing for Customer 50014
+# Retention briefing: customer 50014
+
+Customer 50014 is a new high-risk customer with a recent complaint and a preference for mobile products. The retention agent must prioritize resolving the complaint and conduct a welcome call without an initial discount.
 
 ## Customer snapshot
-- Tenure: 0.0 months
-- Complaint flag: 1 (complained in last month)
-- Preferred Payment Mode: CC (Credit Card)
-- Preferred Order Category: Mobile
-- Satisfaction Score: 3
-- Days Since Last Order: 0.0
-- Order Count: 1.0
-- Cashback Amount: 133.88 INR
+- Tenure 0.0 · Complain 1 · PreferredPaymentMode CC · PreferedOrderCat Mobile · SatisfactionScore 3 · DaySinceLastOrder 0.0 · OrderCount 1.0 · CashbackAmount 133.88
 
 ## Churn risk
-- Risk score: 0.79 (high risk band)
-- Score note: The model never saw this customer during training (scored_out_of_sample: true)
+- Risk score: 0.79 (high risk band: 0.70 or higher). The model never saw this customer during training.
 
-## Recommended action
-- Contact this customer first as they are high risk and have complained recently; prioritize by newest flagged first [retention_playbook.md > Who we contact first].
-- Use a phone call by a retention agent for outreach [retention_playbook.md > Channels].
-- Since this is a new customer (tenure 0 to 1 months), make a welcome call within 3 days of the flag and follow up with an email about delivery and payment experience. Do not offer a discount on this first contact; focus on fixing the experience first [retention_playbook.md > New customers (tenure 0 to 1 months)].
-- Resolve the customer's complaint before offering any coupon or reward, as coupons sent while complaints are open can increase churn [retention_playbook.md > Customers who complained].
-- Monitor competitor offers in the Mobile category, especially from CartNest, which offers 10% off first phone orders for new customers, posing a high threat [competitor_offers.md > CartNest].
-
-## Offer
-- No discount or coupon on this first contact due to new customer status and open complaint [retention_playbook.md > New customers (tenure 0 to 1 months)], [retention_playbook.md > Customers who complained].
-- If an offer is to be made later, maximum discount per customer per month is INR 500 or 15% of the next order, whichever is lower. Cashback offers capped at INR 300 per month [discount_policy.md > Limits per customer].
-- Retention agent can approve discounts up to INR 300; above that requires team lead approval [discount_policy.md > Approval levels].
+## Plan (decided in code from the playbook and the discount policy)
+- **Contact:** Yes, priority 1 (risk 0.70 or higher). High-risk customers with a score of 0.70 or higher are contacted first, prioritizing newest customers. [retention_playbook.md > Who we contact first]
+- **Channel:** Phone call by a retention agent. High-risk customers are contacted by phone call from a retention agent for effective outreach. [retention_playbook.md > Channels]
+- **Frequency:** At most twice in 14 days. Customers are contacted at most twice in 14 days to avoid over-contacting. [retention_playbook.md > Channels]
+- **Complaint:** Close the complaint before any coupon or offer. Complaints must be resolved before offering coupons to avoid increasing churn. [retention_playbook.md > Customers who complained]
+- **New customer:** Welcome call within 3 days plus a follow-up email; no discount on this first contact. New customers receive a welcome call within 3 days and no discount on first contact to fix experience first. [retention_playbook.md > New customers (tenure 0 to 1 months)]
+- **Offer:** Only after the complaint is closed. Offers are only made after complaints are closed to ensure effectiveness. [retention_playbook.md > Customers who complained]
+- **Offer type:** Discount or wallet cashback within the limits. Discounts or wallet cashback are allowed within policy limits for retention. [discount_policy.md > Limits per customer]
+- **Limits:** Up to INR 500 or 15% of the next order, whichever is lower; cashback up to INR 300; one offer per 30 days. Discounts are limited to INR 500 or 15% of next order; cashback capped at INR 300; one offer per 30 days. [discount_policy.md > Limits per customer]
+- **Approval:** Agent up to INR 300; team lead for INR 301 to 500; never above INR 500. Agents can approve offers up to INR 300; higher amounts require team lead approval. [discount_policy.md > Approval levels]
 
 ## Do not
-- Do not send coupons or discounts before complaint resolution [retention_playbook.md > Customers who complained].
-- Do not offer discounts on the first contact with new customers [retention_playbook.md > New customers (tenure 0 to 1 months)].
-- Do not contact the customer more than twice within 14 days [retention_playbook.md > Channels].
+- Do not tell the customer their churn score [retention_playbook.md > What we never do]
 
 ## Market now (last 48 hours)
-- [Google Pixel 11 Pro Unlocked Smartphone sees price cut to $799](https://news.google.com/rss/articles/CBMimAFBVV95cUxOZXF6V0lWM2NtRWhzWWx5ZExvY05STnhjcTI0NUVCWmlXWVdub0NldTRwY1JpQUw2NnZyTUZkV1hJYXNlQjNwRkZnVEpub3FjOGdhNm5uWUZRNDRjV3VLQml4M3laRW5PVFBfajJlSnYwVjBBQzFTSHJSR3BjT3dldU9SUWtXeExCZk9NWXVpaUMxZUp5LXJnOQ?oc=5) - Technobezz, 2026-10-30. Price cuts on smartphones may increase customer expectations for discounts.
-- [DoorDash to Buy Instacart in $17bn Grocery Deal](https://news.google.com/rss/articles/CBMifEFVX3lxTFBCWDdMRTZoS2ZxRWRSSGhoa19YVlJtSmFKMXptd2M3dDdHdGpEQ1ViVi1XY2dEQTZWaWVWTkVBRWJDNExnWGZ2NU1EcmtyZU8ycE9lOVlpZTl2b0c5V1R0WGNIS1lzTUtkeWtCTWxiWEQtdlRvd1RpWXBIX2E?oc=5) - Grocery Trade News, 2026-10-30. Not directly relevant to Mobile category but indicates competitive market activity.
-- [Google Pixel 11 Pro Fold Unlocked Smartphone now $1649, down from $1899](https://news.google.com/rss/articles/CBMiogFBVV95cUxOUUo4cklseXYyZDdxX1h4M2tkQ1FiQVhlUXdfcWlTcEhGT3g1UVAyeUxTVllCeGZ4V2hvc1Z6X1hSV1RkUkR1eWxZYV96ZDNkNnR0TDNiaWRIaXBOSXFkb013dEQteEd5WFRqcC10eVJfNDJ6aHNaZ0gwaVg4bkZhZEFzay1iNGdiSW0yOG1VZmFrN0FnVGUwSDRCcWxlWDNPR1E?oc=5) - Technobezz, 2026-10-30. Further smartphone price reductions may pressure Harbor & Vale to remain competitive.
+- [Samsung Galaxy Z series foldables are breaking pre-order records in the US and Korea](https://news.google.com/rss/articles/CBMijgFBVV95cUxPTGRzVU5HUkpWQlpMLW41Y210Mlk1TXJlbEstTFh2TDZnSWhjejlZcTk5YjF5TERBdUt5dDAxUWZUVmtLaVp6STg5LU4xRGdLWGxuTVBvQ1h1ZEpCZ08tTFZqMEFobHNNNWoyaTIzdE9GQWlwLUpvbGtnRldMRnB4S2didmt6eW93MnRxOXVB?oc=5), Mashable, 2026-10-30 22:00 UTC. Strong pre-order records for Samsung Galaxy Z foldables indicate high market interest in premium mobile devices.
+- [All the phones T-Mobile is giving away for free: Shop iPhone 17, Samsung Galaxy Z Fold 8, and Google Pixel 11](https://news.google.com/rss/articles/CBMilwFBVV95cUxOM3R4UVpTQ3VETVVrR1JRODkwaW9SMFFORGJpU2ZieC1udFJuakxXTVVpRHZ1TGI5eV9YelVrM0NVZVkwLWtpSmFtY2ExXzhGLTJpS1lzU3pQTmdIMGsxUlR5RGl6Z2VsdDVocGtzWG5yUG10VG5uVzVIbWJJSm9hWmFXRVZBUTMxUWNhTXpVSGFkLXB1dXhV?oc=5), Mashable, 2026-10-30 22:00 UTC. Free phone giveaways by T-Mobile may increase competitive pressure on mobile category customers.
+- [Oppo Find X10 review: The competition, our verdict, pros and cons](https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5RMWZhb1lXTXRuUHdEbVMyZFZKcUxNZ183bGtleU43RkxSZk1MWmsxN05TWVF2VU52LVJONlN4bi1kQmRhWkx2TmU4dXVtQ05vQ25nbXZDLWlVSGNHLWs5Z0xCeW5jTEU?oc=5), GSMArena.com, 2026-10-31 02:24 UTC. New smartphone reviews highlight competitive features that may influence customer retention decisions.
 
 ## Sources
-- [retention_playbook.md > Who we contact first]
-- [retention_playbook.md > Channels]
-- [retention_playbook.md > New customers (tenure 0 to 1 months)]
-- [retention_playbook.md > Customers who complained]
-- [competitor_offers.md > CartNest]
-- [discount_policy.md > Limits per customer]
-- [discount_policy.md > Approval levels]
+[discount_policy.md > Approval levels] · [discount_policy.md > Limits per customer] · [retention_playbook.md > Channels] · [retention_playbook.md > Customers who complained] · [retention_playbook.md > New customers (tenure 0 to 1 months)] · [retention_playbook.md > What we never do] · [retention_playbook.md > Who we contact first]

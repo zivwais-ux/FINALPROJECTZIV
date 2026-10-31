@@ -1,47 +1,27 @@
-# Retention Briefing for Customer 50050
+# Retention briefing: customer 50050
+
+Customer 50050 has a low churn risk score of 0.04 but has complained in the last month, with a tenure of 18 months and a preference for laptops and accessories. The key retention focus is resolving the complaint before offering any incentives.
 
 ## Customer snapshot
-- Tenure: 18.0 months
-- Complaint flag: 1 (complained in last month)
-- Preferred Payment Mode: Debit Card
-- Preferred Order Category: Laptop & Accessory
-- Satisfaction Score: 5
-- Days Since Last Order: 3.0
-- Order Count: 1.0
-- Cashback Amount: 150.06
+- Tenure 18.0 · Complain 1 · PreferredPaymentMode Debit Card · PreferedOrderCat Laptop & Accessory · SatisfactionScore 5 · DaySinceLastOrder 3.0 · OrderCount 1.0 · CashbackAmount 150.06
 
 ## Churn risk
-- Risk score: 0.04 (low risk band)
-- Score note: The model never saw this customer during training (scored_out_of_sample: true)
+- Risk score: 0.04 (low risk band: below 0.40). The model never saw this customer during training.
 
-## Recommended action
-- Do not contact this customer proactively as their risk score is below 0.40; they remain in the regular newsletter [retention_playbook.md > Who we contact first].
-- Since the customer has complained in the last month, prioritize resolving the complaint before any retention reward or coupon is offered [retention_playbook.md > Customers who complained].
-- A support agent must close the complaint first; sending a coupon while the complaint is open may increase churn [retention_playbook.md > Customers who complained].
-- No individual outreach by phone or app push is recommended for low-risk customers [retention_playbook.md > Channels].
-- Follow the "resolve before you reward" rule strictly for this customer [past_campaigns.md > Campaign "Sorry We Missed" (complaints)].
-
-## Offer
-- No offer should be made until the complaint is resolved.
-- Once resolved, any coupon or discount must comply with the discount policy limits: maximum INR 500 or 15% of the next order, whichever is lower; cashback capped at INR 300 per month; only one retention offer per 30 days [discount_policy.md > Limits per customer].
-- Approval for any offer must follow the company's discount approval process (not detailed here as no offer applies yet).
+## Plan (decided in code from the playbook and the discount policy)
+- **Contact:** Yes, priority 2 (complained in the last month, whatever the score). Customers who complained in the last month are contacted regardless of their low churn risk score, as per the retention playbook. [retention_playbook.md > Who we contact first]
+- **Channel:** Follow-up by the support team to close the complaint. Low risk customers with recent complaints receive follow-up contact by the support team to close the complaint. [retention_playbook.md > Channels]
+- **Frequency:** At most twice in 14 days. The playbook limits contact frequency to at most twice in 14 days to avoid customer fatigue. [retention_playbook.md > Channels]
+- **Complaint:** Close the complaint before any coupon or offer. The policy mandates resolving complaints before offering coupons, as coupons sent during open complaints increase churn. [retention_playbook.md > Customers who complained]
+- **Offer:** None: offers to customers below 0.40 are not funded. Offers are not funded for customers with churn risk below 0.40, aligning with the discount policy. [discount_policy.md > Offers that need extra care]
 
 ## Do not
-- Do not send coupons or discounts while the complaint is still open.
-- Do not contact the customer more than twice in 14 days.
-- Do not offer discounts on the first contact if the customer was new (not applicable here as tenure is 18 months).
+- Do not tell the customer their churn score [retention_playbook.md > What we never do]
 
 ## Market now (last 48 hours)
-- [HP Ryzen 9 8945HX and RTX 5070 gaming laptop with OLED display drops by 18% with Amazon offer](https://news.google.com/rss/articles/CBMiwAFBVV95cUxPa1ZYXy1QRFlKVUNCX3VoN01tTXlsazVoVjd5NTYxZGp6bGtjMU5SeDhIeTBodk54azIweDZ2VUFNNDJtY1U0aTRhZ2hIWjRyeGFPbVgwOERMNkRNVUpUbm5zVjJsTnhsaS1vaWg2LUNxNTFnaXlSanpPQllEeUJkSnlFVUN2Z2hiZ3VIMlQ5NWpnNjJ0RDJMNVVUczIwV2tyUy15amtXcmpCdWJRYjI5TTFWV0ttbEx2RVVpZGU3Qmg?oc=5) - PC Guide, 2026-10-30  
-  Competitor discounts on high-end laptops may influence customer expectations in the Laptop & Accessory category.
-- [These 2 laptop deals start at $417.99 for Lenovo and Microsoft models](https://news.google.com/rss/articles/CBMiogFBVV95cUxPaEo2Vl9zUlBvSmJ4WFJEcE9EUlYyTk1ZSmtSek1vZDdOczdGRW9BS1VEWDZmMk5qRllHT1ZMVzdOUG04SHptOGlFZkhLc2ptNHpYNk5ULXRoWXFGUEhRUWhpaEZROVhmaWdkRFlJOElILU5BekZzaEpHeWZmMmpxX3ZWUlI1MHNZaEpIS192cE0zcHB5aGM4TU5uVXN6V0xSNEE?oc=5) - Technobezz, 2026-10-30  
-  Promotions on laptops could affect customer retention if Harbor & Vale does not remain competitive.
-- [Tata Sons pumps $115M into Tata Electronics as iPhone, chip arms scale](https://news.google.com/rss/articles/CBMipAFBVV95cUxNclJ5am1FWVYzNUhNd3otYXJiZ2lTZ1lZWkVvSm1KNE9HTm9nYUduaFR2R2VxR01yVU40cnp5bWtvbC1pV2JfTWZSajE0cGNiVTA2dHFyMjJZUFJRQWx4M0xrVDk0UExOWWZlUm5RcVROZmFYNkVqbFNycGJxLUFLMnpUazdQeFVUc3JhdXRMZzBlLThCU3RyYUVuTHdHbl9YZ1pXQg?oc=5) - Dealroom, 2026-10-30  
-  Investment in electronics manufacturing may increase market competition and product availability.
+- [Everything You Need To Know About Black Friday 2026: The Biggest Sales, the Best Deals, and More](https://news.google.com/rss/articles/CBMinAFBVV95cUxQNlhENTR0ckIxeDdRSzJGVUU1S2ZjWXo5RWVCV1FwRENuZjJYNm9HYm9BdGZlYVA5Z2dYUzFRc253MHFYS0M0MTVQYm5nTVNXTmd2a1M2UGRzTjBaT3c0akh2UTljb2p2dnptVHU2Wld0dFduY05qT1FzUXU5WGMwWjR0VnJySmowT2VVM3lsOVFSWGhpd24zTi1CRnI?oc=5), PCMag, 2026-10-31 05:46 UTC. Upcoming Black Friday sales coverage signals potential for increased customer engagement with electronics deals.
+- [Amazon's dropped the price of our favourite laptop for graphic designers by $160 in early Black Friday deal](https://news.google.com/rss/articles/CBMi2wFBVV95cUxQOUdLaW03QWx4WUJkMDNubDdmSHNUem5VTmtFUUwyMFloZWR2cmhJVWtUNUx3ME9YYmY4a05BNXBCTHBEM0VNUDJEQ3lQcmk0dFJwU3NKRkJoLXZBOUNhdVRwT2NTZTY4V203Z3ZobEI4Z0h4LWs5Y180aHZxTVlCcW8xcURWR09rLWx4TDBBb202SjM0MTNReWdKNmNCdmFZU1RKb1AyZDlJSjJqWkw1RElCY2JBMTQwV3F2U2dhSlA1eUF0ZHlLOXgtbGJQNW94NktKSUJPeXMxOFU?oc=5), Creative Bloq, 2026-10-31 05:00 UTC. Early Black Friday laptop discounts may increase customer interest in laptop accessories, relevant to this customer's preferred category.
+- [Deal | HP OmniBook 3 with Wildcat Lake processor drops below $500](https://news.google.com/rss/articles/CBMipAFBVV95cUxOOTJYNVY5NHUtS2NjMDNaVWIyeHRjaHFlZ2dkc0I1aDBaNmFsOWlsTURmWWFDVVMwSXR6TnRxOUFMVUloWUhDVXlTd0QyUmlqeXNvOWdtdG8tdFM5Mk9Oa2FFS2piRWNLYWY1RXo0eUtSV0RlTVdPTjBBem5XaHlZd3dVcEo3VVBCbkw5S0F3eGJmSGVJc0kwTnlUak9zeEg3b2Q5SQ?oc=5), Notebookcheck, 2026-10-31 03:26 UTC. Price drops on laptops like the HP OmniBook could influence this customer's purchasing decisions.
 
 ## Sources
-- [retention_playbook.md > Who we contact first]  
-- [retention_playbook.md > Channels]  
-- [retention_playbook.md > Customers who complained]  
-- [past_campaigns.md > Campaign "Sorry We Missed" (complaints)]  
-- [discount_policy.md > Limits per customer]
+[discount_policy.md > Offers that need extra care] · [retention_playbook.md > Channels] · [retention_playbook.md > Customers who complained] · [retention_playbook.md > What we never do] · [retention_playbook.md > Who we contact first]

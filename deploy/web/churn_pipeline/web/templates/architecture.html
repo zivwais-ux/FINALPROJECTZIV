@@ -56,6 +56,7 @@ The briefing agent combines the model, RAG over internal documents and a web sea
 <div class="grid g3">
   <div class="card"><h3>Agents decide, tools compute</h3><p class="small">Every number in an agent's text comes from a Python tool's output. Agents choose, explain and write; they never do arithmetic.</p></div>
   <div class="card"><h3>Gates are code</h3><p class="small">The contract check, the lock comparison and the quality gate are plain Python. No LLM can talk the flow past a broken handoff.</p></div>
+  <div class="card"><h3>Rules are code</h3><p class="small">The retention playbook's rules (who is contacted, how, whether an offer is allowed) are applied in code. The briefing agent explains the decisions; it cannot change them.</p></div>
   <div class="card"><h3>Fail loudly, explain precisely</h3><p class="small">A failed gate writes a report naming the column and the change, for example "about 100x off, possible unit change", and exits with 1.</p></div>
 </div>
 
@@ -66,7 +67,8 @@ The briefing agent combines the model, RAG over internal documents and a web sea
   <div class="node code"><div class="kind">Chunk</div><h3>One chunk per section</h3><p>40 sections, each prefixed with "document &gt; section" for context.</p></div>
   <div class="node code"><div class="kind">Embed</div><h3>text-embedding-3-small</h3><p>Cached by the text's SHA-256; only changed sections are embedded again.</p></div>
   <div class="node code"><div class="kind">Retrieve</div><h3>Top 4 by cosine</h3><p>Each hit carries <code>cite_as</code>, so the briefing can cite its source.</p></div>
-  <div class="node gate"><div class="kind">Guardrail</div><h3>Check every citation</h3><p>A briefing that cites a section that does not exist is sent back.</p></div>
+  <div class="node code"><div class="kind">Decide</div><h3>Plan in code</h3><p>Contact, channel and offer come from the playbook as code; the agent only explains them.</p></div>
+  <div class="node gate"><div class="kind">Guardrail</div><h3>Check the explanations</h3><p>Every decision explained, none walked back, and only real news links, or the agent tries again.</p></div>
 </div>
 
 <h2>The agents and their prompts</h2>

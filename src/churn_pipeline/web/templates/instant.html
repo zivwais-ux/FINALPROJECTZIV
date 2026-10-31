@@ -38,7 +38,21 @@ that the RAG retrieves for this customer's situation, each with its source, and 
   </div>
 </div>
 
-<h2>What applies to this customer, and what the documents say</h2>
+<h2>The plan</h2>
+<p class="sub">Decided in code from the retention playbook and the discount policy, the same rules the agent-written briefings state word for word.</p>
+<div class="card">
+  <ul class="gates">
+    {% for d in view.plan.decisions %}
+    <li><span class="dot pass" style="background:var(--brand-soft);color:var(--brand)">{{ loop.index }}</span>
+      <div><div class="name" style="font-family:var(--font)">{{ d.label }}</div><div>{{ d.value }}</div>
+        <div class="small">{% for c in d.cites %}<code>{{ c }}</code> {% endfor %}</div></div></li>
+    {% endfor %}
+  </ul>
+  <h3 style="margin-top:14px">Do not</h3>
+  <ul class="problems" style="margin-top:4px">{% for n in view.plan.never %}<li>{{ n.value }}</li>{% endfor %}</ul>
+</div>
+
+<h2>Why: what the documents say</h2>
 <p class="sub">The situations are decided in code from the score and the customer's data; for each, the RAG searched the internal documents.
 Read the rules in this order: a complaint is resolved before any offer, and a new customer gets no discount on the first contact.</p>
 {% for s in view.situations %}

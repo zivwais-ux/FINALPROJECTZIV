@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 BUNDLE = ROOT / "deploy" / "web"
 SRC = ROOT / "src" / "churn_pipeline"
 
-CODE = ["__init__.py", "scenarios.py", "run_history.py", "news.py", "contract", "web"]
+CODE = ["__init__.py", "scenarios.py", "run_history.py", "news.py", "retention_plan.py", "contract", "web"]
 CREWS = [("analyst_crew", "Crew 1 · Data Analyst"), ("scientist_crew", "Crew 2 · Data Scientist"),
          ("briefing_crew", "Crew 3 · Retention Briefing")]
 AGENTS_JSON = ROOT / "artifacts" / "latest" / "agents.json"
@@ -41,12 +41,15 @@ SOURCE_FILES = [
      "Features from the contract, the grouped split and the model comparison."),
     ("RAG", "src/churn_pipeline/rag.py",
      "Chunking by section, embeddings with a cache, cosine search with citations."),
+    ("Retention plan", "src/churn_pipeline/retention_plan.py",
+     "The playbook and the discount policy as code: who is contacted, how, and whether an offer is allowed."),
     ("Briefing situations", "src/churn_pipeline/tools/briefing_tools.py",
      "Code decides which situations apply and what the RAG searches for."),
     ("Web search", "src/churn_pipeline/news.py",
      "Market news from the last 48 hours through Google News RSS, without an API key."),
     ("Briefing guardrail", "src/churn_pipeline/crews/briefing_crew/briefing_crew.py",
-     "A crew that refuses to start without an approved model, and checks every citation and link."),
+     "The agent explains the plan's decisions; code renders the briefing and rejects missing, extra or "
+     "contradicting explanations and invented links."),
     ("An agent's prompts", "src/churn_pipeline/crews/analyst_crew/config/tasks.yaml",
      "The Data Analyst crew's task prompts."),
 ]

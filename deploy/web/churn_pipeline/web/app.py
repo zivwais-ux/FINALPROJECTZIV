@@ -22,6 +22,7 @@ from markupsafe import Markup
 from churn_pipeline.contract.models import load_contract
 from churn_pipeline.contract.validator import validate_against_contract
 from churn_pipeline.news import news_query, search_recent_news
+from churn_pipeline.retention_plan import retention_plan
 from churn_pipeline.run_history import fetch_runs
 from churn_pipeline.scenarios import SCENARIOS
 
@@ -37,8 +38,8 @@ REQUIREMENTS = [
      "where": "Playbook, discount policy, past campaigns, competitor offers and a postmortem, searched by embeddings",
      "page": "architecture"},
     {"need": "A one-page briefing an employee gets for a name they type", "status": "done",
-     "where": "Type any CustomerID for an instant briefing: the approved model's score plus the playbook rules the RAG "
-              "retrieves; agent-written briefings for selected customers",
+     "where": "Type any CustomerID for an instant briefing: the model's score, the plan decided in code from the "
+              "playbook, the rules the RAG retrieves and live news; 23 agent-written briefings",
      "page": "instant_briefing"},
     {"need": "Web search for the latest news (last 48 hours)", "status": "done",
      "where": "Google News, no API key: market news for the customer's category in every briefing, live on the site",
@@ -119,8 +120,9 @@ def instant_briefing_view(customer_id: int, data: dict[str, Any], hits: dict[str
                 shown.add(hit["cite_as"])
                 sections.append({"cite_as": hit["cite_as"], "body": render_md(section_body(hit))})
         situations.append({"situation": s["situation"], "query": s["query"], "sections": sections})
+    facts = dict(zip(data["key_facts"], facts))
     return {"id": customer_id, "score": score, "band": band, "out_of_sample": bool(out_of_sample),
-            "facts": dict(zip(data["key_facts"], facts)), "situations": situations}
+            "facts": facts, "plan": retention_plan(band, facts), "situations": situations}
 
 
 def check_dataframe(df: pd.DataFrame, file_path: Path, lock_path: Path) -> dict[str, Any]:
