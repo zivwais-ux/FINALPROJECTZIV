@@ -111,11 +111,16 @@ def _json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8")) if path.is_file() else None
 
 
+def scrub_paths(text: str | None) -> str | None:
+    """Drop the machine-specific start of a path (/home/<user>/<project>/), keeping the project-relative part."""
+    return None if text is None else re.sub(r"/(?:home|Users)/[\w.-]+/[\w.-]+/", "", text)
+
+
 def render_md(text: str | None) -> Markup | None:
     """Markdown written by the pipeline's agents, rendered as HTML."""
     if text is None:
         return None
-    text = re.sub(r"/(?:home|Users)/[\w.-]+/[\w.-]+/(?=artifacts/)", "", text)  # keep local paths out of the page
+    text = scrub_paths(text)  # keep local paths out of the page
     return Markup(markdown.markdown(text, extensions=["tables", "fenced_code"]))
 
 
@@ -323,12 +328,12 @@ def create_app(artifacts_dir: str | Path | None = None, lock_path: str | Path | 
         for d in sorted((p for p in broken.glob("*") if p.is_dir()), key=lambda p: (order.get(p.name, 2), p.name)):
             report = parse_report(_read(d / "validation_report.md"))
             if report:
-                scenarios.append({"name": d.name, "report": report, "log": _read(d / "pipeline.log"),
+                scenarios.append({"name": d.name, "report": report, "log": scrub_paths(_read(d / "pipeline.log")),
                                   "description": SCENARIOS[d.name].description if d.name in SCENARIOS
                                   else "full run on a broken raw file (Crew 1 included)"})
         history = fetch_runs()
         return render_template("runs.html", latest=parse_report(_read(latest / "validation_report.md")),
-                               latest_log=_read(latest / "pipeline.log"), scenarios=scenarios,
+                               latest_log=scrub_paths(_read(latest / "pipeline.log")), scenarios=scenarios,
                                history=history)
 
     @app.route("/checker", methods=["GET", "POST"])

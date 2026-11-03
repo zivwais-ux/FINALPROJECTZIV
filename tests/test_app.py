@@ -203,3 +203,8 @@ def test_runs_lists_the_incident_first(client):
 def test_each_tour_page_links_to_the_next_one(client):
     assert "Next in the tour" in client.get("/architecture").get_data(as_text=True)
     assert "Next in the tour" not in client.get("/code").get_data(as_text=True)
+
+
+def test_runs_page_does_not_show_local_machine_paths(client):
+    html = client.get("/runs").get_data(as_text=True)
+    assert "/home/user" not in html and "data/raw/E Commerce Dataset.xlsx" in html
