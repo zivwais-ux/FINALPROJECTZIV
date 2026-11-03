@@ -1,10 +1,12 @@
 {% extends "base.html" %}{% from "_gates.html" import ai_card, bar %}
 {% block title %}Data Scientist{% endblock %}
 {% block content %}
-<div class="eyebrow">Crew 2 · 4 agents</div>
-<h1>Data Scientist</h1>
-<p class="lead">Reads only <code>clean_data.csv</code> and the contract. Builds features from the contract, compares two models that handle missing values natively,
-and must pass a quality gate before the model is approved.</p>
+<div class="page-head">
+  <div class="eyebrow">Crew 2 · 4 agents</div>
+  <h1>Data Scientist</h1>
+  <p class="lead">The second crew reads only the cleaned data and the contract. It builds features, compares two models, and the model is approved only if it passes a quality gate.</p>
+  <div class="jump"><a href="#compare">Models compared</a><a href="#errors">Right and wrong</a><a href="#card">Model card</a></div>
+</div>
 
 {% if metrics %}{% set t = metrics.selected_test_metrics %}{% set cm = t.confusion_matrix %}{% set th = metrics.quality_thresholds %}
 <div class="grid g3">
@@ -25,11 +27,13 @@ and must pass a quality gate before the model is approved.</p>
   </div>
 </div>
 
-<div class="callout info" style="margin-top:16px"><span class="ico">ℹ</span><div><strong>An honest split.</strong> The dataset repeats customers under new ids.
+<p class="hint-box" style="margin-top:16px"><span aria-hidden="true">💡</span><span><b>In plain words:</b> PR-AUC says how well the model ranks the customers who really leave above the ones who stay (1.0 is perfect; guessing scores {{ '%.2f'|format(metrics.baseline_pr_auc) }}).
+  Recall is the share of real leavers the model flags. The red line on each bar is the minimum the gate demands.</span></p>
+<div class="callout info"><span class="ico">ℹ</span><div><strong>An honest split.</strong> The dataset repeats customers under new ids.
 A random split scored PR-AUC 0.993 because the test set held copies of training rows. Here each group of copies stays on one side
 ({{ metrics.split.duplicate_groups_on_both_sides }} groups on both sides), which gives the realistic {{ '%.3f'|format(t.pr_auc) }}.</div></div>
 
-<h2>Two models, compared</h2>
+<h2 id="compare">Two models, compared</h2>
 <p class="sub">{{ metrics.selection_rule[:1]|upper }}{{ metrics.selection_rule[1:] }}. The test set ({{ metrics.split.test_rows }} customers) is used once, after the choice.</p>
 <div class="grid g2">
   <div class="card">
@@ -54,7 +58,7 @@ A random split scored PR-AUC 0.993 because the test set held copies of training 
   </div>
 </div>
 
-<div class="grid g2">
+<div class="grid g2" id="errors">
   <div class="card">
     <h3>What the model gets right and wrong</h3>
     <p class="small">Test set, decision threshold {{ metrics.threshold }}.</p>
@@ -78,6 +82,6 @@ one 0/1 column per category spelling · excluded: {{ features.excluded|join(', '
 {% endif %}
 {% endif %}
 
-{% if card %}<h2>Model card</h2>{{ ai_card('Model card', card, 'Model Card Writer') }}{% endif %}
+{% if card %}<h2 id="card">Model card</h2>{{ ai_card('Model card', card, 'Model Card Writer', clamp=true, more='Read the full model card') }}{% endif %}
 {% if evaluation %}<details class="card"><summary>Evaluation report written by the Model Trainer &amp; Evaluator</summary><div class="md" style="margin-top:10px">{{ evaluation }}</div></details>{% endif %}
 {% endblock %}

@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Code{% endblock %}
 {% block content %}
-<div class="eyebrow">Under the hood</div>
-<h1>The code behind the decisions</h1>
-<p class="lead">The parts of the source that enforce the rules: the flow and its router, the gates, the validator, the RAG, the briefing's guardrail and an agent's prompt.
-The whole project is on <a href="{{ repo_url }}">GitHub</a>.</p>
+<div class="page-head">
+  <div class="eyebrow">Under the hood</div>
+  <h1>The code behind the decisions</h1>
+  <p class="lead">The parts of the source that enforce the rules: the flow, the gates, the validator, the RAG, the guardrail and an agent's prompt. Pick a file below. The whole project is on <a href="{{ repo_url }}">GitHub</a>.</p>
+</div>
 {% if files %}
-<div class="chips" role="tablist">
+<div class="chips scroll" role="tablist">
   {% for f in files %}<button class="chip{{ ' on' if loop.first else '' }}" data-tab="f{{ loop.index }}" role="tab">{{ f.title }}</button>{% endfor %}
 </div>
 {% for f in files %}

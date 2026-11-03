@@ -58,6 +58,51 @@ REQUIREMENTS = [
 ]
 
 
+# Plain-language labels for the customer snapshot (the dataset's column names are not friendly).
+PAYMENT_NAMES = {"COD": "Cash on delivery (COD)", "CC": "Credit card (CC)"}
+FACT_LABELS = {
+    "Tenure": "Months as a customer", "Complain": "Complained last month", "PreferredPaymentMode": "Usually pays by",
+    "PreferedOrderCat": "Favourite category", "SatisfactionScore": "Satisfaction (1 to 5)",
+    "DaySinceLastOrder": "Days since last order", "OrderCount": "Orders last month",
+    "CashbackAmount": "Cashback received (INR)",
+}
+SCENARIO_LABELS = {
+    "unit_change": "Money amounts switched units (×100)", "rename_column": "A column was renamed",
+    "out_of_range": "A value is out of range", "bad_category": "A new spelling of a category",
+    "missing_feature": "A column went missing",
+}
+
+
+def humanize_facts(facts: dict[str, Any]) -> list[tuple[str, str]]:
+    """(label, text) rows for the customer snapshot."""
+    rows = []
+    for key, value in facts.items():
+        if value is None:
+            text = "not recorded"
+        elif key == "Complain":
+            text = "Yes" if value == 1 else "No"
+        elif key == "CashbackAmount":
+            text = f"{value:,.0f}"
+        elif isinstance(value, float):
+            text = f"{value:g}"
+        else:
+            text = PAYMENT_NAMES.get(value, str(value)) if key == "PreferredPaymentMode" else str(value)
+        rows.append((FACT_LABELS.get(key, key), text))
+    return rows
+
+
+def blurb(band: str, facts: dict[str, Any]) -> str:
+    """One line on what makes a customer worth trying, from its data."""
+    bits = [f"{band} risk"]
+    if facts.get("Tenure") is not None and facts["Tenure"] <= 1:
+        bits.append("new")
+    if facts.get("Complain") == 1:
+        bits.append("complained")
+    if facts.get("PreferredPaymentMode") in ("COD", "Cash on Delivery"):
+        bits.append("pays cash")
+    return ", ".join(bits)
+
+
 def _read(path: Path) -> str | None:
     return path.read_text(encoding="utf-8") if path.is_file() else None
 
@@ -70,6 +115,7 @@ def render_md(text: str | None) -> Markup | None:
     """Markdown written by the pipeline's agents, rendered as HTML."""
     if text is None:
         return None
+    text = re.sub(r"/(?:home|Users)/[\w.-]+/[\w.-]+/(?=artifacts/)", "", text)  # keep local paths out of the page
     return Markup(markdown.markdown(text, extensions=["tables", "fenced_code"]))
 
 
@@ -121,8 +167,12 @@ def instant_briefing_view(customer_id: int, data: dict[str, Any], hits: dict[str
                 sections.append({"cite_as": hit["cite_as"], "body": render_md(section_body(hit))})
         situations.append({"situation": s["situation"], "query": s["query"], "sections": sections})
     facts = dict(zip(data["key_facts"], facts))
+    plan = retention_plan(band, facts)
+    answers = {d["id"]: d["value"] for d in plan["decisions"]}
     return {"id": customer_id, "score": score, "band": band, "out_of_sample": bool(out_of_sample),
-            "facts": facts, "plan": retention_plan(band, facts), "situations": situations}
+            "facts": facts, "facts_human": humanize_facts(facts), "plan": plan,
+            "answers": {"contact": answers.get("contact"), "channel": answers.get("channel"),
+                        "offer": answers.get("offer")}, "situations": situations}
 
 
 def check_dataframe(df: pd.DataFrame, file_path: Path, lock_path: Path) -> dict[str, Any]:
@@ -157,12 +207,26 @@ def create_app(artifacts_dir: str | Path | None = None, lock_path: str | Path | 
     def briefing_ids() -> list[int]:
         return sorted(int(f.stem.split("_")[1]) for f in (latest / "briefings").glob("customer_*.md"))
 
+    tour = [("architecture", "Architecture"), ("analyst", "Data Analyst"), ("scientist", "Data Scientist"),
+            ("instant_briefing", "Customer briefing"), ("checker", "Contract Checker"), ("runs", "Runs"),
+            ("code", "Code")]
+
     @app.context_processor
     def shared():
-        return {"nav": [("index", "Overview"), ("architecture", "Architecture"), ("analyst", "Data Analyst"),
-                        ("scientist", "Data Scientist"), ("instant_briefing", "Briefing"), ("runs", "Runs"),
-                        ("checker", "Contract Checker"), ("code", "Code")],
-                "repo_url": REPO_URL}
+        names = [e for e, _ in tour]
+        pager = None
+        if request.endpoint in names:
+            i = names.index(request.endpoint)
+            pager = {"prev": tour[i - 1] if i else None, "next": tour[i + 1] if i + 1 < len(tour) else None}
+        return {"nav_groups": [
+                    {"label": "", "items": [("index", "Overview")]},
+                    {"label": "Try it", "try": True, "items": [("instant_briefing", "Briefing"),
+                                                                ("checker", "Contract Checker")]},
+                    {"label": "How it was built", "items": [("architecture", "Architecture"),
+                                                             ("analyst", "Data Analyst"),
+                                                             ("scientist", "Data Scientist"), ("runs", "Runs"),
+                                                             ("code", "Code")]}],
+                "pager": pager, "repo_url": REPO_URL}
 
     @app.route("/")
     def index():
@@ -236,8 +300,15 @@ def create_app(artifacts_dir: str | Path | None = None, lock_path: str | Path | 
                 if view is None:
                     first, last = min(map(int, data["customers"])), max(map(int, data["customers"]))
                     error = f"Customer {raw} is not in the data. CustomerIDs run from {first} to {last}."
+        # Example customers; their risk is only shown while the latest run is approved.
+        examples = []
+        for cid in (51809, 50013, 50230, 50036):
+            row = (data or {}).get("customers", {}).get(str(cid))
+            if row:
+                text = blurb(row[1], dict(zip(data["key_facts"], row[3]))) if approved else ""
+                examples.append({"id": cid, "text": text})
         return render_template("instant.html", view=view, error=error, query=raw, data=data,
-                               written=briefing_ids(), examples=[51809, 50230, 50036])
+                               written=briefing_ids(), examples=examples)
 
     @app.route("/code")
     def code():
@@ -248,15 +319,17 @@ def create_app(artifacts_dir: str | Path | None = None, lock_path: str | Path | 
     def runs():
         broken = artifacts / "broken"
         scenarios = []
-        for d in sorted(p for p in broken.glob("*") if p.is_dir()):
+        order = {"unit_change": 0, "raw_unit_change": 1}  # the incident first, then the rest alphabetically
+        for d in sorted((p for p in broken.glob("*") if p.is_dir()), key=lambda p: (order.get(p.name, 2), p.name)):
             report = parse_report(_read(d / "validation_report.md"))
             if report:
                 scenarios.append({"name": d.name, "report": report, "log": _read(d / "pipeline.log"),
                                   "description": SCENARIOS[d.name].description if d.name in SCENARIOS
                                   else "full run on a broken raw file (Crew 1 included)"})
+        history = fetch_runs()
         return render_template("runs.html", latest=parse_report(_read(latest / "validation_report.md")),
                                latest_log=_read(latest / "pipeline.log"), scenarios=scenarios,
-                               history=fetch_runs())
+                               history=history)
 
     @app.route("/checker", methods=["GET", "POST"])
     def checker():
@@ -289,12 +362,13 @@ def create_app(artifacts_dir: str | Path | None = None, lock_path: str | Path | 
                     except (pd.errors.ParserError, UnicodeDecodeError, ValueError) as e:
                         error, source = f"Could not read the file as CSV: {e}", None
         return render_template("checker.html", scenarios=SCENARIOS, result=result, source=source,
-                               error=error, chosen=chosen, max_mb=MAX_UPLOAD_MB)
+                               error=error, chosen=chosen, max_mb=MAX_UPLOAD_MB, labels=SCENARIO_LABELS)
 
     @app.errorhandler(413)
     def too_large(_):
         return render_template("checker.html", scenarios=SCENARIOS, result=None, source=None, chosen=None,
-                               error=f"The file is larger than {MAX_UPLOAD_MB} MB.", max_mb=MAX_UPLOAD_MB), 413
+                               error=f"The file is larger than {MAX_UPLOAD_MB} MB.", max_mb=MAX_UPLOAD_MB,
+                               labels=SCENARIO_LABELS), 413
 
     @app.errorhandler(404)
     def not_found(_):

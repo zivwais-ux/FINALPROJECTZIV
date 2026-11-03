@@ -1,44 +1,62 @@
 {% extends "base.html" %}
-{% block title %}Instant briefing{% endblock %}
+{% block title %}Customer briefing{% endblock %}
 {% block content %}
-<div class="eyebrow">Type a customer · get a briefing</div>
-<h1>Retention briefing</h1>
-<p class="lead">Type any CustomerID to get a one-page briefing at once: the approved churn model's score, the rules from Harbor &amp; Vale's internal documents
-that the RAG retrieves for this customer's situation, each with its source, and live market news from the last 48 hours.</p>
+<div class="page-head">
+  <div class="eyebrow">Try it · type a customer, get a briefing</div>
+  <h1>Customer briefing</h1>
+  <p class="lead">Type any CustomerID to get a one-page briefing: how likely the customer is to leave, what the retention team should do, why (with the source of every rule), and live market news.</p>
+</div>
 
-<form method="get" action="{{ url_for('instant_briefing') }}" class="card" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
-  <label for="cid" style="font-weight:600">CustomerID</label>
-  <input id="cid" name="id" value="{{ query }}" inputmode="numeric" placeholder="e.g. 51809" class="search" style="margin:0;max-width:220px" autofocus>
-  <button class="btn btn-primary" type="submit">Get briefing</button>
-  <span class="small">Try: {% for e in examples %}<a href="{{ url_for('instant_briefing', id=e) }}">{{ e }}</a>{% if not loop.last %} · {% endif %}{% endfor %}
-    {% if data %}· any ID from {{ data.customers|map('int')|min }} to {{ data.customers|map('int')|max }}{% endif %}</span>
+<form method="get" action="{{ url_for('instant_briefing') }}" class="card">
+  <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+    <label for="cid" style="font-weight:700">CustomerID</label>
+    <input id="cid" name="id" value="{{ query }}" inputmode="numeric" placeholder="e.g. 51809" class="search" style="margin:0;max-width:220px;font-weight:600" {% if not view %}autofocus{% endif %}>
+    <button class="btn btn-primary" type="submit">Get briefing</button>
+    {% if data %}<span class="small">Any number from {{ data.customers|map('int')|min }} to {{ data.customers|map('int')|max }}</span>{% endif %}
+  </div>
+  {% if examples %}
+  <div class="example-grid" aria-label="Examples">
+    {% for e in examples %}<a class="example" href="{{ url_for('instant_briefing', id=e.id) }}"><b>{{ e.id }}</b>{% if e.text %}<span>{{ e.text }}</span>{% endif %}</a>{% endfor %}
+  </div>
+  {% endif %}
 </form>
 
-{% if error %}<div class="callout warn"><span class="ico">⚠</span><div>{{ error }}</div></div>{% endif %}
+{% if error %}<div class="callout warn" role="alert"><span class="ico">⚠</span><div>{{ error }}</div></div>{% endif %}
 
 {% if view %}
 {% set colour = 'var(--fail)' if view.band == 'high' else ('var(--warn)' if view.band == 'medium' else 'var(--pass)') %}
+{% set m = (data.band_rule.medium * 100)|round|int %}{% set h = (data.band_rule.high * 100)|round|int %}
+<div class="jump" aria-label="On this page"><a href="#summary">Summary</a><a href="#plan">The plan</a><a href="#why">Why</a><a href="#news">Market news</a></div>
+
+<h2 id="summary" style="margin-top:22px">Summary</h2>
 <div class="grid g2">
   <div class="card">
     <div style="display:flex;gap:18px;align-items:center">
-      <div class="score-ring" style="--p: {{ view.score * 100 }}; --c: {{ colour }}; width:88px; height:88px; font-size:1.3rem">{{ '%.2f'|format(view.score) }}</div>
+      <div class="score-ring" style="--p: {{ view.score * 100 }}; --c: {{ colour }}; width:88px; height:88px; font-size:1.3rem" title="Churn risk score">{{ '%.2f'|format(view.score) }}</div>
       <div>
         <div class="small">Customer</div><div style="font-size:1.5rem;font-weight:800">{{ view.id }}</div>
         <span class="badge {{ view.band }}">{{ view.band }} churn risk</span>
       </div>
     </div>
-    <p class="small" style="margin:14px 0 0">Score from the approved model ({{ data.model|replace('_', ' ') }}). Band rule from the playbook: high ≥ {{ data.band_rule.high }}, medium ≥ {{ data.band_rule.medium }}.
+    <div class="scale" style="background: linear-gradient(90deg, var(--pass) 0 {{ m }}%, var(--warn) {{ m }}% {{ h }}%, var(--fail) {{ h }}% 100%)" role="img" aria-label="Risk scale: {{ '%.2f'|format(view.score) }} on a scale from 0 to 1">
+      <span class="pin" style="left: {{ view.score * 100 }}%" data-v="{{ '%.2f'|format(view.score) }}"></span></div>
+    <div class="scale-labels"><span style="width:{{ m }}%">Low · below {{ data.band_rule.medium }}</span><span style="width:{{ h - m }}%">Medium</span><span style="width:{{ 100 - h }}%">High · {{ data.band_rule.high }}+</span></div>
+    <p class="small" style="margin:14px 0 0">The score comes from the approved model ({{ data.model|replace('_', ' ') }}); the bands come from the retention playbook.
       {% if view.out_of_sample %}<strong>The model never saw this customer in training.</strong>{% else %}This customer was in the training data, so the score is optimistic about the model.{% endif %}</p>
+    <div class="answers stacked">
+      <div class="answer"><small>Contact?</small><b>{{ view.answers.contact }}</b></div>
+      {% if view.answers.channel %}<div class="answer"><small>How?</small><b>{{ view.answers.channel }}</b></div>{% endif %}
+      <div class="answer"><small>Offer?</small><b>{{ view.answers.offer }}</b></div>
+    </div>
   </div>
   <div class="card">
-    <h3>Customer snapshot</h3>
-    <table><tbody>
-      {% for k, v in view.facts.items() %}<tr><td class="small">{{ k }}</td><td class="num">{{ v if v is not none else 'missing' }}</td></tr>{% endfor %}
-    </tbody></table>
+    <h3>About this customer</h3>
+    <dl class="facts">
+      {% for label, text in view.facts_human %}<dt>{{ label }}</dt><dd>{{ text }}</dd>{% endfor %}
+    </dl>
   </div>
 </div>
-
-<h2>The plan</h2>
+<h2 id="plan">The plan</h2>
 <p class="sub">Decided in code from the retention playbook and the discount policy, the same rules the agent-written briefings state word for word.</p>
 <div class="card">
   <ul class="gates">
@@ -48,26 +66,27 @@ that the RAG retrieves for this customer's situation, each with its source, and 
         <div class="small">{% for c in d.cites %}<code>{{ c }}</code> {% endfor %}</div></div></li>
     {% endfor %}
   </ul>
-  <h3 style="margin-top:14px">Do not</h3>
-  <ul class="problems" style="margin-top:4px">{% for n in view.plan.never %}<li>{{ n.value }}</li>{% endfor %}</ul>
+  {% for n in view.plan.never %}<div class="no">✕ {{ n.value }}</div>{% endfor %}
 </div>
 
-<h2>Why: what the documents say</h2>
+<h2 id="why">Why: what the documents say</h2>
 <p class="sub">The situations are decided in code from the score and the customer's data; for each, the RAG searched the internal documents.
 Read the rules in this order: a complaint is resolved before any offer, and a new customer gets no discount on the first contact.</p>
 {% for s in view.situations %}
-<div class="card">
-  <div class="ai-head"><h3 style="margin:0">{{ loop.index }}. {{ s.situation|capitalize }}</h3><span class="badge neutral" title="RAG query">⌕ {{ s.query }}</span></div>
+<details class="acc"{% if loop.first %} open{% endif %}>
+  <summary>{{ loop.index }}. {{ s.situation|capitalize }}<span class="badge neutral" title="What the RAG searched for">⌕ {{ s.query }}</span></summary>
+  <div class="acc-body">
   {% for sec in s.sections %}
-  <div style="border-left:3px solid var(--accent);padding:2px 0 2px 14px;margin:10px 0">
+  <div class="snippet">
     <div class="md">{{ sec.body }}</div>
     <div class="small">Source: <code>{{ sec.cite_as }}</code></div>
   </div>
   {% else %}<p class="small">The documents already shown above cover this situation.</p>{% endfor %}
-</div>
+  </div>
+</details>
 {% endfor %}
 
-<h2>Market now: news from the last 48 hours</h2>
+<h2 id="news">Market now: news from the last 48 hours</h2>
 <p class="sub">A live web search on Google News for this customer's market{% if view.facts.PreferedOrderCat %} ({{ view.facts.PreferedOrderCat }}, US news){% endif %}.
 Harbor &amp; Vale is fictional, so the search covers its real market. <span class="badge neutral">⌕ {{ view.news.query }}</span></p>
 <div class="card">
@@ -85,15 +104,16 @@ Harbor &amp; Vale is fictional, so the search covers its real market. <span clas
 
 <div class="callout info"><span class="ico">ℹ</span><div>
   This briefing is <strong>assembled in code</strong> from the model's precomputed scores and the RAG results, so it is instant and needs no API key.
-  {% if view.id in written %}An <a href="{{ url_for('briefings', customer_id=view.id) }}">agent-written briefing for customer {{ view.id }}</a> is also available.
-  {% else %}Agent-written briefings, where an LLM turns the same facts into a one-page brief, exist for {% for w in written %}<a href="{{ url_for('briefings', customer_id=w) }}">{{ w }}</a>{% if not loop.last %}, {% endif %}{% endfor %} and are made with <code>uv run brief &lt;CustomerID&gt;</code>.{% endif %}
+  {% if view.id in written %}An <a href="{{ url_for('briefings', customer_id=view.id) }}#briefing">agent-written briefing for customer {{ view.id }}</a> is also available.
+  {% else %}Agent-written briefings, where an LLM turns the same facts into a one-page brief, exist for {% for w in written %}<a href="{{ url_for('briefings', customer_id=w) }}#briefing">{{ w }}</a>{% if not loop.last %}, {% endif %}{% endfor %} and are made with <code>uv run brief &lt;CustomerID&gt;</code>.{% endif %}
 </div></div>
 {% elif not error %}
+<h2>What you will get</h2>
 <div class="grid g4">
-  <div class="card flat"><div class="eyebrow">1 · Score</div><p class="small" style="margin:0">The approved model scored all customers; nothing is shown unless the latest run passed every gate.</p></div>
-  <div class="card flat"><div class="eyebrow">2 · Situations</div><p class="small" style="margin:0">Code picks what applies: the risk band, a complaint, a new customer, cash on delivery, the category, an offer.</p></div>
-  <div class="card flat"><div class="eyebrow">3 · Retrieve</div><p class="small" style="margin:0">For each situation, the RAG's top sections from the playbook, the discount policy, past campaigns and competitor offers.</p></div>
-  <div class="card flat"><div class="eyebrow">4 · Search the web</div><p class="small" style="margin:0">Live market news from the last 48 hours for the customer's category, from Google News.</p></div>
+  <div class="card flat"><div class="eyebrow">1 · Score</div><p class="small" style="margin:0">How likely the customer is to leave. Nothing is shown unless the latest pipeline run passed every gate.</p></div>
+  <div class="card flat"><div class="eyebrow">2 · A plan</div><p class="small" style="margin:0">Whether to contact them, how, and which offer is allowed, decided in code from the company's playbook.</p></div>
+  <div class="card flat"><div class="eyebrow">3 · The reasons</div><p class="small" style="margin:0">The sections of the internal documents the RAG finds for this customer's situation, each with its source.</p></div>
+  <div class="card flat"><div class="eyebrow">4 · The market</div><p class="small" style="margin:0">Live news from the last 48 hours for the customer's category, from Google News.</p></div>
 </div>
 {% endif %}
 {% endblock %}

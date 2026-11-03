@@ -1,33 +1,36 @@
 {% extends "base.html" %}
 {% block title %}Contract Checker{% endblock %}
 {% block content %}
-<div class="eyebrow">Try it</div>
-<h1>Contract checker</h1>
-<p class="lead">Run the same checks that stop the pipeline before Crew 2, against the locked contract. Break the data in one click, or upload your own CSV. Nothing is stored.</p>
+<div class="page-head">
+  <div class="eyebrow">Try it</div>
+  <h1>Contract checker</h1>
+  <p class="lead">The pipeline checks every handoff file against a locked contract. Break the data below and watch the same checks stop it before the model is trained. Nothing is stored.</p>
+</div>
 
-<h2 style="margin-top:8px">Break the handoff</h2>
-<p class="sub">Each button applies one change to Crew 1's <code>clean_data.csv</code> and checks the result.</p>
-<form method="post" class="scen-grid">
-  <button class="scen{{ ' chosen' if chosen == 'clean' else '' }}" name="scenario" value="clean"><b>✓ clean_data.csv</b><span>The handoff as Crew 1 wrote it. Should pass.</span></button>
-  {% for name, s in scenarios.items() %}
-  <button class="scen{{ ' chosen' if chosen == name else '' }}" name="scenario" value="{{ name }}"><b>✕ {{ name }}</b><span>{{ s.description }}</span></button>
+<h2 style="margin-top:8px">1 · Pick a way to break the data</h2>
+<p class="sub">Each button changes Crew 1's <code>clean_data.csv</code> in one way and checks the result at once.</p>
+<form method="post" action="{{ url_for('checker') }}#result" class="scen-grid">
+  {% if 'unit_change' in scenarios %}
+  <button class="scen featured{{ ' chosen' if chosen == 'unit_change' else '' }}" name="scenario" value="unit_change">
+    <span class="tag">Start here</span>
+    <span><b class="nm">{{ labels.get('unit_change', 'unit_change') }}</b><span>{{ scenarios['unit_change'].description }}. This is the incident the project is built around.</span></span>
+  </button>
+  {% endif %}
+  {% for name, s in scenarios.items() if name != 'unit_change' %}
+  <button class="scen{{ ' chosen' if chosen == name else '' }}" name="scenario" value="{{ name }}"><b class="nm">✕ {{ labels.get(name, name) }}</b><span>{{ s.description }}</span><code class="k">{{ name }}</code></button>
   {% endfor %}
+  <button class="scen{{ ' chosen' if chosen == 'clean' else '' }}" name="scenario" value="clean"><b class="nm">✓ The original file</b><span>The handoff as Crew 1 wrote it. It should pass.</span><code class="k">clean_data.csv</code></button>
 </form>
 
-<h2>Or check your own file</h2>
-<form method="post" enctype="multipart/form-data" id="upload-form">
-  <label class="dropzone" id="dropzone">
-    <input type="file" name="file" accept=".csv" id="file-input">
-    <div style="font-size:1.6rem">⇪</div>
-    <div><strong>Drop a CSV here</strong> or click to choose · up to {{ max_mb }} MB</div>
-    <div class="small">Tip: download nothing, just edit a copy of clean_data.csv from the repository and upload it.</div>
-  </label>
-</form>
-
-<div id="result">
-{% if error %}<div class="verdict fail" style="margin-top:20px"><span class="big">!</span><p>{{ error }}</p></div>{% endif %}
+<div id="result" aria-live="polite">
+{% if error %}<div class="verdict fail" style="margin-top:20px" role="alert"><span class="big">!</span><p>{{ error }}</p></div>{% endif %}
 {% if result %}
-<h2>Result</h2>
+<h2>2 · Result</h2>
+<div class="stopflow" aria-label="What the pipeline did">
+  <span class="st ok">Crew 1 wrote the file</span><span class="ar">→</span>
+  <span class="st {{ 'ok' if result.passed else 'bad' }}">Handoff gates {{ '✓ passed' if result.passed else '✕ failed' }}</span><span class="ar">→</span>
+  <span class="st {{ '' if result.passed else 'notrun' }}">Crew 2 trains the model{{ '' if result.passed else ' (did not run)' }}</span>
+</div>
 <div class="verdict {{ 'pass' if result.passed else 'fail' }}">
   <span class="big">{{ '✓ PASSED' if result.passed else '✕ FAILED' }}</span>
   <p>{% if result.passed %}The file matches the locked contract. The pipeline would hand it to Crew 2.{% else %}The pipeline would stop here, write <code>validation_report.md</code>, exit with code 1, and Crew 2 would not run.{% endif %}</p>
@@ -46,6 +49,16 @@
 </div>
 {% endif %}
 </div>
+
+<h2>{{ '3' if result else '2' }} · Or check your own file</h2>
+<form method="post" action="{{ url_for('checker') }}#result" enctype="multipart/form-data" id="upload-form">
+  <label class="dropzone" id="dropzone">
+    <input type="file" name="file" accept=".csv" id="file-input">
+    <div style="font-size:1.6rem" aria-hidden="true">⇪</div>
+    <div><strong>Drop a CSV here</strong> or click to choose · up to {{ max_mb }} MB</div>
+    <div class="small">Tip: download nothing, just edit a copy of clean_data.csv from the repository and upload it.</div>
+  </label>
+</form>
 {% endblock %}
 {% block scripts %}
 <script>

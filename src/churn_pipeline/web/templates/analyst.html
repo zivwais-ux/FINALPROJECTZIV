@@ -1,10 +1,13 @@
 {% extends "base.html" %}{% from "_gates.html" import ai_card, bar %}
 {% block title %}Data Analyst{% endblock %}
 {% block content %}
-<div class="eyebrow">Crew 1 · 4 agents</div>
-<h1>Data Analyst</h1>
-<p class="lead">Profiles the raw data, hands Crew 2 an unchanged <code>clean_data.csv</code>, explores who churns, and writes the dataset contract.
-{% if has_eda %}<a href="{{ url_for('eda_report') }}">Open the full EDA report with charts →</a>{% endif %}</p>
+<div class="page-head">
+  <div class="eyebrow">Crew 1 · 4 agents</div>
+  <h1>Data Analyst</h1>
+  <p class="lead">The first crew checks the raw data, hands the next crew an unchanged <code>clean_data.csv</code>, explores who churns, and writes the dataset contract.
+  {% if has_eda %}<a href="{{ url_for('eda_report') }}">Open the full EDA report with charts →</a>{% endif %}</p>
+  <div class="jump"><a href="#who">Who churns</a><a href="#missing">Missing values</a><a href="#contract-h">The contract</a><a href="#insights">Business insights</a></div>
+</div>
 
 {% if quality %}{% set rate = quality.target.rate %}{% set d = quality.duplicates_ignoring_id %}
 <div class="grid g4">
@@ -17,7 +20,7 @@
 <div class="callout warn" style="margin-top:16px"><span class="ico">⚠</span><div><strong>Duplicates hidden behind unique ids.</strong> {{ d.summary }}
   A random train/test split would put copies of training rows in the test set; Crew 2 keeps each group on one side.</div></div>
 
-<h2>Who churns</h2>
+<h2 id="who">Who churns</h2>
 <p class="sub">Churn rate by segment, computed by the profiling tool. The dark line marks the overall rate ({{ '%.1f'|format(rate * 100) }}%).
 Spellings that look alike, such as <code>COD</code> and <code>Cash on Delivery</code>, are kept apart on purpose: their churn rates differ.</p>
 <div class="grid g2">
@@ -33,7 +36,7 @@ Spellings that look alike, such as <code>COD</code> and <code>Cash on Delivery</
   {% endfor %}
 </div>
 
-<h2>Missing values tell a story</h2>
+<h2 id="missing">Missing values tell a story</h2>
 <p class="sub">Churn rate when a value is missing versus present. Missing values are kept: both models handle them natively.</p>
 <div class="card">
   <div class="bars">
@@ -47,7 +50,7 @@ Spellings that look alike, such as <code>COD</code> and <code>Cash on Delivery</
 {% endif %}
 
 {% if contract %}
-<h2>The dataset contract</h2>
+<h2 id="contract-h">The dataset contract</h2>
 <p class="sub">v{{ contract.contract_version }} · the only thing Crew 2 may assume about the data. Numbers come from a tool; descriptions from the Contract Steward agent.
 Units marked <span class="badge warn">assumed</span> are not stated by the source.</p>
 <div class="card">
@@ -70,6 +73,6 @@ Units marked <span class="badge warn">assumed</span> are not stated by the sourc
 </div>
 {% endif %}
 
-{% if insights %}<h2>Business insights</h2>{{ ai_card('Insights for the retention team', insights, 'EDA & Insights Analyst') }}{% endif %}
+{% if insights %}<h2 id="insights">Business insights</h2>{{ ai_card('Insights for the retention team', insights, 'EDA & Insights Analyst', clamp=true, more='Read the full insights') }}{% endif %}
 {% if summary %}<details class="card"><summary>Quality summary written by the Data Quality Inspector</summary><div class="md" style="margin-top:10px">{{ summary }}</div></details>{% endif %}
 {% endblock %}

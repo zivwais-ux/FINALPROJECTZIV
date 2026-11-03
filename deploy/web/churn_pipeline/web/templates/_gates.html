@@ -13,10 +13,17 @@
   {% endfor %}
 </ul>
 {% endmacro %}
-{% macro ai_card(title, body, note='') %}
+{% macro gate_chips(report) %}
+<div class="gchips" role="list">{% for g in report.gates %}<span class="gchip {{ 'pass' if g.passed else 'fail' }}" role="listitem" title="{{ g.summary }}">{{ '✓' if g.passed else '✕' }} {{ g.name }}</span>{% endfor %}</div>
+{% for g in report.gates if not g.passed %}
+<div class="found"><b>{{ g.name }}: {{ g.summary }}</b>
+  {% if report.problems.get(g.name) %}<ul>{% for p in report.problems[g.name] %}<li>{{ p }}</li>{% endfor %}</ul>{% endif %}</div>
+{% endfor %}
+{% endmacro %}
+{% macro ai_card(title, body, note='', clamp=false, more='') %}
 <div class="card ai-card">
   <div class="ai-head"><h3 style="margin:0">{{ title }}</h3><span class="badge ai">✦ AI-written{% if note %} · {{ note }}{% endif %}</span></div>
-  <div class="md">{{ body }}</div>
+  <div class="md{{ ' clamp' if clamp else '' }}"{% if more %} data-more="{{ more }}"{% endif %}>{{ body }}</div>
 </div>
 {% endmacro %}
 {% macro bar(label, value, max, text, hot=false, ref=none) %}

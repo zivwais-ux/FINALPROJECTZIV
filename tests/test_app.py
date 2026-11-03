@@ -172,3 +172,34 @@ def test_instant_briefing_shows_the_coded_plan(client):
     assert "Yes, priority 2 (complained in the last month, whatever the score)" in html
     assert "Follow-up by the support team to close the complaint" in html
     assert "No individual outreach" not in html
+
+
+def test_render_md_keeps_local_paths_out_of_agent_text():
+    from churn_pipeline.web.app import render_md
+    html = str(render_md("Model file location: /home/user/FINALPROJECTZIV/artifacts/latest/crew2/model.joblib"))
+    assert "/home/user" not in html and "artifacts/latest/crew2/model.joblib" in html
+
+
+def test_customer_snapshot_uses_plain_labels():
+    from churn_pipeline.web.app import humanize_facts
+    rows = dict(humanize_facts({"Tenure": 0.0, "Complain": 1, "PreferredPaymentMode": "COD",
+                                "CashbackAmount": 123.4, "OrderCount": None}))
+    assert rows["Months as a customer"] == "0" and rows["Complained last month"] == "Yes"
+    assert rows["Usually pays by"] == "Cash on delivery (COD)" and rows["Cashback received (INR)"] == "123"
+    assert rows["OrderCount" if "OrderCount" in rows else "Orders last month"] == "not recorded"
+
+
+def test_briefing_page_answers_the_three_questions_and_has_a_menu(client):
+    html = client.get("/briefing?id=51809").get_data(as_text=True)
+    assert "Contact?" in html and "How?" in html and "Offer?" in html and 'id="menu-btn"' in html
+    assert "Cash on delivery (COD)" in html and "PreferredPaymentMode" not in html
+
+
+def test_runs_lists_the_incident_first(client):
+    html = client.get("/runs").get_data(as_text=True)
+    assert html.index('id="unit_change"') < html.index('id="bad_category"')
+
+
+def test_each_tour_page_links_to_the_next_one(client):
+    assert "Next in the tour" in client.get("/architecture").get_data(as_text=True)
+    assert "Next in the tour" not in client.get("/code").get_data(as_text=True)

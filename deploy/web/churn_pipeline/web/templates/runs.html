@@ -1,19 +1,23 @@
-{% extends "base.html" %}{% from "_gates.html" import verdict, gates %}
+{% extends "base.html" %}{% from "_gates.html" import verdict, gates, gate_chips %}
 {% block title %}Runs{% endblock %}
 {% block content %}
-<div class="eyebrow">Evidence</div>
-<h1>Runs</h1>
-<p class="lead">Every run of the pipeline and every break-it scenario (<code>scripts/break_it.py</code>), stored in Supabase, with the gate that stopped it.</p>
+<div class="page-head">
+  <div class="eyebrow">Evidence</div>
+  <h1>Runs</h1>
+  <p class="lead">Proof that the pipeline runs, and that it stops when the data breaks. Every run is stored in Supabase, with the gate that stopped it.</p>
+  <p class="stats-row">{% if history %}<span><b>{{ history|length }}</b> runs recorded</span>{% endif %}<span><b>{{ scenarios|length }}</b> break-it scenarios, <b>{{ scenarios|selectattr('report.verdict', 'equalto', 'FAILED')|list|length }}</b> caught by a gate</span></p>
+  <div class="jump"><a href="#latest">Latest run</a><a href="#scenarios">Break-it scenarios</a><a href="#history-h">Run history</a></div>
+</div>
 
-<h2>Run history</h2>
+<h2 id="history-h">Run history</h2>
 {% if history %}
 <p class="sub">From the Supabase table <code>pipeline_runs</code>, newest first.</p>
-<div class="chips" data-filter-group="#history" role="group" aria-label="Filter runs">
+<div class="chips" data-filter-group="#history-table" role="group" aria-label="Filter runs">
   <button class="chip on" data-value="all">All · {{ history|length }}</button>
   <button class="chip" data-value="pipeline">Pipeline runs · {{ history|selectattr('kind', 'equalto', 'pipeline')|list|length }}</button>
   <button class="chip" data-value="scenario">Break-it scenarios · {{ history|selectattr('kind', 'equalto', 'scenario')|list|length }}</button>
 </div>
-<div class="card" style="padding:0"><table id="history">
+<div class="card" style="padding:0" id="history"><table id="history-table">
   <thead><tr><th>Time (UTC)</th><th>Run</th><th>Verdict</th><th>Stopped by</th><th class="num">PR-AUC</th><th class="num">Recall</th></tr></thead>
   <tbody>
   {% for r in history %}
@@ -32,18 +36,19 @@
 {% endif %}
 
 {% if latest %}
-<h2>Latest full run {{ verdict(latest.verdict) }}</h2>
+<h2 id="latest">Latest full run {{ verdict(latest.verdict) }}</h2>
 <div class="card">{{ gates(latest) }}
   {% if latest_log %}<details style="margin-top:8px"><summary>Pipeline log</summary><pre>{{ latest_log }}</pre></details>{% endif %}</div>
 {% endif %}
 
-<h2>Break-it scenarios</h2>
+<h2 id="scenarios">Break-it scenarios</h2>
 <p class="sub">Each one breaks a copy of the handoff on purpose. Try them yourself in the <a href="{{ url_for('checker') }}">contract checker</a>.</p>
 {% for s in scenarios %}
 <div class="card" id="{{ s.name }}">
   <div class="ai-head"><h3 style="margin:0"><code>{{ s.name }}</code></h3>{{ verdict(s.report.verdict) }}</div>
   <p class="small" style="margin:0 0 6px">{{ s.description }} · {{ s.report.time }} UTC</p>
-  {{ gates(s.report) }}
+  <p class="small" style="margin:0">{{ s.report.next_step }}</p>
+  {{ gate_chips(s.report) }}
   {% if s.log %}<details><summary>Log</summary><pre>{{ s.log }}</pre></details>{% endif %}
 </div>
 {% else %}<div class="card">No scenarios run yet. Run <code>uv run python scripts/break_it.py</code>.</div>{% endfor %}

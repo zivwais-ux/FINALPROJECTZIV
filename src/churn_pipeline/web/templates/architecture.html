@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Architecture{% endblock %}
 {% block content %}
-<div class="eyebrow">System design</div>
-<h1>Architecture</h1>
-<p class="lead">How data, agents, tools and gates connect. {{ agent_count }} agents across three crews; each agent calls its own Python tools, and every gate is plain code.
-The briefing agent combines the model, RAG over internal documents and a web search for news from the last 48 hours.</p>
+<div class="page-head">
+  <div class="eyebrow">System design</div>
+  <h1>Architecture</h1>
+  <p class="lead">How data, agents, tools and gates connect. {{ agent_count }} agents across three crews; each agent calls its own Python tools, and every gate is plain code.
+  The briefing agent combines the model, RAG over internal documents and a web search for news from the last 48 hours.</p>
+  <div class="jump"><a href="#principles">Design principles</a><a href="#rag">The RAG pipeline</a><a href="#agents">Agents and prompts</a></div>
+</div>
 
 <div class="card">
 <svg viewBox="0 0 1040 455" width="100%" role="img" aria-label="Pipeline architecture diagram" style="font-family: var(--font); max-width: 100%">
@@ -52,7 +55,7 @@ The briefing agent combines the model, RAG over internal documents and a web sea
 <div class="legend"><span><i style="background:var(--ai-soft);border:1px solid var(--ai)"></i>AI agents</span><span><i style="background:var(--fail-soft);border:1px solid var(--fail)"></i>Gates in code</span><span><i style="background:var(--accent-soft);border:1px solid var(--accent)"></i>Data and artifacts</span><span><i style="background:var(--brand-soft);border:1px solid var(--brand)"></i>Output</span></div>
 </div>
 
-<h2>Design principles</h2>
+<h2 id="principles">Design principles</h2>
 <div class="grid g3">
   <div class="card"><h3>Agents decide, tools compute</h3><p class="small">Every number in an agent's text comes from a Python tool's output. Agents choose, explain and write; they never do arithmetic.</p></div>
   <div class="card"><h3>Gates are code</h3><p class="small">The contract check, the lock comparison and the quality gate are plain Python. No LLM can talk the flow past a broken handoff.</p></div>
@@ -60,7 +63,7 @@ The briefing agent combines the model, RAG over internal documents and a web sea
   <div class="card"><h3>Fail loudly, explain precisely</h3><p class="small">A failed gate writes a report naming the column and the change, for example "about 100x off, possible unit change", and exits with 1.</p></div>
 </div>
 
-<h2>The RAG pipeline</h2>
+<h2 id="rag">The RAG pipeline</h2>
 <p class="sub">Retrieval over Harbor &amp; Vale's internal documents (<code>src/churn_pipeline/rag.py</code>).</p>
 <div class="flow">
   <div class="node data"><div class="kind">Corpus</div><h3>7 documents</h3><p>Retention playbook, discount policy, past campaigns, competitor offers, postmortem, latest insights, model card.</p></div>
@@ -71,11 +74,11 @@ The briefing agent combines the model, RAG over internal documents and a web sea
   <div class="node gate"><div class="kind">Guardrail</div><h3>Check the explanations</h3><p>Every decision explained, none walked back, and only real news links, or the agent tries again.</p></div>
 </div>
 
-<h2>The agents and their prompts</h2>
+<h2 id="agents">The agents and their prompts</h2>
 <p class="sub">Roles, goals, tools and task prompts, read from the crews' YAML configuration.</p>
 {% for crew in crews %}
 <h3 style="margin-top:22px">{{ crew.title }}</h3>
-<div class="grid g2">
+<div class="grid cols2">
   {% for a in crew.agents %}
   <div class="agent">
     <div class="role">{{ a.role }}</div>
